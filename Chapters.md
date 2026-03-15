@@ -41,4 +41,9 @@
 - [ ]  **13. Cost Optimization & Migration**
     - *Scope:* **Cost Explorer**, **Budgets**, **Compute Optimizer**, **DMS**, **DataSync**, **DR Patterns** (Backup/Restore, Pilot Light, Warm Standby, Multi-Site), **AWS Organizations** (SCPs), **AWS Backup**.
 
+### **ADDITIONAL SERVICES (1-2 Questions Each)**
+
+- [ ]  **14. Additional Services**
+    - *Scope:* **Athena** (SQL on S3), **Redshift** (Data Warehouse), **Glue** (ETL), **EventBridge** (Event Bus), **CloudFormation** (IaC), **Elastic Beanstalk** (PaaS), **OpenSearch** (Search/Log Analytics), **AppSync** (GraphQL), **MSK** (Kafka), **SES** (Email).
+
 ---

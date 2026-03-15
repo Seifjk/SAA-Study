@@ -2,8 +2,8 @@
 
 **Start Date:** Thursday, March 26, 2026
 **Pace:** 1.5 hours/day (2 hours on mock exam days)
-**Exam Date:** Book for April 20, 2026
-**Total Duration:** 26 days
+**Exam Date:** Book for April 21, 2026
+**Total Duration:** 27 days
 
 ---
 
@@ -20,7 +20,7 @@
 **3 weapons against forgetting:**
 1. **Spaced review** — built into every day as Block A
 2. **Scenarios** — each chapter ends with 5 exam-style scenarios that anchor the concepts
-3. **Mock exams** — starting Day 14, every mock forces full recall of all 13 chapters at once
+3. **Mock exams** — starting Day 15, every mock forces full recall of all 14 chapters at once
 
 ---
 
@@ -35,16 +35,17 @@
 | 5 | Databases Relational | DatabasesRelational.md | Heavy |
 | 6 | Databases NoSQL | DatabasesNoSQL.md | Heavy |
 | 7 | Serverless | Serverless.md | Heavy |
-| 8 | Containers + Cost/Migration/DR | Containers.md + CostOptimization.md | Paired |
-| 9 | Decoupling | Decoupling.md | Heavy |
-| 10 | Content Delivery & DNS | ContentDeliveryDNS.md | Medium |
-| 11 | Security & Identity | SecurityIdentity.md | Heavy |
-| 12 | Monitoring & Audit | MonitoringAudit.md | Heavy |
-| 13 | Full review + buffer | All cheat sheets | Review |
+| 8 | Containers | Containers.md | Medium |
+| 9 | Cost/Migration/DR | CostOptimization.md | Heavy |
+| 10 | Decoupling | Decoupling.md | Heavy |
+| 11 | Content Delivery & DNS | ContentDeliveryDNS.md | Medium |
+| 12 | Security & Identity | SecurityIdentity.md | Heavy |
+| 13 | Monitoring & Audit + Additional Services | MonitoringAudit.md + AdditionalServices.md | Paired |
+| 14 | Full review + buffer | All cheat sheets | Review |
 
 ---
 
-## Phase 1: Learn (Days 1-13)
+## Phase 1: Learn (Days 1-14)
 
 ---
 
@@ -118,20 +119,29 @@
 
 ---
 
-### Day 8 — Thu Apr 2: Containers + Cost/Migration/DR
+### Day 8 — Thu Apr 2: Containers
 
-**Block A (20 min):** Networking + Storage cheat sheets (Day 1-2, now +7 days — critical 1-week reinforcement). If you can't recall 80%+ instantly, flag for extra review on Day 13.
+**Block A (20 min):** Networking + Storage cheat sheets (Day 1-2, now +7 days — critical 1-week reinforcement). If you can't recall 80%+ instantly, flag for extra review on Day 14.
 **Block B (70 min):**
-- Read Containers.md (40 min) — focus on: ECS EC2 vs Fargate table, Task Role vs Execution Role, awsvpc mode, EFS for persistent shared storage, EKS = Kubernetes migration.
-- Read CostOptimization.md (20 min) — focus on: Cost Explorer vs Budgets vs Compute Optimizer, DMS (+SCT for heterogeneous), DataSync vs Snow Family, DR patterns table (RPO/RTO), AWS Organizations SCPs, AWS Backup.
-- Do 3 container scenarios. Quiz yourself on DR pattern triggers.
-- **Write from memory:** ECS EC2 vs Fargate table. DR patterns table (4 strategies, RPO/RTO/Cost).
+- Read Containers.md — focus on: ECS EC2 vs Fargate table, Task Role vs Execution Role, awsvpc mode, EFS for persistent shared storage, EKS = Kubernetes migration, Capacity Provider + ASG.
+- Do all 5 container scenarios.
+- **Write from memory:** ECS EC2 vs Fargate table. Task Role vs Execution Role difference.
 
 ---
 
-### Day 9 — Fri Apr 3: Decoupling
+### Day 9 — Fri Apr 3: Cost/Migration/DR
 
-**Block A (20 min):** Compute + HA + Serverless cheat sheets (rapid fire). Test: "Timeout > 15 min → ?" "Eliminate cold starts → ?" "Maintain CPU at 60% → ?" "Run script before instance enters service → ?"
+**Block A (20 min):** Compute + HA cheat sheets (rapid fire). Test: "Per-socket licensing → ?" "Cheapest fault-tolerant batch → ?" "Maintain CPU at 60% → ?" "Static IP → ?"
+**Block B (70 min):**
+- Read CostOptimization.md — focus on: Cost Explorer vs Budgets vs Compute Optimizer, DMS (+SCT for heterogeneous), DataSync vs Snow Family, DR patterns table (RPO/RTO — WILL be on exam), AWS Organizations SCPs, AWS Backup.
+- Quiz yourself on all DR pattern triggers + migration service triggers.
+- **Write from memory:** DR patterns table (4 strategies, RPO/RTO/Cost). "Lift-and-shift servers → ?" "Centralized backup → ?" "Cheapest DR → ?"
+
+---
+
+### Day 10 — Sat Apr 4: Decoupling
+
+**Block A (20 min):** Serverless + Containers cheat sheets. Test: "Timeout > 15 min → ?" "Eliminate cold starts → ?" "Run containers without managing servers → ?" "Container needs S3 access → ?"
 **Block B (70 min):**
 - Read Decoupling.md — focus on: SQS Standard vs FIFO table, Long Polling (reduce API calls), Visibility Timeout, DLQ, SNS + SQS Fan-Out pattern, Kinesis Data Streams vs Data Firehose table, Amazon MQ = RabbitMQ migration only.
 - Do all 5 decoupling scenarios.
@@ -139,9 +149,9 @@
 
 ---
 
-### Day 10 — Sat Apr 4: Content Delivery & DNS
+### Day 11 — Sun Apr 5: Content Delivery & DNS
 
-**Block A (20 min):** DB Relational + DB NoSQL cheat sheets (now 5 days old — reinforce before they fade). Redo "Lambda Connection Storm" scenario.
+**Block A (20 min):** DB Relational + DB NoSQL cheat sheets (now 6 days old — reinforce before they fade). Redo "Lambda Connection Storm" scenario.
 **Block B (70 min):**
 - Read ContentDeliveryDNS.md — focus on: All 7 Route 53 routing policies table (WILL be on exam), Alias vs CNAME (root domain → Alias only), CloudFront OAC (not OAI), Signed URLs (single file) vs Signed Cookies (multiple files), CloudFront vs Global Accelerator table.
 - Do all 5 CDN/DNS scenarios.
@@ -149,9 +159,9 @@
 
 ---
 
-### Day 11 — Sun Apr 5: Security & Identity
+### Day 12 — Mon Apr 6: Security & Identity
 
-**Block A (20 min):** Decoupling + Containers/Cost cheat sheets. Test: "Strict ordering → ?" "Fan-out → ?" "Migrate RabbitMQ → ?" "Cheapest DR → ?" "Lift-and-shift servers → ?" "Centralized backup → ?"
+**Block A (20 min):** Decoupling + Cost/Migration cheat sheets. Test: "Strict ordering → ?" "Fan-out → ?" "Migrate RabbitMQ → ?" "Cheapest DR → ?" "Lift-and-shift servers → ?" "Centralized backup → ?"
 **Block B (70 min):**
 - Read SecurityIdentity.md — focus on: IAM evaluation logic (Deny > Allow > Default Deny), Permission Boundaries, KMS key types + Envelope Encryption, Secrets Manager vs Parameter Store table, Cognito User Pools vs Identity Pools table, WAF rate limiting, GuardDuty vs Inspector vs Macie table.
 - Do all 5 security scenarios.
@@ -159,36 +169,37 @@
 
 ---
 
-### Day 12 — Mon Apr 6: Monitoring & Audit
+### Day 13 — Tue Apr 7: Monitoring & Audit + Additional Services
 
-**Block A (20 min):** Networking + Storage + HA cheat sheets (11+ days old — if you can't recall these, they need serious reinforcement on Day 13).
+**Block A (20 min):** Networking + Storage + HA cheat sheets (12+ days old — if you can't recall these, they need serious reinforcement on Day 14).
 **Block B (70 min):**
-- Read MonitoringAudit.md — focus on: CloudWatch vs CloudTrail vs Config table (WILL be on exam), CloudWatch Agent for memory/disk (not default metrics), EventBridge = CloudWatch Events 2.0, SSM Session Manager (no SSH/port 22), SSM Patch Manager, Trusted Advisor 5 pillars.
-- Do all 5 monitoring scenarios.
-- **Write from memory:** CloudWatch vs CloudTrail vs Config vs VPC Flow Logs. "Monitor memory → ?" "Who deleted resource → ?" "Auto-remediate → ?"
+- Read MonitoringAudit.md (45 min) — focus on: CloudWatch vs CloudTrail vs Config table (WILL be on exam), CloudWatch Agent for memory/disk (not default metrics), EventBridge = CloudWatch Events 2.0, SSM Session Manager (no SSH/port 22), SSM Patch Manager, Trusted Advisor 5 pillars.
+- Read AdditionalServices.md (15 min) — quick reference for 1-2 question services: Athena (SQL on S3), Redshift (data warehouse), Glue (ETL), CloudFormation (IaC), Elastic Beanstalk (PaaS), OpenSearch (search/log analytics), AppSync (GraphQL), MSK (Kafka migration).
+- Do all 5 monitoring scenarios. Skim additional services cheat sheet.
+- **Write from memory:** CloudWatch vs CloudTrail vs Config vs VPC Flow Logs. "Query S3 with SQL → ?" "Data warehouse → ?" "ETL → ?" "IaC → ?"
 
 ---
 
-### Day 13 — Tue Apr 7: Full Review Day + Buffer
+### Day 14 — Wed Apr 8: Full Review Day + Buffer
 
-**Full 90 min:** Go through ALL 13 chapter cheat sheets:
+**Full 90 min:** Go through ALL 14 chapter cheat sheets:
 - Read each trigger/answer pair
 - Cover the answer, test yourself
 - Mark any you can't recall instantly → this becomes your **weak list**
 
 Write your weak list on paper. You'll use it for the rest of the plan.
 
-This day also serves as a **buffer** — if you fell behind by 1 day during Phase 1, use today to catch up on the last chapter instead, and do the full review as Block A on Day 14.
+This day also serves as a **buffer** — if you fell behind by 1 day during Phase 1, use today to catch up on the last chapter instead, and do the full review as Block A on Day 15.
 
 **Also today:** Buy mock exams if you haven't:
 - Stephane Maarek SAA-C03 practice exams (Udemy)
 - Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy)
 
-**Book your exam today for April 20.**
+**Book your exam today for April 21.**
 
 ---
 
-## Phase 2: Mock Exams + Reinforcement (Days 14-25)
+## Phase 2: Mock Exams + Reinforcement (Days 15-26)
 
 **Mock exam days = 2 hours.** The extra 30 min over normal sessions is specifically for proper wrong-answer review. Rushing the review defeats the purpose of mock exams.
 
@@ -196,7 +207,7 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 ---
 
-### Day 14 — Wed Apr 8: Mock #1 (Maarek) [2 hours]
+### Day 15 — Thu Apr 9: Mock #1 (Maarek) [2 hours]
 **Take:** Stephane Maarek Exam #1 (~80 min)
 **Review:** Every wrong answer + every flagged answer (~40 min). Go back to the chapter for each wrong topic.
 **Expected score:** 55-70%. This is your baseline. Don't panic.
@@ -204,16 +215,16 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 ---
 
-### Day 15 — Thu Apr 9: Review Day [90 min]
+### Day 16 — Fri Apr 10: Review Day [90 min]
 **Focus ONLY on topics you got wrong on Mock #1:**
 - Reread the relevant chapter sections
 - Redo the scenarios for those chapters
 - Rewrite the cheat sheet items from memory
-- Speed-run Chapters 1-6 cheat sheets (these are now 10-14 days old)
+- Speed-run Chapters 1-7 cheat sheets (these are now 10-14 days old)
 
 ---
 
-### Day 16 — Fri Apr 10: Mock #2 (Davis) [2 hours]
+### Day 17 — Sat Apr 11: Mock #2 (Davis) [2 hours]
 **Take:** Neal Davis / Tutorials Dojo Exam #1 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Expected score:** 50-65% (Davis is intentionally harder — this is normal).
@@ -221,14 +232,14 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 ---
 
-### Day 17 — Sat Apr 11: Review Day [90 min]
+### Day 18 — Sun Apr 12: Review Day [90 min]
 - Blind spot topics from Mock #1 + #2 — reread those full chapter sections (40 min)
-- Speed-run Chapters 7-13 cheat sheets (30 min)
+- Speed-run Chapters 8-14 cheat sheets (30 min)
 - Redo your 5 weakest scenarios from any chapter (20 min)
 
 ---
 
-### Day 18 — Sun Apr 12: Mock #3 (Maarek) [2 hours]
+### Day 19 — Mon Apr 13: Mock #3 (Maarek) [2 hours]
 **Take:** Stephane Maarek Exam #2 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Target score:** 65-78%. You should see improvement from Mock #1.
@@ -236,7 +247,7 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 ---
 
-### Day 19 — Mon Apr 13: Mock #4 (Davis) [2 hours]
+### Day 20 — Tue Apr 14: Mock #4 (Davis) [2 hours]
 **Take:** Neal Davis Exam #2 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Target score:** 62-74%.
@@ -244,14 +255,14 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 ---
 
-### Day 20 — Tue Apr 14: Review Day [90 min]
-- All 13 cheat sheets — rapid fire trigger/answer pairs (40 min)
+### Day 21 — Wed Apr 15: Review Day [90 min]
+- All 14 cheat sheets — rapid fire trigger/answer pairs (40 min)
 - Your weak list — drill until you can recall every item (30 min)
 - Focus on any topic wrong in 3+ mocks — these are your critical gaps (20 min)
 
 ---
 
-### Day 21 — Wed Apr 15: Mock #5 (Maarek) — CHECKPOINT [2 hours]
+### Day 22 — Thu Apr 16: Mock #5 (Maarek) — CHECKPOINT [2 hours]
 **Take:** Stephane Maarek Exam #3 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Target score:** 72-82%.
@@ -260,21 +271,21 @@ This day also serves as a **buffer** — if you fell behind by 1 day during Phas
 
 | Score | Action |
 |-------|--------|
-| 78%+ | Keep April 20. You're ready. |
-| 72-77% | Keep April 20. Focus remaining days on weak list only. |
-| 65-71% | Reschedule to April 27. Take 2 more mocks + review. |
-| <65% | Reschedule to May 4. Reread your 3 weakest chapters fully. |
+| 78%+ | Keep April 21. You're ready. |
+| 72-77% | Keep April 21. Focus remaining days on weak list only. |
+| 65-71% | Reschedule to April 28. Take 2 more mocks + review. |
+| <65% | Reschedule to May 5. Reread your 3 weakest chapters fully. |
 
 ---
 
-### Day 22 — Thu Apr 16: Mock #6 (Maarek) [2 hours]
+### Day 23 — Fri Apr 17: Mock #6 (Maarek) [2 hours]
 **Take:** Stephane Maarek Exam #4 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Target score:** 78-85%.
 
 ---
 
-### Day 23 — Fri Apr 17: Mock #7 (Maarek) — GO/NO-GO [2 hours]
+### Day 24 — Sat Apr 18: Mock #7 (Maarek) — GO/NO-GO [2 hours]
 **Take:** Stephane Maarek Exam #5 (~80 min)
 **Review:** All wrong answers (~40 min)
 **Target score:** 80%+.
@@ -285,15 +296,15 @@ If <75%: Push exam back 1 week. Take remaining Davis exams.
 
 ---
 
-### Day 24 — Sat Apr 18: Final Review [90 min]
-- All 13 cheat sheets one last time (40 min)
+### Day 25 — Sun Apr 19: Final Review [90 min]
+- All 14 cheat sheets one last time (40 min)
 - Your weak list (20 min)
 - Redo your 5 hardest scenarios (20 min)
 - DR patterns + cost tools + migration services (10 min)
 
 ---
 
-### Day 25 — Sun Apr 19: Pre-Exam [45 min max]
+### Day 26 — Mon Apr 20: Pre-Exam [45 min max]
 - Skim all cheat sheets (don't study deeply, just skim)
 - Optionally take Maarek Exam #6 as warm-up (don't obsess over score)
 - Stop by early afternoon
@@ -302,7 +313,7 @@ Relax. Walk. Sleep well.
 
 ---
 
-### Day 26 — Mon Apr 20: EXAM DAY
+### Day 27 — Tue Apr 21: EXAM DAY
 
 **Morning:**
 - Light breakfast
@@ -333,13 +344,14 @@ Day  4: Learn HA                            Review → Storage, Compute + Networ
 Day  5: Learn DB Relational                 Review → Networking, Storage (+3/+4 days)
 Day  6: Learn DB NoSQL                      Review → HA, Compute (+2/+3 days)
 Day  7: Learn Serverless                    Review → DB Relational, DB NoSQL (+1/+2 days)
-Day  8: Learn Containers + Cost             Review → Networking, Storage (+7 days — critical)
-Day  9: Learn Decoupling                    Review → Compute, HA, Serverless (+3-6 days)
-Day 10: Learn CDN & DNS                     Review → DB Relational, DB NoSQL (+4/+5 days)
-Day 11: Learn Security                      Review → Decoupling, Containers/Cost (+2/+3 days)
-Day 12: Learn Monitoring                    Review → Networking, Storage, HA (+11 days)
-Day 13: Full review                         Review → ALL 13 cheat sheets
-Day 14+: Mock exams                         Every mock reviews EVERYTHING at once
+Day  8: Learn Containers                    Review → Networking, Storage (+7 days — critical)
+Day  9: Learn Cost/Migration/DR             Review → Compute, HA (+5/+6 days)
+Day 10: Learn Decoupling                    Review → Serverless, Containers (+3/+2 days)
+Day 11: Learn CDN & DNS                     Review → DB Relational, DB NoSQL (+5/+6 days)
+Day 12: Learn Security                      Review → Decoupling, Cost/Migration (+2/+3 days)
+Day 13: Learn Monitoring + Additional       Review → Networking, Storage, HA (+12 days)
+Day 14: Full review                         Review → ALL 14 cheat sheets
+Day 15+: Mock exams                         Every mock reviews EVERYTHING at once
 ```
 
 **Result:** By exam day, Day 1 content has been reviewed 10+ times across:
@@ -351,7 +363,7 @@ Day 14+: Mock exams                         Every mock reviews EVERYTHING at onc
 
 ## When to Book the Exam
 
-**Book it on Day 13 (April 7) for April 20.**
+**Book it on Day 14 (April 8) for April 21.**
 
 - Having a locked date creates healthy pressure
 - You can reschedule up to 24 hours before (AWS policy)
@@ -362,13 +374,13 @@ Day 14+: Mock exams                         Every mock reviews EVERYTHING at onc
 ## Mock Exam Score Tracker
 
 ```
-Mock #1 (Day 14) Maarek #1:  ___% | Weak: _______________
-Mock #2 (Day 16) Davis  #1:  ___% | Weak: _______________
-Mock #3 (Day 18) Maarek #2:  ___% | Weak: _______________
-Mock #4 (Day 19) Davis  #2:  ___% | Weak: _______________
-Mock #5 (Day 21) Maarek #3:  ___% | Weak: _______________ ← CHECKPOINT
-Mock #6 (Day 22) Maarek #4:  ___% | Weak: _______________
-Mock #7 (Day 23) Maarek #5:  ___% | Weak: _______________ ← GO/NO-GO
+Mock #1 (Day 15) Maarek #1:  ___% | Weak: _______________
+Mock #2 (Day 17) Davis  #1:  ___% | Weak: _______________
+Mock #3 (Day 19) Maarek #2:  ___% | Weak: _______________
+Mock #4 (Day 20) Davis  #2:  ___% | Weak: _______________
+Mock #5 (Day 22) Maarek #3:  ___% | Weak: _______________ ← CHECKPOINT
+Mock #6 (Day 23) Maarek #4:  ___% | Weak: _______________
+Mock #7 (Day 24) Maarek #5:  ___% | Weak: _______________ ← GO/NO-GO
 ```
 
 **Healthy:** Each Maarek score 5-10% higher than the previous.
@@ -388,30 +400,31 @@ WEEK 1 — LEARN (Mar 26 - Apr 1)                    [90 min/day]
   Tue 31: Databases NoSQL
   Wed  1: Serverless
 
-WEEK 2 — LEARN + FIRST MOCKS (Apr 2 - Apr 8)       [90 min learn, 2h mock]
-  Thu  2: Containers + Cost/Migration/DR
-  Fri  3: Decoupling
-  Sat  4: Content Delivery & DNS
-  Sun  5: Security & Identity
-  Mon  6: Monitoring & Audit
-  Tue  7: Full review + buffer (book exam today)
-  Wed  8: Mock #1 (Maarek)
+WEEK 2 — LEARN + BUFFER (Apr 2 - Apr 8)            [90 min/day]
+  Thu  2: Containers
+  Fri  3: Cost/Migration/DR
+  Sat  4: Decoupling
+  Sun  5: Content Delivery & DNS
+  Mon  6: Security & Identity
+  Tue  7: Monitoring & Audit + Additional Services
+  Wed  8: Full review + buffer (book exam today)
 
 WEEK 3 — MOCKS + REVIEW (Apr 9 - Apr 15)           [alternating 90 min / 2h]
-  Thu  9: Review day
-  Fri 10: Mock #2 (Davis)
-  Sat 11: Review day
-  Sun 12: Mock #3 (Maarek)
-  Mon 13: Mock #4 (Davis)
-  Tue 14: Review day
-  Wed 15: Mock #5 (Maarek) ← CHECKPOINT
+  Thu  9: Mock #1 (Maarek)
+  Fri 10: Review day
+  Sat 11: Mock #2 (Davis)
+  Sun 12: Review day
+  Mon 13: Mock #3 (Maarek)
+  Tue 14: Mock #4 (Davis)
+  Wed 15: Review day
 
-WEEK 4 — FINAL (Apr 16 - Apr 20)
-  Thu 16: Mock #6 (Maarek)
-  Fri 17: Mock #7 (Maarek) ← GO/NO-GO
-  Sat 18: Final review
-  Sun 19: Pre-exam (light)
-  Mon 20: EXAM DAY
+WEEK 4 — FINAL (Apr 16 - Apr 21)
+  Thu 16: Mock #5 (Maarek) ← CHECKPOINT
+  Fri 17: Mock #6 (Maarek)
+  Sat 18: Mock #7 (Maarek) ← GO/NO-GO
+  Sun 19: Final review
+  Mon 20: Pre-exam (light)
+  Tue 21: EXAM DAY
 ```
 
 ---
@@ -430,7 +443,7 @@ WEEK 4 — FINAL (Apr 16 - Apr 20)
 
 ## What You Need Before Day 1
 
-- [ ] All 13 chapter files (already in this folder)
+- [ ] All 14 chapter files (already in this folder)
 - [ ] Stephane Maarek SAA-C03 practice exams (Udemy) — buy by Day 12
 - [ ] Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy) — buy by Day 12
 - [ ] A notebook for writing from memory (paper > app for retention)
