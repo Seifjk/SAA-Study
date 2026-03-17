@@ -39,19 +39,19 @@ Block 1 (60 min)  →  Break (10 min)  →  Block 2 (50 min)
 
 | Day | Chapter(s) | File(s) | Load |
 |-----|-----------|---------|------|
-| 1 | Networking | Networking.md | Medium |
-| 2 | Storage | Storage.md | Medium |
-| 3 | Compute | Compute.md | Medium |
-| 4 | High Availability | HighAvailability.md | Medium |
-| 5 | Databases Relational | DatabasesRelational.md | Heavy |
-| 6 | Databases NoSQL | DatabasesNoSQL.md | Heavy |
+| 1 | Networking | [Networking](./Networking.md) | Medium |
+| 2 | Storage | [Storage](./Storage.md) | Medium |
+| 3 | Compute | [Compute](./Compute.md) | Medium |
+| 4 | High Availability | [HighAvailability](./HighAvailability.md) | Medium |
+| 5 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) | Heavy |
+| 6 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | Heavy |
 | — | **REST DAY** | — | — |
-| 7 | Serverless | Serverless.md | Heavy |
-| 8 | Cost/Migration/DR | CostOptimization.md | Heavy |
-| 9 | Decoupling | Decoupling.md | Heavy |
-| 10 | CDN/DNS + Monitoring/Audit | ContentDeliveryDNS.md + MonitoringAudit.md | Paired |
-| 11 | Security & Identity | SecurityIdentity.md | Heavy |
-| 12 | Containers + Additional Services | Containers.md + AdditionalServices.md | Paired |
+| 7 | Serverless | [Serverless](./Serverless.md) | Heavy |
+| 8 | Cost/Migration/DR | [CostOptimization](./CostOptimization.md) | Heavy |
+| 9 | Decoupling | [Decoupling](./Decoupling.md) | Heavy |
+| 10 | CDN/DNS + Monitoring/Audit | [ContentDeliveryDNS](./ContentDeliveryDNS.md) + [MonitoringAudit](./MonitoringAudit.md) | Paired |
+| 11 | Security & Identity | [SecurityIdentity](./SecurityIdentity.md) | Heavy |
+| 12 | Containers + Additional Services | [Containers](./Containers.md) + [AdditionalServices](./AdditionalServices.md) | Paired |
 | 13 | Full review + buffer | All cheat sheets | Review |
 
 ---
