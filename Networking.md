@@ -147,7 +147,7 @@ This covers the network logic. If you can draw the packet flow from a private in
 
 ### **3. SOLVE: VPC Scenarios (The "Plumbing" Tests)**
 
-### **Scenario 6: The "Bad Actor" (NACL vs. SG)**
+### **Scenario 1: The "Bad Actor" (NACL vs. SG)**
 
 **The Situation:** Your security team has detected a Denial of Service attack coming from a specific IP address `203.0.113.5`. You need to **immediately block** all traffic from this IP.
 
@@ -166,7 +166,7 @@ D. Use AWS WAF to inspect the traffic.
 - **Trap:** Security Groups (Option A) **cannot** have DENY rules. They are "Allow Only."
 - **The Fix:** **Option B**. **NACLs** are the only place at the subnet level where you can explicitly DENY a specific IP.
 
-### **Scenario 7: The "Private Update" (NAT Gateway)**
+### **Scenario 2: The "Private Update" (NAT Gateway)**
 
 **The Situation:** You have a fleet of EC2 instances in a **Private Subnet**. They need to download security patches from the internet, but they must **not** be accessible from the public internet.
 
@@ -185,7 +185,7 @@ D. Use a VPC Endpoint for S3.
 - **Trap:** Putting the NAT Gateway in the Private Subnet (Option B). A NAT Gateway needs its *own* route to the internet to work. It must live in the **Public Subnet**.
 - **The Fix:** **Option C**. Private Instance -> NAT GW (in Public) -> IGW -> Internet.
 
-### **Scenario 8: The "S3 Security" (Gateway Endpoint)**
+### **Scenario 3: The "S3 Security" (Gateway Endpoint)**
 
 **The Situation:** An application in a private subnet needs to transfer sensitive data to an S3 bucket. Corporate policy states that this data **must not traverse the public internet**, even if encrypted.
 
@@ -204,7 +204,7 @@ D. Enable S3 Transfer Acceleration.
 - **Trap:** NAT Gateway (Option A) sends traffic over the internet (even though it's masked).
 - **The Fix:** **Option B**. **Gateway Endpoints** keep traffic entirely within the AWS internal network. It never touches the public internet.
 
-### **Scenario 9: The "Star Topology" (Transit Gateway)**
+### **Scenario 4: The "Star Topology" (Transit Gateway)**
 
 **The Situation:** Your company has acquired 3 smaller startups. You now have **50 different VPCs** across different accounts that all need to communicate with each other and with an on-premise data center. Managing individual peering connections is becoming impossible.
 
@@ -223,7 +223,7 @@ D. Use a Shared VPC.
 - **Trap:** VPC Peering (Option A) becomes a management nightmare (N*(N-1)/2 connections).
 - **The Fix:** **Option C**. **Transit Gateway** acts as a central hub/router. You connect all 50 VPCs to the TGW once.
 
-### **Scenario 10: The "Broken Internet" (Route Tables)**
+### **Scenario 5: The "Broken Internet" (Route Tables)**
 
 **The Situation:** You launched an EC2 instance in a Public Subnet with a Public IP address. However, you cannot SSH into it from your home laptop. The Security Group allows Port 22 from `0.0.0.0/0`. What is the most likely cause?
 
