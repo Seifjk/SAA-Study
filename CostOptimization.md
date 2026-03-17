@@ -155,3 +155,119 @@
 10. **Near-zero RTO DR?** → Multi-Site Active-Active.
 11. **Restrict services across accounts?** → SCPs (Organizations).
 12. **Centralized backup?** → AWS Backup.
+
+---
+
+# **REAL EXAM SCENARIOS**
+
+### **Scenario 1: The "Cheapest DR" (Backup & Restore vs Pilot Light)**
+
+**The Situation:** A company runs a non-critical internal application on EC2 with an RDS MySQL database. They need a DR strategy for their secondary region. The business accepts up to **24 hours of downtime** and up to **4 hours of data loss**. They want the **lowest cost** DR option.
+
+**The Options:**
+
+A. Deploy a Warm Standby with a scaled-down copy of production in the DR region.
+
+B. Use Multi-Site Active-Active with Route 53 health checks.
+
+C. Back up RDS snapshots and AMIs to the DR region using AWS Backup. Restore when disaster hits.
+
+D. Keep a Pilot Light with the RDS database always running in the DR region.
+
+**The Logic:**
+
+- **Trap:** Warm Standby (Option A) and Multi-Site (Option B) are far more expensive than needed for 24-hour RTO.
+- **Trap:** Pilot Light (Option D) keeps the DB running 24/7 in the DR region — cheaper than Warm Standby but more expensive than needed when 24-hour downtime is acceptable.
+- **The Fix:** **Option C**. **Backup & Restore** is the cheapest DR strategy. RPO = hours (last backup), RTO = hours (restore from snapshot + launch from AMI). Meets the 24-hour downtime and 4-hour data loss requirements at the lowest cost.
+
+---
+
+### **Scenario 2: The "Database Migration" (DMS + SCT)**
+
+**The Situation:** A company needs to migrate their on-premises **Oracle** database to **Amazon Aurora PostgreSQL**. They require **near-zero downtime** during migration and the application must continue serving traffic throughout the migration.
+
+**The Options:**
+
+A. Use AWS DMS with Change Data Capture (CDC) for continuous replication.
+
+B. Export the Oracle database to a dump file, upload to S3, and import into Aurora.
+
+C. Use AWS DMS with the Schema Conversion Tool (SCT) first, then DMS with CDC.
+
+D. Use AWS DataSync to transfer the database files to Aurora.
+
+**The Logic:**
+
+- **Trap:** DMS alone (Option A) handles data replication but Oracle → PostgreSQL is a **heterogeneous** migration — the schemas are incompatible. DMS needs SCT first to convert the schema.
+- **Trap:** Database dump (Option B) requires downtime during export/import (violates near-zero downtime requirement).
+- **Trap:** DataSync (Option D) is for file/object transfer, not database migration.
+- **The Fix:** **Option C**. **SCT converts the Oracle schema** to PostgreSQL format first. Then **DMS with CDC** replicates existing data and captures ongoing changes, enabling near-zero downtime cutover.
+
+---
+
+### **Scenario 3: The "Multi-Account Governance" (SCPs)**
+
+**The Situation:** A large enterprise uses AWS Organizations with 50 accounts. The security team requires that **no account can launch resources outside of us-east-1 and eu-west-1**. Some developers have administrator access in their accounts.
+
+**The Options:**
+
+A. Create IAM policies in each account to deny non-approved regions.
+
+B. Apply a Service Control Policy (SCP) at the Organization root to deny all regions except us-east-1 and eu-west-1.
+
+C. Use AWS Config rules to detect and auto-remediate resources in non-approved regions.
+
+D. Use AWS Budgets to alert when spending occurs in non-approved regions.
+
+**The Logic:**
+
+- **Trap:** IAM policies (Option A) would need to be applied to every account and every user — not scalable with 50 accounts, and admins could remove them.
+- **Trap:** Config rules (Option C) detect after the fact — resources are created first, then remediated. Not a preventive control.
+- **Trap:** Budgets (Option D) only alert, they don't prevent launches.
+- **The Fix:** **Option B**. **SCPs are guardrails** that restrict the maximum permissions for all accounts in an Organization. Even administrators cannot override SCPs. One policy at the root = 50 accounts governed. SCPs don't grant permissions — they restrict them.
+
+---
+
+### **Scenario 4: The "Lift and Shift" (MGN vs DMS)**
+
+**The Situation:** A company wants to migrate **30 on-premises servers** (mix of Windows and Linux, running custom applications) to AWS EC2 with **minimal changes** to the applications. They want to replicate the servers continuously and perform a cutover during a maintenance window.
+
+**The Options:**
+
+A. Use AWS DMS to migrate the servers to EC2.
+
+B. Manually create AMIs and launch EC2 instances from them.
+
+C. Use AWS Application Migration Service (MGN) to replicate and cutover.
+
+D. Use AWS DataSync to transfer the server data to EBS volumes.
+
+**The Logic:**
+
+- **Trap:** DMS (Option A) is for **database** migration, not server migration.
+- **Trap:** Manual AMIs (Option B) require significant effort for 30 servers and don't support continuous replication.
+- **Trap:** DataSync (Option D) transfers files to S3/EFS/FSx, not to EBS or EC2.
+- **The Fix:** **Option C**. **Application Migration Service (MGN)** is purpose-built for lift-and-shift. Install the agent on each source server → continuous replication to AWS → cutover during maintenance window. Supports both Windows and Linux with minimal application changes.
+
+---
+
+### **Scenario 5: The "Cost Visibility" (Cost Explorer vs Budgets vs Compute Optimizer)**
+
+**The Situation:** A company's AWS bill increased 40% last month. The CTO needs to: (1) understand **which services** drove the increase, (2) set up **automatic alerts** if spending exceeds $50,000 next month, and (3) identify **over-provisioned EC2 instances** to right-size.
+
+**The Options:**
+
+A. Use AWS Budgets for all three requirements.
+
+B. Use Cost Explorer to analyze spending, Budgets for alerts, and Compute Optimizer for right-sizing.
+
+C. Use CloudWatch metrics to track spending and set alarms.
+
+D. Use AWS Trusted Advisor for all three requirements.
+
+**The Logic:**
+
+- **Trap:** Budgets (Option A) handles alerts but doesn't provide detailed spending analysis or right-sizing recommendations.
+- **Trap:** CloudWatch (Option C) has billing metrics but not the detailed service breakdown or right-sizing capability.
+- **Trap:** Trusted Advisor (Option D) provides some cost recommendations but not the detailed spending analysis or budget alerting.
+- **The Fix:** **Option B**. Three tools, three jobs: **Cost Explorer** = analyze spending by service/region/tag (answers "what caused the 40% increase"). **Budgets** = alert when next month exceeds $50K. **Compute Optimizer** = ML-based recommendations to right-size over-provisioned EC2. Each tool serves a specific purpose.
