@@ -2,9 +2,9 @@
 
 **Start Date:** Tuesday, March 25, 2026
 **Pace:** 3 hours/day (three 50-min blocks with 10-min breaks)
-**Rest Days:** 2 total (mid-learning + pre-exam)
+**Rest Days:** 1 (mid-learning consolidation)
 **Exam Date:** Book for April 11, 2026
-**Total Duration:** 18 calendar days (16 study days + 2 rest days)
+**Total Duration:** 18 calendar days (17 study days + 1 rest day)
 
 ---
 
@@ -31,7 +31,7 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)  →  Break (10 min
 1. **Spaced review** — Block 1 of every day reviews older material
 2. **10-min rest breaks** — brain consolidates what you just reviewed before new input
 3. **Scenarios** — each chapter ends with 5 exam-style scenarios that anchor concepts
-4. **Mock exams** — starting Day 10, every mock forces full recall of all 14 chapters
+4. **Mock exams** — starting Day 11, 7 mocks force full recall of all 14 chapters (455 practice questions)
 
 ---
 
@@ -172,16 +172,14 @@ No studying. Walk, exercise, do anything else. Your brain is consolidating 5 day
 This day also serves as a **buffer** — if you fell behind by 1 day during Phase 1, use today to catch up on the last chapter instead, and do the full review as Block 1 on Day 11.
 
 **Also today:** Buy mock exams if you haven't:
-- Stephane Maarek SAA-C03 practice exams (Udemy)
-- Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy)
-
-**Book your exam today for April 11.**
+- Stephane Maarek SAA-C03 practice exams (Udemy) — you need 4 exams from this set
+- Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy) — you need 3 exams from this set
 
 ---
 
-## Phase 2: Mock Exams + Reinforcement (Days 11-16)
+## Phase 2: Mock Exams + Reinforcement (Days 11-17)
 
-**Mock exam days = 3 hours:**
+**Every day is a mock exam day = 3 hours:**
 ```
 Block 1 (65 min): Take mock exam under real conditions
 Break (10 min): Walk, stretch, decompress
@@ -190,16 +188,9 @@ Break (10 min)
 Block 3 (45 min): Reread weak chapter sections + drill weak list
 ```
 
-**Review days = 3 hours:**
-```
-Block 1 (50 min): Reread weak chapter sections + redo scenarios
-Break (10 min)
-Block 2 (50 min): Speed-run all cheat sheets
-Break (10 min)
-Block 3 (50 min): Drill weak list + redo hardest scenarios
-```
+**7 mocks in 7 days. No dedicated review days needed** — Block 2+3 of each mock day gives you 95 minutes of targeted review, which is more effective than generic cheat sheet review because it's focused on exactly what you got wrong.
 
-**Pattern: Mock → Review → Mock → Mock → Mock → Mock.** The extra block per day means you need fewer dedicated review days.
+**Pattern: Mock every day.** Alternating Maarek (easier, closer to real exam) and Davis (harder, builds resilience).
 
 ---
 
@@ -208,79 +199,88 @@ Block 3 (50 min): Drill weak list + redo hardest scenarios
 **Break (10 min)**
 **Block 2 (50 min):** Review every wrong answer + every flagged answer. Go back to the chapter for each wrong topic.
 **Break (10 min)**
-**Block 3 (45 min):** Reread the weakest 2-3 chapter sections. Update your weak list.
+**Block 3 (45 min):** Reread the weakest 2-3 chapter sections. Start your weak list.
 **Expected score:** 55-70%. This is your baseline. Don't panic.
 
 ---
 
-### Day 12 — Sun Apr 6: Review Day [3 hours]
-**Block 1 (50 min):** Focus ONLY on topics you got wrong on Mock #1. Reread the relevant chapter sections. Redo the scenarios for those chapters.
-**Break (10 min)**
-**Block 2 (50 min):** Speed-run ALL cheat sheets (Chapters 1-14). Rewrite from memory the ones you struggle with.
-**Break (10 min)**
-**Block 3 (50 min):** Redo your 5 weakest scenarios from any chapter. Drill every trigger on your weak list.
-
----
-
-### Day 13 — Mon Apr 7: Mock #2 (Davis) [3 hours]
+### Day 12 — Sun Apr 6: Mock #2 (Davis) [3 hours]
 **Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #1.
 **Break (10 min)**
-**Block 2 (50 min):** Review all wrong answers.
+**Block 2 (50 min):** Review all wrong answers. Notice patterns — same topics wrong in Mock #1 AND #2 = blind spots.
 **Break (10 min)**
-**Block 3 (45 min):** Notice patterns — same topics wrong in Mock #1 AND #2 = blind spots. Highlight on weak list. Reread those chapter sections.
+**Block 3 (45 min):** Highlight blind spots on weak list. Reread those chapter sections. Redo the scenarios for blind spot chapters.
 **Expected score:** 50-65% (Davis is intentionally harder — this is normal).
 
 ---
 
-### Day 14 — Tue Apr 8: Mock #3 (Maarek) — CHECKPOINT [3 hours]
+### Day 13 — Mon Apr 7: Mock #3 (Maarek) [3 hours]
 **Block 1 (65 min):** Stephane Maarek Exam #2.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
-**Block 3 (45 min):** Deep-dive into persistent weak topics. If DR patterns, cost tools, or migration questions keep tripping you, reread CostOptimization.md fully.
-**Target score:** 65-78%. You should see clear improvement from Mock #1.
-
-**Decision point:**
-
-| Score | Action |
-|-------|--------|
-| 75%+ | Keep April 11. You're on track. |
-| 68-74% | Keep April 11. Remaining days focus exclusively on weak list. |
-| 60-67% | Reschedule to April 18. Take 3 more mocks + review. |
-| <60% | Reschedule to April 25. Reread your 3 weakest chapters fully. |
+**Block 3 (45 min):** Speed-run all cheat sheets. Focus extra time on blind spot chapters from Mock #1+2.
+**Target score:** 65-75%. You should see improvement from Mock #1.
 
 ---
 
-### Day 15 — Wed Apr 9: Mock #4 (Maarek) [3 hours]
+### Day 14 — Tue Apr 8: Mock #4 (Davis) — CHECKPOINT [3 hours]
+**Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #2.
+**Break (10 min)**
+**Block 2 (50 min):** Review all wrong answers.
+**Break (10 min)**
+**Block 3 (45 min):** Deep-dive into persistent weak topics. If DR patterns, cost tools, or migration questions keep tripping you, reread CostOptimization.md fully.
+**Target score:** 60-72% (Davis scale — equivalent to 70-78% on real exam).
+
+**Decision point:**
+
+| Davis Score | Real Exam Equivalent | Action |
+|-------------|---------------------|--------|
+| 68%+ | ~75%+ | Keep April 11. You're on track. |
+| 60-67% | ~68-74% | Keep April 11. Remaining days focus exclusively on weak list. |
+| 52-59% | ~60-67% | Reschedule to April 18. Take 3 more mocks + review. |
+| <52% | ~<60% | Reschedule to April 25. Reread your 3 weakest chapters fully. |
+
+---
+
+### Day 15 — Wed Apr 9: Mock #5 (Maarek) [3 hours]
 **Block 1 (65 min):** Stephane Maarek Exam #3.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
-**Block 3 (45 min):** Speed-run all cheat sheets. Drill weak list.
+**Block 3 (45 min):** Drill weak list. Redo your 5 weakest scenarios from any chapter.
 **Target score:** 75-85%.
 
 ---
 
-### Day 16 — Thu Apr 10: Mock #5 (Davis) — GO/NO-GO [3 hours]
-**Block 1 (65 min):** Neal Davis Exam #2.
+### Day 16 — Thu Apr 10: Mock #6 (Maarek) [3 hours]
+**Block 1 (65 min):** Stephane Maarek Exam #4.
 **Break (10 min)**
-**Block 2 (50 min):** Review all wrong answers. Skim weak list one final time.
+**Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
-**Block 3 (45 min):** Final cheat sheet speed-run. Write from memory your top 10 weakest triggers.
-**Target score:** 72-80%+ (Davis scale — equivalent to 78%+ on real exam).
-
-If 75%+ on Davis: You're passing. Cruise to exam day.
-If 68-74% on Davis: You'll likely pass. Review weak list tonight, don't cram.
-If <68% on Davis: Push exam back 1 week. Take remaining Maarek exams.
+**Block 3 (45 min):** Speed-run all cheat sheets. Write from memory your top 10 weakest triggers.
+**Target score:** 78-88%.
 
 ---
 
-### ☁ Fri Apr 11: REST DAY + EXAM DAY
+### Day 17 — Fri Apr 11 morning: Mock #7 (Davis) — GO/NO-GO [2 hours]
+**Block 1 (65 min):** Neal Davis Exam #3. Real conditions. Time it.
+**Break (10 min)**
+**Block 2 (45 min):** Quick review of wrong answers. Skim weak list one final time. Done.
 
-**Morning — rest protocol:**
-- Light breakfast
-- Skim your weak list one time (15 min max)
-- Stop. You're ready. Do NOT cram.
+**This is your morning session — exam is in the afternoon.**
+
+If 68%+ on Davis: You're passing. Relax until exam time.
+If 60-67% on Davis: You'll likely pass. Skim your 3 weakest cheat sheets, then stop.
+If <60% on Davis: Push exam back 1 week. You have 3 more Maarek exams to use.
+
+---
+
+### Fri Apr 11 afternoon: EXAM DAY
+
+**After Mock #7 review — rest protocol:**
+- Lunch. Walk. Decompress.
+- Do NOT re-study. You just did 7 mocks. You're ready.
 
 **Exam strategy (65 questions, 130 min):**
 - **Pass 1 (45 min):** Answer confident questions, flag everything else
@@ -313,19 +313,19 @@ Day 10: Full review                                Review → ALL 14 cheat sheet
 Day 11+: Mock exams                                Every mock reviews EVERYTHING at once
 ```
 
-**Result:** By exam day, Day 1 content has been reviewed 8+ times across:
+**Result:** By exam day, Day 1 content has been reviewed 10+ times across:
 - 4 dedicated Block 1 reviews
 - 1 full review day
-- 5 mock exams that test all topics
-- 2 rest days for memory consolidation
+- 7 mock exams that test all topics (455 practice questions)
+- 1 rest day for memory consolidation
 
 ---
 
 ## When to Book the Exam
 
-**Book it on Day 10 (April 4) for April 11.**
+**Book it NOW for Friday April 11, afternoon slot.**
 
-- Having a locked date creates healthy pressure
+- Exam is already booked — no backing out, only forward
 - You can reschedule up to 24 hours before (AWS policy)
 - Day 14 checkpoint tells you if you need to push back
 
@@ -335,13 +335,15 @@ Day 11+: Mock exams                                Every mock reviews EVERYTHING
 
 ```
 Mock #1 (Day 11) Maarek #1:  ___% | Weak: _______________
-Mock #2 (Day 13) Davis  #1:  ___% | Weak: _______________
-Mock #3 (Day 14) Maarek #2:  ___% | Weak: _______________ ← CHECKPOINT
-Mock #4 (Day 15) Maarek #3:  ___% | Weak: _______________
-Mock #5 (Day 16) Davis  #2:  ___% | Weak: _______________ ← GO/NO-GO
+Mock #2 (Day 12) Davis  #1:  ___% | Weak: _______________
+Mock #3 (Day 13) Maarek #2:  ___% | Weak: _______________
+Mock #4 (Day 14) Davis  #2:  ___% | Weak: _______________ ← CHECKPOINT
+Mock #5 (Day 15) Maarek #3:  ___% | Weak: _______________
+Mock #6 (Day 16) Maarek #4:  ___% | Weak: _______________
+Mock #7 (Day 17) Davis  #3:  ___% | Weak: _______________ ← GO/NO-GO (exam day morning)
 ```
 
-**Healthy:** Each Maarek score 5-10% higher than the previous.
+**Healthy:** Each Maarek score 5-10% higher than the previous. Davis scores ~8% lower than Maarek is normal.
 **Warning:** Plateau or drop for 2 consecutive → reread your 2 weakest chapters entirely.
 
 ---
@@ -366,12 +368,12 @@ WEEK 2 — LEARN + REVIEW (Mar 31 - Apr 4)            [3h/day, 50+10+50+10+50]
 
 WEEK 3 — MOCKS (Apr 5 - Apr 11)                     [3h/day, 65+10+50+10+45]
   Sat  5: Mock #1 (Maarek)
-  Sun  6: Review day
-  Mon  7: Mock #2 (Davis)
-  Tue  8: Mock #3 (Maarek) ← CHECKPOINT
-  Wed  9: Mock #4 (Maarek)
-  Thu 10: Mock #5 (Davis) ← GO/NO-GO
-  Fri 11: ☁ REST MORNING → EXAM DAY
+  Sun  6: Mock #2 (Davis)
+  Mon  7: Mock #3 (Maarek)
+  Tue  8: Mock #4 (Davis) ← CHECKPOINT
+  Wed  9: Mock #5 (Maarek)
+  Thu 10: Mock #6 (Maarek)
+  Fri 11: Mock #7 (Davis, morning) → ☁ REST → EXAM (afternoon)
 ```
 
 ---
@@ -380,7 +382,7 @@ WEEK 3 — MOCKS (Apr 5 - Apr 11)                     [3h/day, 65+10+50+10+45]
 
 **Missed 1 day during Phase 1:** Use the rest day (Mar 30) to catch up. If already past the rest day, the third block gives you more flexibility — extend to a 4th block (3.5h) the next day.
 
-**Missed 1 day during Phase 2:** Skip the review day, not the mock. The mock is more valuable.
+**Missed 1 day during Phase 2:** You have 7 mocks scheduled. Dropping to 6 is fine — skip the last Maarek (Day 16), keep the Davis go/no-go on exam morning.
 
 **Missed 2+ days:** Shift everything forward. Reschedule exam if needed.
 
