@@ -190,9 +190,10 @@ No studying. Walk, exercise, do anything else. Your brain is consolidating 6 day
 
 This day also serves as a **buffer** — if you fell behind by 1 day during Phase 1, use today to catch up on the last chapter instead, and do the full review as Block 1 on Day 13.
 
-**Also today:** Buy mock exams if you haven't:
-- Stephane Maarek SAA-C03 practice exams (Udemy) — you need 5 exams from this set
-- Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy) — you need 4 exams from this set
+**Mock exams ready:**
+- Stephane Maarek SAA-C03 (6 exams — using 3, 3 backup)
+- Neal Davis SAA-C03 (6 exams — using 3, 3 backup)
+- Jon Bonso / Tutorials Dojo SAA-C03 (6 exams — using 3, 3 backup)
 
 ---
 
@@ -215,7 +216,7 @@ Block 3 (45 min): Reread weak chapter sections + drill weak list
 
 **9 mocks in 9 days. 585 practice questions.** Block 2+3 of each mock day gives you 95 minutes of targeted review focused on exactly what you got wrong — more effective than generic review.
 
-**Pattern: Alternating Maarek (closer to real exam) and Davis (harder, builds resilience).**
+**Pattern: Rotating Maarek (straightforward), Davis (hardest), and Bonso (closest to real exam) for maximum variety.**
 
 ---
 
@@ -230,7 +231,7 @@ Block 3 (45 min): Reread weak chapter sections + drill weak list
 ---
 
 ### Day 14 — Fri Apr 10: Mock #2 (Davis) [3 hours]
-**Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #1.
+**Block 1 (65 min):** Neal Davis Exam #1.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers. Notice patterns — same topics wrong in Mock #1 AND #2 = blind spots.
 **Break (10 min)**
@@ -239,18 +240,18 @@ Block 3 (45 min): Reread weak chapter sections + drill weak list
 
 ---
 
-### Day 15 — Sat Apr 11: Mock #3 (Maarek) [3 hours]
-**Block 1 (65 min):** Stephane Maarek Exam #2.
+### Day 15 — Sat Apr 11: Mock #3 (Bonso) [3 hours]
+**Block 1 (65 min):** Jon Bonso / Tutorials Dojo Exam #1.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
 **Block 3 (45 min):** Speed-run all cheat sheets. Focus extra time on blind spot chapters from Mock #1+2.
-**Target score:** 65-75%. You should see improvement from Mock #1.
+**Target score:** 60-72%. Bonso is closest to the real exam — treat this score as your most reliable indicator.
 
 ---
 
 ### Day 16 — Sun Apr 12: Mock #4 (Davis) — CHECKPOINT [3 hours]
-**Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #2.
+**Block 1 (65 min):** Neal Davis Exam #2.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
@@ -269,7 +270,7 @@ Block 3 (45 min): Reread weak chapter sections + drill weak list
 ---
 
 ### Day 17 — Mon Apr 13: Mock #5 (Maarek) [3 hours]
-**Block 1 (65 min):** Stephane Maarek Exam #3.
+**Block 1 (65 min):** Stephane Maarek Exam #2.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
@@ -278,42 +279,42 @@ Block 3 (45 min): Reread weak chapter sections + drill weak list
 
 ---
 
-### Day 18 — Tue Apr 14: Mock #6 (Davis) [3 hours]
-**Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #3.
+### Day 18 — Tue Apr 14: Mock #6 (Bonso) [3 hours]
+**Block 1 (65 min):** Jon Bonso Exam #2.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
 **Block 3 (45 min):** Reread any chapter section that still trips you. Update weak list.
-**Target score:** 65-75% (Davis scale).
+**Target score:** 70-78%. Compare with Bonso #1 — you should see clear improvement.
 
 ---
 
-### Day 19 — Wed Apr 15: Mock #7 (Maarek) [3 hours]
-**Block 1 (65 min):** Stephane Maarek Exam #4.
+### Day 19 — Wed Apr 15: Mock #7 (Davis) [3 hours]
+**Block 1 (65 min):** Neal Davis Exam #3.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
 **Block 3 (45 min):** Speed-run all cheat sheets. Write from memory your top 10 weakest triggers.
-**Target score:** 78-88%.
+**Target score:** 68-75% (Davis scale).
 
 ---
 
-### Day 20 — Thu Apr 16: Mock #8 (Davis) — GO/NO-GO [3 hours]
-**Block 1 (65 min):** Neal Davis / Tutorials Dojo Exam #4.
+### Day 20 — Thu Apr 16: Mock #8 (Bonso) — GO/NO-GO [3 hours]
+**Block 1 (65 min):** Jon Bonso Exam #3.
 **Break (10 min)**
 **Block 2 (50 min):** Review all wrong answers.
 **Break (10 min)**
 **Block 3 (45 min):** Final weak list drill. Skim the 3 chapters you've scored lowest on across all mocks.
-**Target score:** 68-78% (Davis scale — equivalent to 78-85% real exam).
+**Target score:** 75-85% (Bonso is closest to real exam — this is your best predictor).
 
-If 68%+ on Davis: You're passing. Cruise to exam day.
-If 60-67% on Davis: You'll likely pass. Light review only tomorrow.
-If <60% on Davis: Push exam back 1 week.
+If 75%+ on Bonso: You're passing. Cruise to exam day.
+If 68-74% on Bonso: You'll likely pass. Light review only tomorrow.
+If <68% on Bonso: Push exam back 1 week.
 
 ---
 
 ### Day 21 — Fri Apr 17 morning: Mock #9 (Maarek) — FINAL [2 hours]
-**Block 1 (65 min):** Stephane Maarek Exam #5. Real conditions. Time it.
+**Block 1 (65 min):** Stephane Maarek Exam #3. Real conditions. Time it.
 **Break (10 min)**
 **Block 2 (45 min):** Quick review of wrong answers. Skim weak list one final time. Done.
 
@@ -386,16 +387,17 @@ Day 13+: Mock exams                                Every mock reviews EVERYTHING
 ```
 Mock #1 (Day 13) Maarek #1:  ___% | Weak: _______________
 Mock #2 (Day 14) Davis  #1:  ___% | Weak: _______________
-Mock #3 (Day 15) Maarek #2:  ___% | Weak: _______________
+Mock #3 (Day 15) Bonso  #1:  ___% | Weak: _______________
 Mock #4 (Day 16) Davis  #2:  ___% | Weak: _______________ ← CHECKPOINT
-Mock #5 (Day 17) Maarek #3:  ___% | Weak: _______________
-Mock #6 (Day 18) Davis  #3:  ___% | Weak: _______________
-Mock #7 (Day 19) Maarek #4:  ___% | Weak: _______________
-Mock #8 (Day 20) Davis  #4:  ___% | Weak: _______________ ← GO/NO-GO
-Mock #9 (Day 21) Maarek #5:  ___% | Weak: _______________ ← FINAL (exam day morning)
+Mock #5 (Day 17) Maarek #2:  ___% | Weak: _______________
+Mock #6 (Day 18) Bonso  #2:  ___% | Weak: _______________
+Mock #7 (Day 19) Davis  #3:  ___% | Weak: _______________
+Mock #8 (Day 20) Bonso  #3:  ___% | Weak: _______________ ← GO/NO-GO
+Mock #9 (Day 21) Maarek #3:  ___% | Weak: _______________ ← FINAL (exam day morning)
 ```
 
-**Healthy:** Each Maarek score 5-10% higher than the previous. Davis scores ~8% lower than Maarek is normal.
+**Healthy:** Scores trend upward across all authors. Davis ~8% lower than Maarek is normal. Bonso is closest to the real exam — use those scores as your best predictor.
+**You have 9 backup exams** (3 Maarek + 2 Davis + 4 Bonso) if you need to reschedule or want extra practice.
 **Warning:** Plateau or drop for 2 consecutive → reread your 2 weakest chapters entirely.
 
 ---
@@ -424,12 +426,12 @@ WEEK 2 — LEARN + REVIEW (Apr 2 - Apr 8)            [3h/day, 50+10+50+10+50]
 WEEK 3 — MOCKS (Apr 9 - Apr 16)                    [3h/day, 65+10+50+10+45]
   Thu  9: Mock #1 (Maarek)
   Fri 10: Mock #2 (Davis)
-  Sat 11: Mock #3 (Maarek)
+  Sat 11: Mock #3 (Bonso)
   Sun 12: Mock #4 (Davis) ← CHECKPOINT
   Mon 13: Mock #5 (Maarek)
-  Tue 14: Mock #6 (Davis)
-  Wed 15: Mock #7 (Maarek)
-  Thu 16: Mock #8 (Davis) ← GO/NO-GO
+  Tue 14: Mock #6 (Bonso)
+  Wed 15: Mock #7 (Davis)
+  Thu 16: Mock #8 (Bonso) ← GO/NO-GO
 
 WEEK 4 — FINAL (Apr 17)
   Fri 17: Mock #9 (Maarek, morning) → ☁ REST → EXAM (early afternoon)
