@@ -249,6 +249,27 @@
 
 ---
 
+### **11. DynamoDB Export to S3**
+
+**The Rule:** Export full table data to **S3** without consuming any **RCUs** or affecting table performance.
+
+**How It Works:**
+
+- Uses **PITR** (Must be enabled).
+- Exports data in **DynamoDB JSON** or **Amazon Ion** format.
+- Export is a point-in-time snapshot (Any point within PITR window — last 35 days).
+- Exported data can be queried with **Athena**, **EMR**, or **Redshift Spectrum**.
+
+**Use Cases:**
+
+- Analytics on DynamoDB data without impacting production reads.
+- Data lake ingestion (Export → S3 → Athena for ad-hoc queries).
+- Archival/compliance snapshots.
+
+**Exam Trigger:** "Analyze DynamoDB data without impacting performance" or "Export DynamoDB to S3 without consuming RCUs" → DynamoDB Export to S3.
+
+---
+
 ### **SECTION 2: ELASTICACHE (IN-MEMORY CACHE)**
 
 *Managed Redis and Memcached.*
@@ -345,6 +366,71 @@
 
 ---
 
+### **SECTION 3: PURPOSE-BUILT DATABASES**
+
+*AWS offers specialized databases for specific workloads. The exam tests whether you pick the right one.*
+
+### **1. Amazon DocumentDB**
+
+- **The Rule:** Fully managed **MongoDB-compatible** document database. Scales up to millions of requests/sec.
+- **Architecture:** Storage decoupled from compute, auto-scales up to **64 TB**. Replicates **6 copies across 3 AZs**.
+- **Exam Trigger:** "MongoDB migration" or "MongoDB-compatible" → **DocumentDB**.
+
+---
+
+### **2. Amazon Neptune**
+
+- **The Rule:** Fully managed **graph database**. Supports Property Graph (Gremlin) and RDF (SPARQL).
+- **Architecture:** Up to **15 read replicas**, Multi-AZ HA, storage auto-scales up to 64 TB.
+- **Exam Trigger:** "Social network", "Fraud detection", "Recommendation engine", "Knowledge graph" → **Neptune**.
+
+---
+
+### **3. Amazon Timestream**
+
+- **The Rule:** Fully managed **time-series database**. 1000x faster and 1/10th cost of relational databases for time-series.
+- **Architecture:** Automatic tiering — recent data in memory, historical in magnetic storage. Built-in analytics functions.
+- **Exam Trigger:** "IoT sensor data", "DevOps metrics", "Time-series data" → **Timestream**.
+
+---
+
+### **4. Amazon QLDB (Quantum Ledger Database)**
+
+- **The Rule:** Fully managed **immutable ledger**. Cryptographically verifiable transaction log (Uses SHA-256 hash chain).
+- **Key Distinction:** Centralized (Owned by one authority). **NOT blockchain** — no decentralization or multi-party consensus.
+- **Exam Trigger:** "Immutable ledger", "Financial transactions audit trail", "Cryptographic verification" → **QLDB**.
+
+---
+
+### **5. Amazon Keyspaces**
+
+- **The Rule:** Fully managed **Apache Cassandra-compatible** database. Serverless, pay-per-use.
+- **Architecture:** Tables replicated **3x across multiple AZs**. On-demand or provisioned capacity (Like DynamoDB).
+- **Exam Trigger:** "Cassandra migration" or "Cassandra-compatible" → **Keyspaces**.
+
+---
+
+### **6. Amazon MemoryDB for Redis**
+
+- **The Rule:** Durable, **Redis-compatible** in-memory database. Multi-AZ durability with transaction log.
+- **Key Distinction:** Use as a **primary database** (Durable). ElastiCache Redis = **cache layer** (May lose data). MemoryDB = microsecond reads + single-digit millisecond writes with durability.
+- **Exam Trigger:** "Durable in-memory database" or "Redis with durability as primary database" → **MemoryDB**.
+
+---
+
+### **Purpose-Built Database Comparison**
+
+| **Service** | **Use Case** | **Exam Trigger** |
+| --- | --- | --- |
+| **DocumentDB** | Document DB (MongoDB workloads) | "MongoDB migration/compatible" |
+| **Neptune** | Graph relationships | "Social network, Fraud detection, Recommendations" |
+| **Timestream** | Time-series data | "IoT sensors, DevOps metrics, Time-series" |
+| **QLDB** | Immutable ledger | "Audit trail, Immutable, Cryptographic verification" |
+| **Keyspaces** | Wide-column (Cassandra workloads) | "Cassandra migration/compatible" |
+| **MemoryDB** | Durable in-memory primary DB | "Redis with durability, Durable in-memory" |
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **Unpredictable DynamoDB workload?** → On-Demand Mode.
@@ -355,10 +441,17 @@
 6. **Multi-region DynamoDB with read/write?** → Global Tables.
 7. **Auto-delete old DynamoDB items?** → TTL.
 8. **Atomic operation across multiple items?** → Transactions.
-9. **Cache with backups/persistence?** → Redis.
-10. **Simple multi-threaded cache?** → Memcached.
-11. **Scale Redis horizontally?** → Cluster Mode Enabled.
-12. **Session storage for stateless app?** → ElastiCache (Redis or Memcached).
+9. **Analyze DynamoDB data without consuming RCUs?** → Export to S3.
+10. **Cache with backups/persistence?** → Redis.
+11. **Simple multi-threaded cache?** → Memcached.
+12. **Scale Redis horizontally?** → Cluster Mode Enabled.
+13. **Session storage for stateless app?** → ElastiCache (Redis or Memcached).
+14. **MongoDB migration?** → DocumentDB.
+15. **Social network / Fraud detection / Recommendations?** → Neptune.
+16. **IoT sensor data / Time-series?** → Timestream.
+17. **Immutable ledger / Audit trail?** → QLDB (Not blockchain).
+18. **Cassandra migration?** → Keyspaces.
+19. **Durable in-memory database (not just cache)?** → MemoryDB for Redis.
 
 ---
 

@@ -272,6 +272,272 @@
 
 ---
 
+### **SECTION 11: AWS BATCH**
+
+*Managed batch computing service.*
+
+**Key Facts:**
+
+- **The Rule:** Run batch computing jobs at any scale. AWS handles provisioning, scaling, and managing compute resources (EC2 or Fargate).
+- **Jobs:** Packaged as **Docker containers**. Submit jobs to a job queue, Batch schedules them on optimal compute.
+- **Compute Environments:** Managed (AWS provisions EC2/Fargate) or Unmanaged (you manage instances).
+- **Auto-Provisioning:** Automatically selects optimal instance types based on job requirements (CPU, memory, GPU).
+- **No Time Limit:** Jobs can run for hours or days (unlike Lambda's 15-minute max).
+
+**Exam Triggers:**
+
+- "Large-scale batch jobs" or "Long-running batch processing" --> AWS Batch.
+- "Batch processing with Docker containers" --> AWS Batch.
+- "Processing job that takes hours" --> AWS Batch (NOT Lambda -- 15 min max).
+
+**Common Traps:**
+
+- AWS Batch vs. Lambda: Batch is for **long-running, resource-heavy jobs**. Lambda is for **short, event-driven functions** (15 min max, limited memory).
+- AWS Batch is NOT real-time -- it is for batch (asynchronous) workloads.
+
+---
+
+### **SECTION 12: AMAZON EMR**
+
+*Managed big data framework.*
+
+**Key Facts:**
+
+- **The Rule:** Managed clusters running **Apache Hadoop, Spark, Hive, Presto, HBase, Flink**. Process massive datasets.
+- **Architecture:** Master node + Core nodes (store data on HDFS) + Task nodes (compute only, optional).
+- **Storage:** HDFS on cluster, or use S3 (EMRFS) for persistent storage that outlives the cluster.
+- **Use Cases:** Log analysis, ETL at scale, machine learning training, genomics, financial analysis.
+
+**Exam Triggers:**
+
+- "Big data processing" or "Apache Spark" or "Hadoop cluster" --> EMR.
+- "Process petabytes of data with Spark/Hive" --> EMR.
+- "Managed Hadoop" --> EMR.
+
+**Common Traps:**
+
+- EMR vs. Glue: EMR gives you **full control** over the big data framework. Glue is **serverless ETL** (simpler, less control).
+- EMR clusters can be transient (spin up, process, terminate) to save cost.
+
+---
+
+### **SECTION 13: AMAZON QUICKSIGHT**
+
+*Serverless business intelligence and visualization.*
+
+**Key Facts:**
+
+- **The Rule:** Serverless BI service. Create interactive dashboards and visualizations. Pay per session.
+- **Data Sources:** S3, Athena, Redshift, RDS, Aurora, OpenSearch, on-prem databases, Excel/CSV files.
+- **SPICE Engine:** In-memory calculation engine for fast dashboard performance. Import data into SPICE for sub-second query response.
+- **Sharing:** Publish dashboards to users/groups. Embed dashboards in applications.
+
+**Exam Triggers:**
+
+- "Create dashboards" or "Business intelligence" --> QuickSight.
+- "Visualize data from S3/Redshift/Athena" --> QuickSight.
+- "Serverless BI" --> QuickSight.
+
+**Common Traps:**
+
+- QuickSight is for **visualization/dashboards**, not data processing. Use Athena/Redshift for queries, QuickSight to display results.
+
+---
+
+### **SECTION 14: AWS LAKE FORMATION**
+
+*Data lake governance and management.*
+
+**Key Facts:**
+
+- **The Rule:** Build, secure, and manage **data lakes** on S3. Simplifies data ingestion, cataloging, and access control.
+- **Under the Hood:** Uses Glue crawlers, Glue ETL, and Glue Data Catalog.
+- **Fine-Grained Access Control:** Column-level and row-level security on data lake tables. Central permission model replaces complex S3/IAM policies.
+- **Data Ingestion:** Import data from RDS, S3, on-prem databases. Automatically converts to optimized formats.
+- **Cross-Account Access:** Share data lake tables across AWS accounts securely.
+
+**Exam Triggers:**
+
+- "Data lake governance" or "Fine-grained access to data lake" --> Lake Formation.
+- "Column-level security on S3 data" --> Lake Formation.
+- "Build a data lake on S3 with centralized permissions" --> Lake Formation.
+
+**Common Traps:**
+
+- Lake Formation is a **governance layer** on top of Glue and S3 -- it does not replace them.
+- Lake Formation vs. Glue: Glue is the ETL engine. Lake Formation adds **security and governance** on top.
+
+---
+
+### **SECTION 15: ML/AI SERVICES (QUICK REFERENCE)**
+
+*Managed AI/ML services -- know what each one does.*
+
+| **Service** | **Purpose** | **Exam Trigger** |
+| --- | --- | --- |
+| **Rekognition** | Image and video analysis (faces, objects, text, content moderation) | "Analyze images" or "Detect faces in video" |
+| **Textract** | Extract text and data from documents (OCR) | "Extract text from scanned documents" |
+| **Comprehend** | Natural Language Processing -- sentiment analysis, entity extraction | "Sentiment analysis" or "NLP" |
+| **Transcribe** | Speech-to-text | "Convert audio to text" |
+| **Polly** | Text-to-speech | "Convert text to audio" |
+| **Lex** | Build chatbots (same technology that powers Alexa) | "Chatbot" or "Conversational interface" |
+| **Translate** | Language translation | "Translate text between languages" |
+| **SageMaker** | Build, train, and deploy custom ML models | "Custom ML model" or "Train ML model" |
+| **Kendra** | Intelligent enterprise search powered by ML | "Intelligent search across documents" |
+
+**Exam Rule:** You do NOT need to know how to use these services in depth. Just know **which service matches which use case**.
+
+---
+
+### **SECTION 16: EDGE & HYBRID INFRASTRUCTURE**
+
+*AWS infrastructure beyond standard regions.*
+
+### **AWS Outposts**
+
+- **The Rule:** AWS-managed infrastructure installed **in your on-premises data center**. Same AWS hardware, APIs, and services -- but physically in your facility.
+- **Use Cases:** Data residency requirements, ultra-low latency to on-prem systems, local data processing.
+- **Exam Trigger:** "Must keep data on-premises but want AWS services" --> Outposts.
+
+### **AWS Local Zones**
+
+- **The Rule:** Extend an AWS Region to a specific metro area. Run latency-sensitive workloads closer to end users.
+- **Use Cases:** Real-time gaming, media content creation, video streaming, AR/VR.
+- **Exam Trigger:** "Single-digit millisecond latency to a specific city" --> Local Zones.
+
+### **AWS Wavelength**
+
+- **The Rule:** Embed AWS compute and storage at **5G network edges** (inside telecom provider data centers). Ultra-low latency for mobile devices.
+- **Use Cases:** Connected vehicles, interactive live video, AR/VR, real-time gaming on mobile.
+- **Exam Trigger:** "5G edge computing" or "Ultra-low latency for mobile/5G devices" --> Wavelength.
+
+**Quick Differentiation:**
+
+| **Need** | **Service** |
+| --- | --- |
+| AWS services on-premises | Outposts |
+| Low latency to a specific city | Local Zones |
+| Low latency for 5G mobile devices | Wavelength |
+
+---
+
+# **REAL EXAM SCENARIOS**
+
+### **Scenario 1: The "SQL on S3" (Athena vs. Redshift Spectrum)**
+
+**The Situation:** A company stores 5 TB of web analytics data in S3 as compressed JSON files. Business analysts need to run ad-hoc SQL queries against this data to generate weekly reports. The company wants the simplest, most cost-effective solution with no infrastructure to manage.
+
+**The Options:**
+
+A. Load the data into a Redshift cluster and run queries from Redshift.
+
+B. Use Amazon Athena to query the data directly in S3.
+
+C. Use Redshift Spectrum to query the data in S3 from a Redshift cluster.
+
+D. Set up an EMR cluster with Hive to query the data.
+
+**The Logic:**
+
+- **Trap:** Redshift cluster (Option A) requires provisioning and ongoing management/cost -- overkill for weekly ad-hoc reports.
+- **Trap:** Redshift Spectrum (Option C) requires an existing Redshift cluster -- adds unnecessary cost and complexity.
+- **Trap:** EMR with Hive (Option D) requires cluster management -- not "simplest."
+- **The Fix:** **Option B**. **Athena** is serverless, no infrastructure to manage. Pay per query ($5/TB scanned). Queries S3 data in place. For even lower cost, convert JSON to **Parquet** (columnar) to reduce scan volume.
+
+---
+
+### **Scenario 2: The "Batch Processing" (AWS Batch vs. Lambda)**
+
+**The Situation:** A genomics research company needs to process 10,000 DNA sequence files. Each file takes 2-4 hours to process and requires 16 GB of memory. The processing is packaged as a Docker container. The workload runs once per week.
+
+**The Options:**
+
+A. Use AWS Lambda functions triggered by S3 uploads for each file.
+
+B. Use AWS Batch with a managed compute environment to process all files.
+
+C. Use AWS Step Functions to orchestrate Lambda functions for each file.
+
+D. Use Amazon ECS with a fixed cluster of EC2 instances running 24/7.
+
+**The Logic:**
+
+- **Trap:** Lambda (Option A) has a **15-minute timeout** and **10 GB max memory** -- 2-4 hour jobs with 16 GB memory cannot run on Lambda.
+- **Trap:** Step Functions + Lambda (Option C) still hits the same Lambda limits.
+- **Trap:** ECS 24/7 cluster (Option D) wastes money when the workload only runs weekly.
+- **The Fix:** **Option B**. **AWS Batch** handles Docker containers with no time limit. Auto-provisions optimal EC2 instances (16 GB+ memory). Processes 10,000 jobs in parallel across dynamically scaled compute. Terminates resources when done -- pay only for what you use.
+
+---
+
+### **Scenario 3: The "Data Lake" (Glue + Lake Formation + Athena)**
+
+**The Situation:** A healthcare company has data scattered across S3 (CSV files), RDS (patient records), and DynamoDB (IoT sensor data). They want to build a centralized data lake on S3 with the ability to query across all sources. Different departments need different levels of access -- some can see all columns, others only non-PII columns.
+
+**The Options:**
+
+A. Copy all data into Redshift and manage access with Redshift user permissions.
+
+B. Use AWS Glue to catalog and transform data into S3, then use Athena for queries with S3 bucket policies for access control.
+
+C. Use AWS Lake Formation to build the data lake with Glue ETL, and enforce column-level access control. Query with Athena.
+
+D. Use EMR to process and consolidate all data into a single S3 bucket.
+
+**The Logic:**
+
+- **Trap:** Redshift (Option A) is a data warehouse, not a data lake. Expensive for storing raw data.
+- **Trap:** Glue + Athena + S3 bucket policies (Option B) works for ETL and querying, but S3 bucket policies cannot enforce **column-level** access control.
+- **Trap:** EMR (Option D) consolidates data but provides no governance or fine-grained access control.
+- **The Fix:** **Option C**. **Lake Formation** provides centralized governance with **column-level and row-level security**. Glue crawlers discover schema, Glue ETL transforms data into Parquet on S3. Athena queries the data. Lake Formation manages who can access which columns -- ideal for PII restrictions.
+
+---
+
+### **Scenario 4: The "Legacy Migration" (Elastic Beanstalk vs. ECS)**
+
+**The Situation:** A company is migrating a monolithic Java web application from on-premises to AWS. The team has limited AWS experience and wants to deploy quickly with minimal infrastructure management. They want automated scaling, load balancing, and deployment management. The application is NOT containerized.
+
+**The Options:**
+
+A. Deploy on EC2 instances manually with an ALB and Auto Scaling Group.
+
+B. Containerize the app and deploy on Amazon ECS with Fargate.
+
+C. Deploy using AWS Elastic Beanstalk with a Java platform.
+
+D. Refactor the app into Lambda functions.
+
+**The Logic:**
+
+- **Trap:** Manual EC2 + ALB + ASG (Option A) works but requires significant infrastructure management -- not "minimal management."
+- **Trap:** ECS/Fargate (Option B) requires containerizing the application first -- adds migration effort.
+- **Trap:** Lambda (Option D) requires breaking the monolith into functions -- major refactor.
+- **The Fix:** **Option C**. **Elastic Beanstalk** supports Java natively. Upload the WAR/JAR file, Beanstalk provisions EC2, ALB, ASG automatically. Built-in deployment strategies (rolling, immutable). Team retains full control if needed. Fastest path for a non-containerized Java app with minimal AWS experience.
+
+---
+
+### **Scenario 5: The "Event-Driven Architecture" (EventBridge vs. SNS)**
+
+**The Situation:** An e-commerce platform needs to react to order events (order placed, shipped, delivered, returned). Different microservices need different events: the inventory service needs "order placed," the notification service needs "shipped" and "delivered," and the analytics service needs all events. Events also need to integrate with a third-party SaaS returns-processing system.
+
+**The Options:**
+
+A. Use SNS with one topic per event type and subscribe each service to the relevant topics.
+
+B. Use Amazon EventBridge with content-based filtering rules to route events to the correct targets.
+
+C. Use SQS queues with one queue per service, and have the order service publish to all queues.
+
+D. Use Kinesis Data Streams with one stream for all events and filter in each consumer.
+
+**The Logic:**
+
+- **Trap:** SNS (Option A) can do basic fan-out, but content-based filtering is limited. Also, SNS does NOT natively integrate with SaaS partners.
+- **Trap:** SQS (Option C) requires the producer to know all consumers -- tight coupling.
+- **Trap:** Kinesis (Option D) is for high-throughput streaming -- overkill for event routing. Each consumer must filter events itself.
+- **The Fix:** **Option B**. **EventBridge** excels at content-based filtering -- route "order placed" to inventory, "shipped"/"delivered" to notifications, and all events to analytics, all from a single event bus. Partner Event Bus supports SaaS integration for the returns system. Schema Registry helps teams discover event formats. Archive & Replay enables debugging.
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **"Query S3 data with SQL"?** --> Athena.
@@ -292,6 +558,18 @@
 16. **"New streaming app on AWS"?** --> Kinesis (NOT MSK).
 17. **"Reduce Athena cost"?** --> Columnar format (Parquet/ORC) + partitioning.
 18. **"Detect manual infrastructure changes"?** --> CloudFormation Drift Detection.
+19. **"Long-running batch jobs with Docker"?** --> AWS Batch (NOT Lambda).
+20. **"Big data / Apache Spark / Hadoop"?** --> EMR.
+21. **"Create dashboards / BI"?** --> QuickSight.
+22. **"Data lake governance / column-level security"?** --> Lake Formation.
+23. **"Analyze images / Detect faces"?** --> Rekognition.
+24. **"Extract text from documents (OCR)"?** --> Textract.
+25. **"Sentiment analysis / NLP"?** --> Comprehend.
+26. **"Build chatbot"?** --> Lex.
+27. **"Custom ML model"?** --> SageMaker.
+28. **"AWS services on-premises"?** --> Outposts.
+29. **"Low latency to specific city"?** --> Local Zones.
+30. **"5G edge computing"?** --> Wavelength.
 
 ---
 
@@ -309,3 +587,10 @@
 | Send emails | SES | SNS (notifications) |
 | GraphQL API | AppSync | API Gateway (REST) |
 | Managed Kafka | MSK | Kinesis (AWS-native) |
+| Long-running batch jobs | AWS Batch | Lambda (15 min max) |
+| Big data (Spark/Hadoop) | EMR | Glue (serverless ETL) |
+| BI dashboards | QuickSight | OpenSearch (log analytics) |
+| Data lake governance | Lake Formation | Glue (ETL only) |
+| AWS on-premises | Outposts | Local Zones (metro area) |
+| Low latency to city | Local Zones | Wavelength (5G mobile) |
+| 5G edge computing | Wavelength | Local Zones (metro area) |

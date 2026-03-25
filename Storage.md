@@ -30,8 +30,8 @@
 | --- | --- | --- | --- | --- |
 | **General Purpose** | **gp2** | Boot volumes, Dev/Test | **IOPS Linked to Size.** 3 IOPS per GB. (Max 16,000 IOPS). | "Balance price/performance" |
 | **General Purpose** | **gp3** | **Default Choice.** | **Decoupled Performance.** You get 3,000 IOPS baseline free. You pay to increase IOPS without increasing size. | "Independent scaling of storage and IOPS" |
-| **Provisioned IOPS** | **io1 / io2** | Mission Critical DBs | **High IOPS.** Up to 64,000 (io1) or 256,000 (io2) IOPS. | "Sub-millisecond latency", "Sustained IOPS" |
-| **Block Express** | **io2 Block Express** | The "SAN" Killer | Sub-millisecond latency. Highest EBS performance. | "Mission critical", "SAP HANA" |
+| **Provisioned IOPS** | **io1 / io2** | Mission Critical DBs | **High IOPS.** Up to 64,000 IOPS (both io1 and io2). | "Sub-millisecond latency", "Sustained IOPS" |
+| **Block Express** | **io2 Block Express** | The "SAN" Killer | Up to **256,000 IOPS**. Sub-millisecond latency. Highest EBS performance. | "Mission critical", "SAP HANA", "256K IOPS" |
 | **Throughput Opt HDD** | **st1** | Big Data, Logs, Kafka | Optimized for **Throughput (MB/s)**, not IOPS. Max 500 MB/s. | "Streaming", "Log processing", "Sequential I/O" |
 | **Cold HDD** | **sc1** | Archive | Cheapest EBS. Infrequent access. | "Lowest cost block storage" |
 
@@ -44,6 +44,15 @@
     - **Root Volume:** Default = **Delete**. (OS disk vanishes when EC2 terminates).
     - **Data Volume:** Default = **Keep**. (Extra disk stays).
     - *Exam Trap:* "Preserve the root volume data" → Change attribute `DeleteOnTermination` to `False`.
+
+**EBS Snapshots:**
+
+- **Incremental:** Only changed blocks since the last snapshot are saved. First snapshot is full copy.
+- **Stored in S3** internally (you cannot see them in your S3 console).
+- **Cross-Region Copy:** Snapshot → Copy to another Region → Create Volume. This is how you migrate EBS across regions.
+- **Data Lifecycle Manager (DLM):** Automate snapshot creation, retention, and deletion on a schedule. *Exam Trigger:* "Automate EBS backups" → DLM.
+- **Fast Snapshot Restore (FSR):** Pre-warms the snapshot so volumes created from it have **no latency penalty** on first read. Costs money. *Exam Trigger:* "Eliminate latency on first access from snapshot" → FSR.
+- *Exam Trap:* Snapshots are **not real-time backups**. For crash-consistent snapshots, stop I/O or detach the volume first.
 
 ---
 
@@ -81,6 +90,83 @@
     - **SSE-S3:** AWS manages keys. (Default).
     - **SSE-KMS:** AWS manages keys, but you control permissions/rotation. **Impacts KMS Quotas** (Exam trap: "Uploads failing due to ThrottlingException" -> Check KMS limits).
     - **SSE-C:** Client (You) sends the key with every request. AWS does not store the key.
+
+**5. S3 Versioning**
+
+- **What it does:** Keeps every version of every object (including deletions).
+- **Enable vs Suspend:** Once enabled, you can only **suspend** versioning (not disable). Existing versions are preserved when suspended.
+- **Delete Behavior:**
+    - **Simple DELETE** on a versioned bucket → places a **Delete Marker** (soft delete). The object appears gone but all versions still exist. You can recover by removing the delete marker.
+    - **Permanent DELETE** requires specifying the exact **Version ID**.
+- **MFA Delete:** Optional. Requires MFA to permanently delete versions or change versioning state. Can only be enabled by the **root account** via CLI (not console).
+- **Required for Replication:** You cannot enable CRR or SRR without versioning on both source and destination buckets.
+- *Exam Trap:* "Protect against accidental deletion" → Enable Versioning (+ optionally MFA Delete).
+
+**6. S3 Lifecycle Policies**
+
+- **Transition Rules:** Automatically move objects between storage classes over time.
+    - Example: Standard → Standard-IA (after 30 days) → Glacier Flexible (after 90 days) → Deep Archive (after 180 days).
+    - *Constraint:* Cannot transition from Standard-IA to One Zone-IA. The "waterfall" only goes down.
+- **Expiration Rules:** Automatically delete objects or old versions after a set period.
+    - Can also clean up **incomplete multipart uploads** (important cost-saving exam trap).
+- **Minimum Storage Duration Charges:**
+    - Standard-IA / One Zone-IA: **30 days** (delete early = still charged for 30 days).
+    - Glacier Instant / Glacier Flexible: **90 days**.
+    - Glacier Deep Archive: **180 days**.
+- *Exam Trigger:* "Reduce storage costs over time" or "Archive old data automatically" → Lifecycle Policy.
+
+**7. S3 Replication**
+
+- **CRR (Cross-Region Replication):** Replicate objects to a bucket in a **different region**. Use cases: compliance, lower-latency access, DR.
+- **SRR (Same-Region Replication):** Replicate within the **same region**. Use cases: log aggregation, live replication between prod/test.
+- **Requirements:**
+    - **Versioning must be enabled** on both source and destination buckets.
+    - Proper **IAM role** for S3 to replicate on your behalf.
+- **Key Rules:**
+    - **Existing objects** are NOT replicated when you enable replication. Use **S3 Batch Replication** to copy existing objects.
+    - **No chaining:** If Bucket A replicates to B, and B replicates to C, objects from A do **not** propagate to C.
+    - **Delete markers** are NOT replicated by default (optional setting to enable).
+    - Permanent deletes (by version ID) are **never** replicated (prevents malicious deletes).
+- *Exam Trap:* "Replicate existing objects" → S3 Batch Replication (not just enabling replication rules).
+
+**8. S3 Object Lock & Glacier Vault Lock**
+
+- **S3 Object Lock:** WORM (Write Once, Read Many) compliance at the object level.
+    - **Requires Versioning** to be enabled.
+    - **Governance Mode:** Users with special IAM permissions (`s3:BypassGovernanceRetention`) can override/delete. Good for internal controls.
+    - **Compliance Mode:** **Nobody** can delete or overwrite — not even the root account. The retention period cannot be shortened. Use for regulatory compliance.
+    - **Retention Period:** Set a fixed time window (days/years) during which the object is protected.
+    - **Legal Hold:** Indefinite protection until explicitly removed. Independent of retention period.
+- **Glacier Vault Lock:** WORM compliance at the **vault level** using a Vault Lock Policy.
+    - Once the policy is locked, it can **never** be changed or deleted.
+    - *Exam Trigger:* "Regulatory compliance", "SEC Rule 17a-4", "Data cannot be deleted for 7 years" → Glacier Vault Lock or S3 Object Lock (Compliance Mode).
+
+**9. S3 Pre-signed URLs**
+
+- **What it does:** Generate a temporary URL that grants time-limited access to a **private** S3 object.
+- The URL inherits the permissions of the IAM user/role that generated it.
+- **Expiration:** Configurable (default 1 hour, max 7 days with IAM user credentials).
+- **Use Cases:** Allow a user to download a private file without making the bucket public. Allow a user to upload to a specific key.
+- *Exam Trigger:* "Temporary access to a private object", "Share a file without making it public", "Allow upload without AWS credentials" → Pre-signed URL.
+
+**10. S3 Event Notifications**
+
+- **Triggers:** S3 can emit events on `s3:ObjectCreated:*`, `s3:ObjectRemoved:*`, `s3:ObjectRestore:*`, etc.
+- **Destinations:**
+    - **SQS** — queue for async processing.
+    - **SNS** — fan-out to multiple subscribers.
+    - **Lambda** — serverless processing (e.g., thumbnail generation on upload).
+    - **Amazon EventBridge** — **all** S3 events can be sent to EventBridge for advanced filtering, multiple destinations, and archive/replay.
+- **EventBridge Advantage:** Supports 18+ AWS services as targets, advanced rules, and works with ALL event types. EventBridge is the modern, more flexible option.
+- *Exam Trigger:* "Process files on upload" → S3 Event Notification to Lambda. "Fan out to multiple services" → EventBridge.
+
+**11. S3 Static Website Hosting**
+
+- S3 can host a static website (HTML, CSS, JS) directly from a bucket.
+- **Endpoint format:** `http://<bucket-name>.s3-website-<region>.amazonaws.com`
+- **Must enable public access** (Bucket Policy allowing `s3:GetObject` to `*`) OR use CloudFront with **OAC (Origin Access Control)** to keep the bucket private.
+- *Exam Combo:* Static website on S3 + CloudFront (CDN) + OAC (restrict direct S3 access) + Route 53 (custom domain) + ACM (HTTPS). This is a very common architecture question.
+- *Exam Trap:* S3 website endpoint does NOT support HTTPS natively. You need CloudFront in front for HTTPS.
 
 ---
 
@@ -147,7 +233,7 @@ Connects On-Premise to Cloud.
 
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
-1. **High IOPS Block Storage?** → EBS io1/io2.
+1. **High IOPS Block Storage?** → EBS io1/io2. Need 256K IOPS? → io2 Block Express.
 2. **High Throughput/Streaming?** → EBS st1.
 3. **Instance Store vs EBS?** → Instance Store = Ephemeral/Fast. EBS = Persistent/Network.
 4. **Windows Shared Drive?** → FSx for Windows.
@@ -155,9 +241,18 @@ Connects On-Premise to Cloud.
 6. **HPC/Supercomputer?** → FSx for Lustre.
 7. **S3 Encryption causing 503 errors?** → KMS Quota exceeded.
 8. **Need to query data in S3 using SQL?** → S3 Select (or Athena).
-9. **Move data to another region?** → S3 Cross-Region Replication (CRR) - Requires Versioning enabled.
-
-This is the scope. If it's not here, it's likely not a primary "Storage" question on the Associate exam.
+9. **Move data to another region?** → S3 Cross-Region Replication (CRR) — Requires Versioning enabled.
+10. **Protect against accidental S3 deletion?** → Enable Versioning (+ MFA Delete for extra protection).
+11. **Reduce S3 costs over time automatically?** → Lifecycle Policy (transition + expiration rules).
+12. **Replicate existing S3 objects?** → S3 Batch Replication (new replication rules only apply to new objects).
+13. **WORM / Regulatory compliance / Cannot delete?** → S3 Object Lock (Compliance Mode) or Glacier Vault Lock.
+14. **Temporary access to private S3 object?** → Pre-signed URL.
+15. **Process files on S3 upload?** → S3 Event Notification → Lambda. Multiple targets? → EventBridge.
+16. **Static website + HTTPS + custom domain?** → S3 + CloudFront (OAC) + Route 53 + ACM.
+17. **Automate EBS backup schedule?** → Data Lifecycle Manager (DLM).
+18. **No latency on first read from EBS snapshot?** → Fast Snapshot Restore (FSR).
+19. **Delete markers not replicating?** → Delete markers are NOT replicated by default. Enable optional setting.
+20. **S3 Object Lock modes?** → Governance = override with permissions. Compliance = nobody can delete, not even root.
 
 
 # Scenarios

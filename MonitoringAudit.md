@@ -171,6 +171,77 @@
 
 ---
 
+### **8. CloudWatch Logs Subscription Filters**
+
+**The Rule:** Stream log data in **real-time** from CloudWatch Logs to a destination for processing or analysis.
+
+**Destinations:**
+
+- **Lambda:** Process/transform logs in real-time.
+- **Kinesis Data Streams:** Custom real-time processing pipeline.
+- **Kinesis Data Firehose:** Deliver to S3, Redshift, or OpenSearch (near real-time).
+- **OpenSearch:** Log analytics with dashboards.
+
+**How It Works:**
+
+- Define a **filter pattern** on a Log Group (e.g., match all ERROR lines).
+- Matching log events are streamed to the chosen destination in real-time.
+- One subscription filter per Log Group (use Kinesis Data Streams to fan out to multiple destinations).
+
+**Exam Trigger:** "Real-time log processing" or "Stream logs to OpenSearch" --> CloudWatch Logs Subscription Filter.
+
+---
+
+### **9. CloudWatch Metric Filters**
+
+**The Rule:** Extract metric data from log events using **filter patterns**. Turn log patterns into custom CloudWatch Metrics, then alarm on them.
+
+**How It Works:**
+
+1. Define a **filter pattern** on a Log Group (e.g., match `"404"` or `"ERROR"`).
+2. CloudWatch creates a **custom metric** that increments each time the pattern matches.
+3. Create a **CloudWatch Alarm** on that custom metric.
+
+**Use Cases:**
+
+- Count 404 errors in access logs --> Alarm if > 100 in 5 minutes.
+- Count failed login attempts --> Alarm for security monitoring.
+- Track specific application error patterns --> Operational alerting.
+
+**Exam Trigger:** "Create alarm based on log pattern" or "Alert when error count in logs exceeds threshold" --> CloudWatch Metric Filter + Alarm.
+
+---
+
+### **SECTION 1.5: AWS X-RAY**
+
+*Distributed tracing for microservices.*
+
+### **1. X-Ray Overview**
+
+- **The Rule:** Analyze and debug distributed applications. Trace requests as they travel across **microservices** (Lambda, API Gateway, ECS, EC2, Elastic Beanstalk).
+- **Service Map:** Visual representation of your application's architecture. Shows services, connections, latency, errors, and fault rates.
+
+**Key Capabilities:**
+
+- **Tracing:** Follow a single request across multiple services end-to-end.
+- **Segments & Subsegments:** Each service creates a segment. External calls (DB, HTTP) create subsegments.
+- **Annotations:** Key-value pairs for filtering traces (indexed, searchable).
+- **Groups:** Filter traces by annotation or error type.
+
+**Integration:**
+
+- Lambda, API Gateway, ECS, EC2, Elastic Beanstalk, App Mesh.
+- Install **X-Ray Daemon** on EC2/ECS (Lambda and API Gateway have built-in integration).
+
+**Exam Triggers:**
+
+- "Debug latency in distributed application" --> X-Ray.
+- "Trace requests across microservices" --> X-Ray.
+- "Visualize application architecture and dependencies" --> X-Ray Service Map.
+- "Identify performance bottleneck in microservices" --> X-Ray.
+
+---
+
 ### **SECTION 2: CLOUDTRAIL (THE AUDIT LOG)**
 
 *Track API calls and user activity.*
@@ -436,6 +507,10 @@
 13. **Query logs for errors?** → CloudWatch Logs Insights.
 14. **Audit API calls?** → CloudTrail.
 15. **Track configuration changes?** → AWS Config.
+16. **Debug latency in distributed app?** → X-Ray.
+17. **Trace requests across microservices?** → X-Ray Service Map.
+18. **Stream logs to OpenSearch in real-time?** → CloudWatch Logs Subscription Filter.
+19. **Create alarm based on log pattern?** → CloudWatch Metric Filter + Alarm.
 
 ---
 

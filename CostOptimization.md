@@ -36,9 +36,20 @@
 - **Use Case:** Identify buckets with no lifecycle policies, find unused storage.
 - *Exam Trigger:* "Analyze S3 storage usage across organization" → S3 Storage Lens.
 
+### **5. AWS Trusted Advisor (Cost Optimization)**
+
+- **The Rule:** Scans your account for cost waste and recommends fixes.
+- **Cost Checks:**
+    - **Idle EC2 instances** (low CPU utilization).
+    - **Underutilized EBS volumes** (low I/O).
+    - **Unassociated Elastic IPs** (allocated but not attached — you're charged).
+    - **Idle Load Balancers** (no registered targets / no traffic).
+- **⚠ Support Plan Trap:** Full Trusted Advisor checks require **Business or Enterprise Support** plan. Basic/Developer plans only get a limited set of checks.
+- *Exam Trigger:* "Identify idle resources wasting money" → Trusted Advisor.
+
 ---
 
-### **SECTION 2: SAVINGS STRATEGIES (Cheat Sheet)**
+### **SECTION 2: SAVINGS STRATEGIES**
 
 | **Strategy** | **Savings** | **Exam Trigger** |
 | --- | --- | --- |
@@ -51,9 +62,62 @@
 | **EBS gp3 over gp2** | ~20% | "Independent IOPS scaling" |
 | **NAT Gateway vs NAT Instance** | NAT Instance cheaper | "Budget-constrained private subnet internet" |
 
+### **Savings Plans — Deep Dive**
+
+- **Compute Savings Plans (most flexible):**
+    - Applies to **any instance family, region, OS, tenancy**.
+    - Also covers **Fargate** and **Lambda** usage.
+    - Commit to $/hr for 1 or 3 years.
+- **EC2 Instance Savings Plans (highest discount):**
+    - Locked to a **specific instance family in a specific region** (e.g., M5 in us-east-1).
+    - Can still change size, OS, and tenancy within that family.
+    - Higher discount than Compute SP because less flexible.
+- *Exam Trigger:* "Flexible commitment across regions and compute types" → Compute Savings Plans. "Highest discount, same instance family" → EC2 Instance Savings Plans.
+
+### **Reserved Instances — Deep Dive**
+
+- **Standard RI:**
+    - Up to **72% discount**. Committed to a specific instance family.
+    - **Cannot change** instance family, OS, or tenancy.
+    - **Can sell** on the RI Marketplace.
+- **Convertible RI:**
+    - Up to **66% discount**. Lower discount = more flexibility.
+    - **Can change** instance family, OS, tenancy, and scope.
+    - **Cannot sell** on the RI Marketplace.
+- **Payment options (discount order):** All Upfront (highest discount) > Partial Upfront > No Upfront (lowest discount).
+- *Exam Trap:* "Change instance family mid-term" → must be **Convertible RI** (Standard cannot). "Sell unused reservation" → must be **Standard RI** (Convertible cannot be sold).
+
+### **Data Transfer Costs — Must Know**
+
+- **Inbound** data to AWS from internet: **FREE**.
+- **Same AZ** traffic: **FREE** (using private IP).
+- **Cross-AZ** traffic (private IP): **Charged per GB** (small cost, adds up).
+- **Cross-Region** transfer: **Charged per GB** (more expensive than cross-AZ).
+- **VPC Endpoints:**
+    - **Gateway Endpoints** (S3, DynamoDB): **FREE** — no per-hour or per-GB charge.
+    - **Interface Endpoints** (everything else): **Charged** per hour + per GB.
+- **CloudFront to origin:** Cheaper than direct internet transfer out.
+- **S3 Transfer Acceleration:** Additional cost on top of standard transfer pricing.
+- *Exam Trap:* "Reduce data transfer costs between services in same region" → use **private IPs** + **same AZ** where possible. "Reduce S3 access costs from VPC" → **Gateway VPC Endpoint** (free).
+
 ---
 
 ### **SECTION 3: MIGRATION SERVICES**
+
+### **The 6 R's of Migration**
+
+*Classic exam topic — they describe a scenario and you pick which R applies.*
+
+| **Strategy** | **What It Means** | **Example** |
+| --- | --- | --- |
+| **Rehost** (Lift-and-Shift) | Move as-is to AWS, no code changes. | On-prem VM → EC2 via MGN. |
+| **Replatform** (Lift-Tinker-Shift) | Minor optimizations, no core code changes. | On-prem MySQL → RDS MySQL. |
+| **Repurchase** (Drop-and-Shop) | Move to a different product, usually SaaS. | On-prem CRM → Salesforce. |
+| **Refactor** (Re-architect) | Redesign for cloud-native. Most effort. | Monolith → microservices on ECS/Lambda. |
+| **Retire** | Decommission — no longer needed. | Legacy app no one uses. |
+| **Retain** | Keep on-prem for now. Not ready to migrate. | Mainframe with deep dependencies. |
+
+- *Exam Trigger:* "Move to AWS with minimal changes" → **Rehost**. "Move database to managed service" → **Replatform**. "Replace with SaaS" → **Repurchase**. "Redesign for serverless" → **Refactor**.
 
 ### **1. AWS DMS (Database Migration Service)**
 
@@ -104,7 +168,8 @@
 
 ### **2. Pilot Light**
 - Core infrastructure (DB) always running in DR region. Other services launched when needed.
-- Example: RDS Multi-AZ in DR region, EC2/ASG launched from AMIs on failover.
+- Example: RDS **read replica** in DR region (minimal DB replica), EC2/ASG launched from AMIs on failover.
+- *Note:* Pilot Light = minimal replica running. Multi-AZ is an availability feature within a single region, not the same as Pilot Light across regions.
 
 ### **3. Warm Standby**
 - Scaled-down but fully functional copy of production in DR region.
@@ -146,15 +211,28 @@
 1. **Analyze spending patterns?** → Cost Explorer.
 2. **Alert when budget exceeded?** → AWS Budgets.
 3. **Right-size EC2 instances?** → Compute Optimizer.
-4. **Migrate database with minimal downtime?** → DMS (+ SCT if heterogeneous).
-5. **Lift-and-shift servers to EC2?** → Application Migration Service (MGN).
-6. **Transfer files via SFTP to S3?** → Transfer Family.
-7. **Online data transfer (NFS to S3)?** → DataSync.
-8. **Offline data transfer (100 TB)?** → Snow Family.
-9. **Cheapest DR strategy?** → Backup & Restore.
-10. **Near-zero RTO DR?** → Multi-Site Active-Active.
-11. **Restrict services across accounts?** → SCPs (Organizations).
-12. **Centralized backup?** → AWS Backup.
+4. **Idle resources wasting money?** → Trusted Advisor (needs Business/Enterprise Support for full checks).
+5. **Flexible savings across regions/compute types?** → Compute Savings Plans.
+6. **Highest discount, locked to instance family?** → EC2 Instance Savings Plans.
+7. **Change instance family mid-term RI?** → Convertible RI (Standard cannot).
+8. **Sell unused RI on Marketplace?** → Standard RI only (Convertible cannot).
+9. **RI payment: max discount?** → All Upfront > Partial Upfront > No Upfront.
+10. **Inbound data to AWS?** → FREE.
+11. **Reduce S3/DynamoDB access cost from VPC?** → Gateway VPC Endpoint (free).
+12. **Cross-AZ transfer cost?** → Charged per GB (use same AZ + private IP to avoid).
+13. **Move to AWS with minimal changes?** → Rehost (lift-and-shift, MGN).
+14. **Move DB to managed service, minor changes?** → Replatform (e.g., → RDS).
+15. **Replace with SaaS product?** → Repurchase (drop-and-shop).
+16. **Redesign for cloud-native/serverless?** → Refactor (re-architect).
+17. **Migrate database with minimal downtime?** → DMS (+ SCT if heterogeneous).
+18. **Lift-and-shift servers to EC2?** → Application Migration Service (MGN).
+19. **Transfer files via SFTP to S3?** → Transfer Family.
+20. **Online data transfer (NFS to S3)?** → DataSync.
+21. **Offline data transfer (100 TB)?** → Snow Family.
+22. **Cheapest DR strategy?** → Backup & Restore.
+23. **Near-zero RTO DR?** → Multi-Site Active-Active.
+24. **Restrict services across accounts?** → SCPs (Organizations).
+25. **Centralized backup?** → AWS Backup.
 
 ---
 

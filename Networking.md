@@ -44,6 +44,16 @@
 | **Use Case** | Standard application security | Blocking a specific malicious IP |
 - **Exam Trap:** "You blocked an IP in the Security Group but they can still access." -> You *can't* block in SG. You must use **NACL**.
 
+### **AWS Network Firewall**
+
+- **Purpose:** Managed firewall service for **VPC-level traffic inspection**. Goes far beyond what SGs and NACLs can do.
+- **Capabilities:** Deep packet inspection, intrusion detection/prevention (IDS/IPS), protocol filtering, domain-based filtering (block traffic to specific domains).
+- **Placement:** Deployed in a dedicated **firewall subnet**. Route tables direct traffic through it.
+- **Key Distinction:**
+    - **SGs/NACLs:** Simple IP/port rules. Cannot inspect packet contents.
+    - **Network Firewall:** Full L3-L7 inspection, Suricata-compatible rules, stateful filtering.
+- *Exam Trigger:* "Inspect traffic for malicious payloads", "IDS/IPS", "Filter outbound traffic by domain name", "Deep packet inspection at VPC level".
+
 ---
 
 ### **SECTION 3: CONNECTIVITY (GETTING OUT)**
@@ -68,9 +78,17 @@
     - **Self-Managed:** It's just an EC2.
     - **Configuration:** Must disable **Source/Destination Check** on the instance.
     - **Performance:** Limited by EC2 size.
-    - *Exam Trigger:* "Bastion Host" or "Cheap/Legacy solution".
+    - *Exam Trigger:* "Cheap/Legacy NAT solution" or "Disable Source/Destination Check".
+    - **Not a Bastion Host.** NAT Instance = outbound internet for private instances. Bastion Host = inbound SSH jump box for admins. Different purpose.
 
-### **3. VPC Endpoints (PrivateLink)**
+### **3. Egress-Only Internet Gateway (IPv6)**
+
+- **Purpose:** The IPv6 equivalent of a NAT Gateway. Allows **outbound** IPv6 traffic from private instances but **blocks** inbound connections from the internet.
+- **Why it exists:** IPv6 addresses are all public (no "private range" like `10.x.x.x`). You need this to prevent the internet from initiating connections to your IPv6 instances.
+- **Rule:** Only for **IPv6**. For IPv4 outbound, use NAT Gateway.
+- *Exam Trigger:* "IPv6 instances need outbound internet access but must not be reachable from the internet."
+
+### **4. VPC Endpoints (PrivateLink)**
 
 - **Purpose:** Access AWS Services (S3, DynamoDB, CloudWatch) **privately** (without going over the public internet).
 - **Type A: Gateway Endpoint**
@@ -81,6 +99,16 @@
     - **Services:** Everything else (CloudWatch, SNS, SQS, etc.).
     - **Mechanism:** Creates an **ENI** (IP address) in your subnet. Uses DNS.
     - **Cost:** **$$$** (Hourly + Data).
+
+### **5. AWS PrivateLink (Exposing Your Own Services)**
+
+- **Purpose:** Expose a service **you built** in your VPC to other VPCs (even in other accounts) **privately**, without VPC Peering, IGW, NAT, or public IPs.
+- **Architecture:**
+    - **Provider VPC:** Put your service behind a **Network Load Balancer (NLB)**, then create a **VPC Endpoint Service**.
+    - **Consumer VPC:** Creates an **Interface Endpoint** (ENI) that connects to your service.
+- **Key Distinction:** Interface Endpoints (above) connect to **AWS services**. PrivateLink Endpoint Services connect to **your own services** via NLB.
+- **Scalability:** Works across accounts and even with AWS Marketplace services.
+- *Exam Trigger:* "Expose service to hundreds of customer VPCs without peering", "NLB + PrivateLink", "Service provider/consumer model".
 
 ---
 
@@ -106,7 +134,9 @@
     - **VGW (Virtual Private Gateway):** On the AWS side (attached to VPC).
     - **CGW (Customer Gateway):** On the User side (Physical Router IP).
 - **Speed:** Runs over Public Internet (encrypted). Max 1.25 Gbps per tunnel.
-- **ECMP:** Use logic to combine tunnels for higher speed.
+- **ECMP (Equal-Cost Multi-Path):** Spreads traffic across multiple VPN tunnels for higher throughput.
+    - **Only works with Transit Gateway + VPN.** Does NOT work with standard VPN on a VGW (Virtual Private Gateway).
+    - *Exam Trap:* "Increase VPN bandwidth" → ECMP via TGW, not VGW.
 
 ### **4. Direct Connect (DX)**
 
@@ -115,6 +145,21 @@
 - **Reliability:** High.
 - **Time:** Takes weeks/months to setup.
 - **Backup:** Often use VPN as a backup for Direct Connect.
+
+### **5. DX + VPN (Encryption over Direct Connect)**
+
+- **The Problem:** Direct Connect is a private connection, but it is **NOT encrypted** by default. Data travels in cleartext over the dedicated fiber.
+- **The Fix:** Run a **Site-to-Site VPN connection over the Direct Connect** link. This adds IPSec encryption on top of the dedicated connection.
+- **Architecture:** DX provides the reliable pipe, VPN provides the encryption. Best of both worlds.
+- *Exam Trigger:* "Encrypted connection with consistent latency", "Encrypt Direct Connect traffic", "Compliance requires encryption in transit over dedicated link".
+- *Exam Trap:* "Direct Connect is private, so it's encrypted." → **Wrong.** Private ≠ Encrypted.
+
+### **6. Direct Connect Resiliency Patterns**
+
+- **High Resiliency:** **2 DX connections at 2 different DX locations.** (One connection per location). Survives a single location failure.
+- **Maximum Resiliency:** **2 DX connections per location at 2 different DX locations** (4 connections total). Survives device failure AND location failure.
+- **Cost vs. Resilience tradeoff:** Maximum resiliency costs 2x but is required for critical workloads.
+- *Exam Trigger:* "Mission-critical workload needs highest DX resiliency" → Maximum resiliency (2 connections x 2 locations).
 
 ---
 
@@ -136,10 +181,17 @@
 3. **Access Kinesis/SQS/CloudWatch Privately?** → Interface Endpoint.
 4. **Connect 50 VPCs together?** → Transit Gateway.
 5. **Connect 2 VPCs?** → VPC Peering (Check for no CIDR overlap).
-6. **High Security private internet access?** → NAT Gateway (in Public Subnet).
+6. **Private instances need internet (outbound only)?** → NAT Gateway (in Public Subnet).
 7. **Instance has Public IP but no internet?** → Check Route Table for IGW.
-8. **Bastion Host?** → Needs to be in Public Subnet. Security Group: Allow SSH from *your IP only*.
-9. **VPC Peering not working?** → Check Route Tables on *both* sides and Security Groups.
+8. **Bastion Host?** → Public Subnet EC2 for SSH jump access. SG: Allow SSH from *your IP only*.
+9. **NAT Instance?** → Legacy/cheap NAT. Disable Source/Destination Check. Not the same as Bastion.
+10. **VPC Peering not working?** → Check Route Tables on *both* sides and Security Groups.
+11. **Expose your service to other VPCs privately?** → NLB + PrivateLink (Endpoint Service).
+12. **Encrypt Direct Connect?** → Run Site-to-Site VPN over the DX connection.
+13. **Highest DX resiliency?** → Maximum resiliency: 2 connections x 2 locations (4 total).
+14. **IPv6 outbound only (no inbound)?** → Egress-Only Internet Gateway.
+15. **Deep packet inspection / IDS/IPS at VPC level?** → AWS Network Firewall.
+16. **Increase VPN bandwidth?** → ECMP via Transit Gateway (not VGW).
 
 This covers the network logic. If you can draw the packet flow from a private instance -> NAT GW -> IGW -> Internet, you pass.
 
@@ -248,13 +300,12 @@ D. The Subnet's Route Table is missing a route to `0.0.0.0/0` targeting the Inte
 
 **Clear Answer:**
 
-These 10 scenarios map directly to the "Rules" in your `.MD` file.
+These 5 scenarios map directly to the core networking rules above.
 
-- **Scenario 1** proves why you need to know "EBS Multi-Attach = io1/io2".
-- **Scenario 6** proves why you memorize "Security Groups = Allow Only."
+- **Scenario 1 (Bad Actor)** proves why you memorize "Security Groups = Allow Only" → use NACL to deny.
+- **Scenario 2 (Private Update)** proves the NAT Gateway placement rule → Public Subnet only.
+- **Scenario 3 (S3 Security)** proves Gateway Endpoints keep traffic off the public internet.
+- **Scenario 4 (Star Topology)** proves Transit Gateway solves the peering mesh problem.
+- **Scenario 5 (Broken Internet)** proves that a Public IP alone isn't enough → Route Table must point to IGW.
 
-**Confidence Level:** 1.0 (These are standard patterns for the SAA-C03 exam).
-
-**Next Step:**
-
-Add these to the bottom of your `.MD` file under a new header **"SECTION 6: REAL EXAM SCENARIOS"**. Read one scenario, cover the answer, and explain *why* the other three are wrong. That is how you pass.
+**Next Step:** Read one scenario, cover the answer, and explain *why* the other three are wrong. That is how you pass.

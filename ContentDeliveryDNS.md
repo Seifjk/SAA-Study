@@ -148,6 +148,29 @@
 
 ---
 
+### **6. Public vs. Private Hosted Zones**
+
+### **A. Public Hosted Zone**
+
+- **The Rule:** Contains records that define how traffic is routed **on the internet** (Public DNS).
+- **Created Automatically:** When you register a domain with Route 53.
+- **Example:** `example.com` → ALB public IP.
+- **Who Can Query:** Anyone on the internet.
+
+### **B. Private Hosted Zone**
+
+- **The Rule:** Contains records that define how traffic is routed **within one or more VPCs** (Internal DNS).
+- **Requirement:** Must be **associated with VPCs** (Specify which VPCs can resolve these records).
+- **Example:** `db.internal.example.com` → RDS private IP (Only reachable inside VPC).
+- **Use Case:** Internal service discovery, Private endpoints, Microservices routing.
+- **Multi-VPC:** Can associate one private hosted zone with **multiple VPCs** (Even across accounts).
+
+**Exam Trap:** "Resolve internal DNS names within a VPC" → Private Hosted Zone (Must be associated with the VPC).
+
+**Exam Trigger:** "Internal DNS for VPC resources" → Private Hosted Zone. "Internet-facing DNS" → Public Hosted Zone.
+
+---
+
 ### **SECTION 2: CLOUDFRONT (THE CDN)**
 
 *Global Content Delivery Network.*
@@ -266,7 +289,82 @@
 
 ---
 
-### **5. CloudFront vs. S3 Cross-Region Replication**
+### **5. CloudFront Functions vs. Lambda@Edge**
+
+*One of the most commonly tested CloudFront topics on the exam.*
+
+### **A. CloudFront Functions**
+
+- **Runtime:** Lightweight **JavaScript** only.
+- **Event Types:** **Viewer request** and **Viewer response** ONLY.
+- **Execution:** Sub-millisecond startup, very fast.
+- **Scale:** Millions of requests per second.
+- **Cost:** Very cheap (~1/6th the cost of Lambda@Edge).
+- **Limitations:** No network access, No file system access, No request body access.
+
+**Use Cases:**
+- Header manipulation (Add/Modify/Delete headers).
+- URL rewrites and redirects.
+- Cache key normalization (Lowercase, strip query strings).
+- Simple auth (JWT validation, token checking).
+
+---
+
+### **B. Lambda@Edge**
+
+- **Runtime:** **Node.js** and **Python**.
+- **Event Types:** **All 4 event types** (Viewer request, Viewer response, Origin request, Origin response).
+- **Execution:** Up to **5 seconds** (Viewer triggers) or **30 seconds** (Origin triggers).
+- **Scale:** Thousands of requests per second (per region).
+- **Capabilities:** Network access, Read/Write request body, Access to external services.
+
+**Use Cases:**
+- Complex authentication and authorization (OIDC, SAML).
+- A/B testing with full logic.
+- Dynamic origin selection (Route to different origins based on request).
+- Content generation at the edge (HTML rendering, image manipulation).
+- Bot detection and advanced security.
+
+---
+
+### **C. Comparison Table**
+
+| **Feature** | **CloudFront Functions** | **Lambda@Edge** |
+| --- | --- | --- |
+| **Language** | JavaScript only | Node.js, Python |
+| **Event Types** | Viewer request/response ONLY | All 4 (Viewer + Origin) |
+| **Max Execution** | Sub-millisecond | 5 sec (Viewer) / 30 sec (Origin) |
+| **Scale** | Millions req/sec | Thousands req/sec |
+| **Network Access** | No | Yes |
+| **Body Access** | No | Yes (Read/Write) |
+| **Cost** | Very cheap | ~6x more expensive |
+| **Use Case** | Simple transforms, Rewrites, Headers | Complex logic, External calls, Body manipulation |
+
+**Exam Trigger:** "Simple URL rewrite or header manipulation" → CloudFront Functions. "Need network access or origin-level processing" → Lambda@Edge. "Cheapest edge compute for high-volume requests" → CloudFront Functions.
+
+---
+
+### **6. CloudFront Origin Groups (Origin Failover)**
+
+**The Rule:** Configure a **Primary origin** and a **Secondary origin** for automatic failover. If primary returns **5xx** or **4xx** errors, CloudFront **automatically** routes the request to the secondary origin.
+
+**How It Works:**
+
+1. CloudFront sends request to **Primary origin**.
+2. If Primary returns a configured error status (e.g., 500, 502, 503, 504) → CloudFront retries to **Secondary origin**.
+3. Secondary serves the content (User sees no error).
+
+**Configuration:**
+- Define **failover criteria** (Which HTTP status codes trigger failover).
+- Primary and Secondary can be **different origin types** (e.g., Primary = ALB, Secondary = S3 static error page).
+
+**Use Case:** High availability for CloudFront distributions, Serving fallback content when origin is down.
+
+**Exam Trigger:** "CloudFront high availability" or "Origin failover" → Origin Groups (Primary + Secondary origin).
+
+---
+
+### **7. CloudFront vs. S3 Cross-Region Replication**
 
 | **Feature** | **CloudFront** | **S3 CRR** |
 | --- | --- | --- |
@@ -342,6 +440,11 @@
 10. **Static IP, UDP, Gaming, Fast failover?** → Global Accelerator.
 11. **Replicate S3 to specific region?** → S3 Cross-Region Replication (NOT CloudFront).
 12. **Manually clear CloudFront cache?** → Invalidation (Costs money; use versioned names).
+13. **Simple URL rewrite or header manipulation at edge?** → CloudFront Functions (Cheap, sub-ms, viewer only).
+14. **Complex edge logic with network access or body manipulation?** → Lambda@Edge (All 4 event types, up to 30 sec).
+15. **CloudFront high availability / origin failover?** → Origin Groups (Primary + Secondary origin).
+16. **Internal DNS within a VPC?** → Route 53 Private Hosted Zone (Must associate with VPC).
+17. **Internet-facing DNS resolution?** → Route 53 Public Hosted Zone.
 
 ---
 

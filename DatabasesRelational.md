@@ -56,7 +56,7 @@
 **Key Facts:**
 
 - **Replication:** **Asynchronous** (Eventual consistency. Slight lag possible).
-- **Count:** Up to **15 Read Replicas** per primary.
+- **Count:** Up to **5 Read Replicas** per primary (Standard RDS). Aurora supports up to **15**.
 - **Location:** Same AZ, Cross-AZ, or **Cross-Region**.
 - **Use Case:** Reporting, Analytics, Read-heavy workloads.
 - **Promotion:** Can promote Read Replica to **standalone DB** (Breaks replication).
@@ -171,6 +171,30 @@
 
 ---
 
+### **8. RDS Custom**
+
+**The Rule:** RDS Custom gives you **OS-level and database-level access** while AWS still manages backups, patching, and HA. Available for **Oracle** and **Microsoft SQL Server** only.
+
+**Key Facts:**
+
+- **OS Access:** Full SSH/RDP access to the underlying EC2 instance.
+- **Database Access:** Can install custom patches, configure OS settings, install agents.
+- **Automation Mode:** Pause AWS automation when making custom changes (prevents conflicts). Resume after.
+- **Supported Engines:** Oracle, SQL Server only.
+
+**How It Differs from Standard RDS:**
+
+| **Feature** | **Standard RDS** | **RDS Custom** |
+| --- | --- | --- |
+| **OS Access** | **NO** | **YES** (SSH/RDP) |
+| **Custom Patches** | **NO** (AWS manages) | **YES** |
+| **Automation** | Always on | Can pause/resume |
+| **Engines** | All 6 engines | Oracle, SQL Server only |
+
+**Exam Trigger:** "Need root/admin OS access but still want managed database" → RDS Custom.
+
+---
+
 ### **SECTION 2: AURORA (THE CLOUD-NATIVE DB)**
 
 *AWS-built MySQL/PostgreSQL-compatible DB.*
@@ -277,6 +301,33 @@
 
 ---
 
+### **6. Aurora Cloning**
+
+**The Rule:** Create a **copy-on-write clone** of an Aurora DB cluster. Fast, storage-efficient.
+
+**How It Works:**
+
+- Uses **copy-on-write protocol** — clone initially shares the same data pages as the source.
+- New data pages are only allocated when data is **modified** in the clone.
+- Creation takes **seconds** regardless of database size (vs. hours for snapshot+restore).
+
+**Key Facts:**
+
+- Clone is a fully independent Aurora cluster (own endpoint, own configuration).
+- No performance impact on the source/production database.
+- Much faster and more storage-efficient than snapshot+restore.
+- Useful for creating multiple clones from the same source.
+
+**Use Cases:**
+
+- Create test/staging copy of production DB.
+- Run experiments or analytics without affecting production.
+- Debug production issues with real data.
+
+**Exam Trigger:** "Create test copy of production database quickly without affecting production" → Aurora Cloning.
+
+---
+
 ### **SECTION 3: RDS PROXY**
 
 **The Rule:** Managed connection pooling for RDS/Aurora.
@@ -315,7 +366,9 @@
 9. **Variable/unpredictable load?** → Aurora Serverless.
 10. **Global reads, DR with RTO < 1 min?** → Aurora Global Database.
 11. **Lambda exhausting DB connections?** → RDS Proxy.
-13. **Quickly undo bad data change?** → Aurora Backtrack.
+12. **Quickly undo bad data change?** → Aurora Backtrack.
+13. **Create test copy of production DB fast?** → Aurora Cloning (copy-on-write, seconds).
+14. **Need OS-level access on managed DB?** → RDS Custom (Oracle/SQL Server only).
 
 ---
 

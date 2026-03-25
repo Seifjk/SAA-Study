@@ -122,7 +122,50 @@
 
 ---
 
-### **SECTION 2: KMS (KEY MANAGEMENT SERVICE)**
+### **SECTION 2: STS (SECURITY TOKEN SERVICE)**
+
+*Temporary credentials via AssumeRole.*
+
+### **1. STS Overview**
+
+- **The Rule:** Issue **temporary credentials** (Access Key, Secret Key, Session Token) for IAM Roles.
+- **Global Service:** Single endpoint `sts.amazonaws.com` (Regional endpoints also available).
+
+---
+
+### **2. Key STS API Calls**
+
+- **AssumeRole:** Assume a role within your account or cross-account. Most common. Used by EC2 Instance Profiles, Lambda Execution Roles, cross-account access.
+- **AssumeRoleWithWebIdentity:** Exchange a web identity token (Google, Facebook, Amazon) for temporary AWS credentials. Cognito Identity Pools uses this behind the scenes. Exam shows this API name when discussing mobile/web apps accessing AWS.
+- **AssumeRoleWithSAML:** Exchange a SAML assertion from corporate IdP (Active Directory) for temporary AWS credentials. Exam trigger: "enterprise SSO to AWS Console via SAML."
+
+**Exam Trap:** Don't confuse the three. Web identity = social/OpenID logins. SAML = corporate federation. Plain AssumeRole = AWS-to-AWS or CLI usage.
+
+---
+
+### **SECTION 3: IAM IDENTITY CENTER (FORMERLY AWS SSO)**
+
+*Single sign-on across AWS accounts.*
+
+### **1. IAM Identity Center Overview**
+
+- **The Rule:** **Centralized SSO** for multiple AWS accounts in an Organization and business applications (Salesforce, Slack, custom SAML apps).
+- **Identity Source:** Built-in identity store, or integrate with **Active Directory** (AWS Managed AD or AD Connector) or external IdP (Okta, Azure AD).
+- **Permission Sets:** Define permissions once, assign to users/groups across multiple accounts.
+
+**How It Works:**
+
+1. User signs in once via IAM Identity Center portal.
+2. Sees all assigned AWS accounts and applications.
+3. Clicks an account → Gets temporary credentials via STS.
+
+**Exam Trigger:** "SSO across AWS accounts" → IAM Identity Center. "Centralized access management for Organization" → IAM Identity Center.
+
+**Exam Trap:** IAM Identity Center replaces the old "AWS SSO" name. Same service, new name. Exam may use either.
+
+---
+
+### **SECTION 4: KMS (KEY MANAGEMENT SERVICE)**
 
 *Managed encryption keys.*
 
@@ -203,7 +246,70 @@
 
 ---
 
-### **SECTION 3: SECRETS MANAGER**
+### **7. KMS vs. CloudHSM**
+
+| **Feature** | **KMS** | **CloudHSM** |
+| --- | --- | --- |
+| **Tenancy** | Shared / multi-tenant | **Single-tenant** dedicated hardware |
+| **Compliance** | FIPS 140-2 Level 2 | **FIPS 140-2 Level 3** |
+| **Key Control** | AWS manages HSM infrastructure | **You control keys entirely** |
+| **HA** | AWS-managed (Multi-AZ built-in) | You deploy CloudHSM cluster across AZs |
+| **Integration** | Native with almost all AWS services | Custom apps, Oracle TDE, SSL offload on EC2 |
+
+**Exam Trigger:** "FIPS 140-2 Level 3" → CloudHSM. "Customer-managed encryption keys with full control" → CloudHSM. "Regulatory compliance requiring dedicated HSM" → CloudHSM.
+
+---
+
+### **SECTION 4B: ACM (AWS CERTIFICATE MANAGER)**
+
+*Free SSL/TLS certificates.*
+
+### **1. ACM Overview**
+
+- **The Rule:** Provision, manage, and deploy **public and private SSL/TLS certificates**. Free for public certificates.
+- **Auto-Renewal:** ACM automatically renews certificates before expiry (No manual work).
+- **Integration:** ALB, NLB, CloudFront, API Gateway, Elastic Beanstalk.
+
+---
+
+### **2. ACM Key Rules**
+
+- **Cannot install ACM certificates directly on EC2.** Must use CloudHSM or import certificates manually to EC2.
+- **Regional Service:** Certificates are region-specific. Exception: **CloudFront requires ACM certificate in us-east-1** (N. Virginia) regardless of where your app runs.
+- **Validation:** Domain validation via DNS (recommended, add CNAME record) or email.
+
+**Exam Trigger:** "Free SSL for ALB" → ACM. "HTTPS on CloudFront with custom domain" → ACM certificate in **us-east-1**.
+
+**Exam Trap:** "SSL certificate on EC2" → NOT ACM. Use CloudHSM for SSL offload on EC2 or import certificate manually.
+
+---
+
+### **SECTION 4C: CloudHSM**
+
+*Dedicated Hardware Security Module.*
+
+### **1. CloudHSM Overview**
+
+- **The Rule:** AWS provisions **dedicated HSM hardware** in your VPC. You manage keys entirely.
+- **FIPS 140-2 Level 3** compliant (KMS is only Level 2).
+- **Single-Tenant:** Hardware is not shared with other customers.
+
+---
+
+### **2. CloudHSM Use Cases**
+
+- **SSL/TLS offload** on EC2 (ACM can't do this).
+- **Oracle TDE** (Transparent Data Encryption).
+- **Custom key store** for KMS (Bridge: KMS API + CloudHSM hardware).
+- **Regulatory requirements** mandating dedicated HSM.
+
+**HA Setup:** Deploy **CloudHSM cluster** across multiple AZs for high availability.
+
+**Exam Trigger:** "FIPS 140-2 Level 3" → CloudHSM. "Dedicated HSM" → CloudHSM. "SSL offload on EC2" → CloudHSM.
+
+---
+
+### **SECTION 5: SECRETS MANAGER**
 
 *Securely store and rotate secrets.*
 
@@ -225,7 +331,7 @@
 
 ---
 
-### **SECTION 4: COGNITO**
+### **SECTION 6: COGNITO**
 
 *User authentication and authorization.*
 
@@ -276,7 +382,7 @@
 
 ---
 
-### **SECTION 5: WAF & SHIELD**
+### **SECTION 7: WAF & SHIELD**
 
 *Web Application Firewall and DDoS Protection.*
 
@@ -322,7 +428,7 @@
 
 ---
 
-### **SECTION 6: GUARDDUTY, INSPECTOR, MACIE**
+### **SECTION 8: GUARDDUTY, INSPECTOR, MACIE**
 
 *Threat Detection and Security Assessment.*
 
@@ -383,6 +489,68 @@
 
 ---
 
+### **SECTION 9: SECURITY HUB**
+
+*Centralized security findings.*
+
+### **1. Security Hub Overview**
+
+- **The Rule:** **Aggregates security findings** from GuardDuty, Inspector, Macie, Firewall Manager, and third-party tools into a **single dashboard**.
+- **Automated Compliance Checks:** CIS AWS Foundations Benchmark, PCI DSS, AWS Foundational Security Best Practices.
+- **Cross-Account:** Works across all accounts in an Organization.
+
+**Output:** Consolidated findings with severity scores + EventBridge integration for automated remediation.
+
+**Exam Trigger:** "Centralized security findings" → Security Hub. "Security posture dashboard" → Security Hub. "Compliance dashboard for CIS/PCI DSS" → Security Hub.
+
+---
+
+### **SECTION 10: FIREWALL MANAGER**
+
+*Centralized firewall rule management across accounts.*
+
+### **1. Firewall Manager Overview**
+
+- **The Rule:** **Centrally manage** WAF rules, Shield Advanced protections, Security Groups, Network Firewall rules across **all accounts** in an Organization.
+- **Prerequisite:** Requires AWS Organizations and AWS Config enabled.
+- **Auto-Apply:** New accounts in the Organization automatically get the rules.
+
+**Exam Trigger:** "Manage WAF rules across all accounts" → Firewall Manager. "Centralized firewall management" → Firewall Manager. "Ensure all accounts have Shield Advanced" → Firewall Manager.
+
+**Exam Trap:** Firewall Manager **manages rules**, it is not a firewall itself. It orchestrates WAF, Shield, Security Groups, and Network Firewall.
+
+---
+
+### **SECTION 11: AWS NETWORK FIREWALL**
+
+*Managed firewall for VPC traffic inspection.*
+
+### **1. Network Firewall Overview**
+
+- **The Rule:** Managed **firewall service** deployed in your VPC. Inspects traffic entering and leaving VPCs.
+- **Features:**
+    - **Stateful and stateless** rules.
+    - **Deep packet inspection** (Layer 3 through Layer 7).
+    - **Intrusion Prevention System (IPS)** and intrusion detection.
+    - Domain name filtering (Allow/block specific domains).
+- **Deployment:** Sits in a dedicated firewall subnet. Traffic routed through it via VPC route tables.
+
+**Network Firewall vs. NACLs vs. Security Groups:**
+
+| **Feature** | **Security Groups** | **NACLs** | **Network Firewall** |
+| --- | --- | --- | --- |
+| **Level** | Instance level | Subnet level | VPC level |
+| **Inspection** | Port/Protocol | Port/Protocol/IP | **Deep packet inspection** |
+| **Stateful** | Yes | No | Yes (and stateless rules) |
+| **IDS/IPS** | No | No | **Yes** |
+| **Domain Filtering** | No | No | **Yes** |
+
+**Exam Trigger:** "Inspect traffic entering/leaving VPC" → Network Firewall. "IDS/IPS for VPC" → Network Firewall. "Deep packet inspection in VPC" → Network Firewall.
+
+**Exam Trap:** NACLs are basic allow/deny by IP/port. Network Firewall does deep inspection, domain filtering, and IPS. Very different.
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **EC2 needs S3 access without keys?** → IAM Role (Instance Profile).
@@ -399,6 +567,16 @@
 12. **Discover PII in S3?** → Macie.
 13. **Cross-account S3 access?** → Bucket Policy (Resource-based).
 14. **Encrypt large files efficiently?** → Envelope Encryption (KMS).
+15. **Free SSL/TLS for ALB or CloudFront?** → ACM.
+16. **CloudFront HTTPS with custom domain?** → ACM in **us-east-1**.
+17. **SSL certificate on EC2?** → NOT ACM. Use CloudHSM or import manually.
+18. **FIPS 140-2 Level 3 / dedicated HSM?** → CloudHSM.
+19. **SSO across multiple AWS accounts?** → IAM Identity Center.
+20. **Centralized security findings dashboard?** → Security Hub.
+21. **Manage WAF rules across all accounts?** → Firewall Manager.
+22. **Deep packet inspection / IDS/IPS in VPC?** → AWS Network Firewall.
+23. **AssumeRoleWithWebIdentity?** → Cognito Identity Pools / social login federation.
+24. **AssumeRoleWithSAML?** → Corporate IdP (Active Directory) federation to AWS.
 
 ---
 
