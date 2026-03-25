@@ -229,6 +229,32 @@ Connects On-Premise to Cloud.
 - **Snowmobile:** 100PB. (An actual 45-foot shipping container truck).
 - *Rule:* Use when network transfer would take > 1 week.
 
+**3. AWS DataSync**
+
+- **The Rule:** Agent-based service for migrating data between on-prem and AWS (or between AWS services).
+- **Protocols:** Supports NFS, SMB, HDFS → S3, EFS, FSx.
+- **Features:** Automatic encryption, data integrity validation, scheduling.
+- **Comparison:** DataSync = **migration/sync** (move data). Storage Gateway = **ongoing hybrid access** (keep on-prem connected).
+- *Exam Trigger:* "Migrate NFS share to EFS", "One-time large data migration to S3", "Ongoing data sync between on-prem and AWS" → **DataSync**.
+
+**4. AWS Transfer Family**
+
+- **The Rule:** Managed **SFTP/FTPS/FTP** service for transferring files to/from S3 and EFS.
+- **Use Case:** Existing file-transfer workflows that use SFTP/FTP and need to land files in S3.
+- *Exam Trigger:* "Existing SFTP workflow needs to transfer files to S3", "FTP server for S3" → **Transfer Family**.
+
+**5. S3 Access Points**
+
+- **The Rule:** Named network endpoints with dedicated access policies attached to a shared S3 bucket.
+- **How:** Each access point has its own **DNS name** and **IAM policy**. Simplifies managing access for multiple applications hitting the same bucket.
+- *Exam Trigger:* "Simplify S3 access for multiple applications", "Dedicated S3 endpoint per application" → **S3 Access Points**.
+
+**6. S3 Requester Pays**
+
+- **The Rule:** The **requester** (not bucket owner) pays for data transfer and request costs. Bucket owner still pays for storage.
+- **Requirement:** Requester must be an authenticated AWS user (anonymous access is disabled).
+- *Exam Trigger:* "Share large dataset without paying for transfer" → **Requester Pays**.
+
 ---
 
 ### **Exam Summary Cheat Sheet (Memorize This)**
@@ -253,6 +279,10 @@ Connects On-Premise to Cloud.
 18. **No latency on first read from EBS snapshot?** → Fast Snapshot Restore (FSR).
 19. **Delete markers not replicating?** → Delete markers are NOT replicated by default. Enable optional setting.
 20. **S3 Object Lock modes?** → Governance = override with permissions. Compliance = nobody can delete, not even root.
+21. **Migrate NFS share to EFS or sync data on-prem → AWS?** → DataSync (agent-based, supports NFS/SMB/HDFS → S3/EFS/FSx).
+22. **Existing SFTP/FTP workflow to S3?** → Transfer Family.
+23. **Multiple apps need separate S3 access policies on one bucket?** → S3 Access Points (dedicated DNS + policy per app).
+24. **Share large S3 dataset without paying transfer costs?** → S3 Requester Pays.
 
 
 # Scenarios

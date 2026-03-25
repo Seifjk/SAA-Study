@@ -45,17 +45,25 @@
 | **Reserved (RI)** | 1 Year or 3 Year contract | 40-75% | "Steady-state", "Database", "Predictable load" |
 | **Convertible RI** | 1/3 Year. Can change instance family. | 30-66% | "Flexibility to change type" |
 | **Savings Plan** | 1/3 Year. Commit to $/hour usage. | Similar to RI | "Flexibility across families/regions" |
-| **Spot Instances** | Bid on spare capacity. Can be terminated with 2-min notice. | Up to 90% | "Batch jobs", "Fault-tolerant", "Big Data" |
+| **Spot Instances** | Use spare capacity at market price. Set max price (default = On-Demand). Interrupted with 2-min notice if spot price exceeds max. | Up to 90% | "Batch jobs", "Fault-tolerant", "Big Data" |
 | **Dedicated Hosts** | Physical server for you. | Expensive | "Per-socket licensing" (Oracle, Windows Server), "Compliance" |
 | **Dedicated Instances** | Instances on hardware dedicated to you (but AWS controls placement). | Less expensive | "Regulatory isolation", "No per-socket needs" |
 
 **Deep Dive: Spot Instances**
 
-- **How It Works:** AWS has spare capacity. You bid. If spot price > your bid, your instance terminates.
+- **How It Works:** AWS has spare capacity at a fluctuating market price. You set a **max price** (default = On-Demand price). If spot price exceeds your max price, your instance is interrupted (2-min warning). There is no bidding.
 - **Spot Fleet:** Launch a mix of Spot + On-Demand to maintain capacity.
 - **Spot Block:** ~~Fully deprecated (removed Dec 2022). Not a valid exam answer.~~
 - **Interruption Handling:** Use **Spot Instance Interruption Notices** (2-minute warning) to gracefully save state.
 - *Exam Trap:* "Cheapest for non-critical batch jobs" → Spot.
+
+### **3. EC2 Capacity Reservations**
+
+- **The Rule:** Reserves capacity for EC2 instances in a **specific AZ**. Guarantees you can launch instances when needed.
+- **NOT a billing discount** — you pay On-Demand price whether you use the capacity or not.
+- **Combine with Savings Plans or RIs** for both capacity guarantee AND billing discount.
+- **No commitment required** — create/cancel anytime.
+- *Exam Trigger:* "Guarantee capacity in a specific AZ" → Capacity Reservation.
 
 ---
 
@@ -101,6 +109,14 @@
 - **The Rule:** For **HPC** and **ML** workloads requiring **OS-Bypass** (Bypasses kernel for ultra-low latency).
 - **Protocols:** Supports MPI (Message Passing Interface).
 - *Exam Trigger:* "Tightly coupled HPC", "Sub-millisecond latency between nodes", "ML distributed training".
+
+### **4. Elastic IP**
+
+- **The Rule:** Static public IPv4 address that you own until you release it.
+- **Limit:** 5 per region (can request increase).
+- **Charged** when **not** associated with a running instance (AWS discourages wasting IPv4 addresses).
+- **Survives stop/start** — unlike the default public IP which changes on stop/start.
+- *Exam Trigger:* "Static public IP that survives stop/start" → Elastic IP.
 
 ---
 
@@ -178,6 +194,8 @@
 8. **Resume app with RAM intact?** → Hibernate.
 9. **Auto-install software at launch?** → User Data script.
 10. **EC2 needs S3 access without hardcoded keys?** → IAM Instance Profile.
+11. **Guarantee capacity in a specific AZ?** → Capacity Reservation (not a discount — combine with Savings Plans/RIs).
+12. **Static public IP that survives stop/start?** → Elastic IP (charged when unassociated).
 
 ---
 

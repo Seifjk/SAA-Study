@@ -138,7 +138,15 @@
     - **Only works with Transit Gateway + VPN.** Does NOT work with standard VPN on a VGW (Virtual Private Gateway).
     - *Exam Trap:* "Increase VPN bandwidth" → ECMP via TGW, not VGW.
 
-### **4. Direct Connect (DX)**
+### **4. VPN CloudHub**
+
+- **Purpose:** Connect **multiple branch offices** to each other through AWS using a hub-and-spoke model.
+- **How It Works:** Each branch has its own Site-to-Site VPN connection to the **same VGW**. The VGW routes traffic between branches.
+- **Cost:** Low-cost. Uses existing VPN connections over the public internet.
+- **Key Point:** Branch-to-branch traffic flows through the VGW (hub). No direct branch-to-branch link needed.
+- *Exam Trigger:* "Connect multiple branch offices to each other through AWS", "Hub-and-spoke VPN for remote offices" → VPN CloudHub.
+
+### **5. Direct Connect (DX)**
 
 - **Rule:** Dedicated physical fiber. **No Public Internet.**
 - **Speed:** 1 Gbps or 10 Gbps (or 100 Gbps).
@@ -146,7 +154,7 @@
 - **Time:** Takes weeks/months to setup.
 - **Backup:** Often use VPN as a backup for Direct Connect.
 
-### **5. DX + VPN (Encryption over Direct Connect)**
+### **6. DX + VPN (Encryption over Direct Connect)**
 
 - **The Problem:** Direct Connect is a private connection, but it is **NOT encrypted** by default. Data travels in cleartext over the dedicated fiber.
 - **The Fix:** Run a **Site-to-Site VPN connection over the Direct Connect** link. This adds IPSec encryption on top of the dedicated connection.
@@ -154,7 +162,7 @@
 - *Exam Trigger:* "Encrypted connection with consistent latency", "Encrypt Direct Connect traffic", "Compliance requires encryption in transit over dedicated link".
 - *Exam Trap:* "Direct Connect is private, so it's encrypted." → **Wrong.** Private ≠ Encrypted.
 
-### **6. Direct Connect Resiliency Patterns**
+### **7. Direct Connect Resiliency Patterns**
 
 - **High Resiliency:** **2 DX connections at 2 different DX locations.** (One connection per location). Survives a single location failure.
 - **Maximum Resiliency:** **2 DX connections per location at 2 different DX locations** (4 connections total). Survives device failure AND location failure.
@@ -171,6 +179,22 @@
 - **Limitations:** Does **NOT** capture packet content (payload). Just the address label.
 - **Storage:** Sends data to **S3** or **CloudWatch Logs**.
 - *Exam Trigger:* "Debug why traffic is blocked", "Audit network traffic".
+
+---
+
+### **SECTION 6: BASTION HOST vs. SESSION MANAGER**
+
+| **Feature** | **Bastion Host** | **Session Manager (SSM)** |
+| --- | --- | --- |
+| **What** | EC2 jump box in Public Subnet | AWS Systems Manager feature |
+| **SSH / Port 22** | Required (open inbound port 22) | **Not needed** (no open ports) |
+| **Infrastructure** | You manage/patch the EC2 instance | No infrastructure to manage |
+| **Access Control** | Security Group (IP-based) | **IAM policies** (identity-based) |
+| **Logging** | Manual setup | Built-in: logs to **CloudWatch Logs / S3** |
+| **Cost** | EC2 instance cost | Free (EC2 needs SSM Agent + IAM role) |
+
+- *Exam Trigger:* "Access private instances without opening SSH" → Session Manager. "Most secure way to access private instances" → Session Manager. "Audit all shell commands to private instances" → Session Manager (CloudWatch/S3 logging).
+- *Exam Trap:* "Bastion Host is the most secure way to access private instances." → **Wrong.** Session Manager eliminates SSH, open ports, and key management entirely.
 
 ---
 
@@ -192,6 +216,8 @@
 14. **IPv6 outbound only (no inbound)?** → Egress-Only Internet Gateway.
 15. **Deep packet inspection / IDS/IPS at VPC level?** → AWS Network Firewall.
 16. **Increase VPN bandwidth?** → ECMP via Transit Gateway (not VGW).
+17. **Connect multiple branch offices to each other through AWS?** → VPN CloudHub (hub-and-spoke via VGW).
+18. **Access private instances without SSH / most secure access?** → Session Manager (no ports, IAM-based, logged).
 
 This covers the network logic. If you can draw the packet flow from a private instance -> NAT GW -> IGW -> Internet, you pass.
 

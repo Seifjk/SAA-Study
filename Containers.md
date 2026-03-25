@@ -267,7 +267,29 @@
 
 ---
 
-### **SECTION 4: ECR IMAGE SCANNING & LIFECYCLE**
+### **SECTION 4: AWS APP RUNNER**
+
+*The simplest way to run a containerized web app on AWS.*
+
+### **1. App Runner Overview**
+
+- **The Rule:** Point to an ECR image or source code repo → App Runner builds, deploys, scales, and load-balances automatically. Zero infrastructure configuration.
+- **No Task Definitions, No Services, No Clusters.** Just provide the container image or code.
+- **Auto Scaling:** Built-in. Scales up on traffic, scales down to zero.
+- **Auto Deploy:** Push a new image or commit → App Runner redeploys automatically.
+- **Networking:** HTTPS endpoint out of the box. Can connect to private VPC resources via VPC Connector.
+- **Pricing:** Pay per vCPU/memory while active + a small pause fee when scaled to zero.
+
+**App Runner vs. Fargate:**
+
+- **App Runner:** No orchestration config at all. Best for simple web apps/APIs.
+- **Fargate:** Still requires Task Definitions, Services, Load Balancer setup. More control, more config.
+
+**Exam Trigger:** "Deploy container with zero infrastructure management" → App Runner. "Simplest way to run a web app from a container image" → App Runner. Simpler than Fargate.
+
+---
+
+### **SECTION 5: ECR IMAGE SCANNING & LIFECYCLE**
 
 ### **1. Image Scanning**
 
@@ -304,6 +326,7 @@
 10. **Scan images for vulnerabilities?** → ECR Image Scanning.
 11. **Container needs S3 access?** → Task Role (Not Execution Role).
 12. **ECS agent needs to pull image from ECR?** → Execution Role.
+13. **Deploy container with zero infrastructure management?** → App Runner (simpler than Fargate).
 
 ---
 

@@ -11,7 +11,7 @@
 - **Cross-Zone Load Balancing:**
     - **Enabled:** Distributes traffic evenly across **all** targets in **all** enabled AZs.
     - **Disabled:** Distributes traffic only within each AZ (Can cause imbalance).
-    - *Default:* Enabled for ALB. Disabled for NLB/GLB (but no charge to enable).
+    - *Default:* ALB = always enabled, free. NLB = disabled by default, **inter-AZ data transfer is charged** when enabled. GWLB = disabled by default.
 
 ---
 
@@ -46,11 +46,18 @@
 - **SSL/TLS Termination:** ALB decrypts HTTPS traffic, then forwards HTTP to targets (Reduces compute on targets).
 - **SNI (Server Name Indication):** Allows **multiple SSL certificates** on one ALB (for multiple domains).
 
+**X-Forwarded-For Header:**
+
+- **The Rule:** ALB replaces the source IP with its own. To get the **original client IP**, read the `X-Forwarded-For` HTTP header.
+- Also available: `X-Forwarded-Port` (original port), `X-Forwarded-Proto` (original protocol).
+- *Exam Trigger:* "Application behind ALB needs client IP" → `X-Forwarded-For` header.
+
 **Exam Triggers:**
 
 - "Route based on URL path" → ALB.
 - "Host-based routing" → ALB.
 - "Invoke Lambda from HTTP request" → ALB.
+- "Get original client IP behind ALB" → `X-Forwarded-For` header.
 
 ---
 
@@ -200,6 +207,13 @@
 - **Best For:** Cyclical traffic patterns.
 - *Exam Trigger:* "Proactively scale before predicted load" → Predictive Scaling.
 
+### **F. SQS-Based Scaling (The Queue Depth)**
+
+- **The Rule:** Scale ASG based on `ApproximateNumberOfMessagesVisible` CloudWatch metric from an SQS queue.
+- **How:** Create a Target Tracking policy using a **custom metric** = Queue Messages / Number of Instances (backlog per instance).
+- **Best For:** Worker fleets processing messages from a queue.
+- *Exam Trigger:* "Scale workers based on queue depth" → SQS `ApproximateNumberOfMessagesVisible` metric + ASG Target Tracking.
+
 ---
 
 ### **SECTION 3: HIGH AVAILABILITY ARCHITECTURES**
@@ -223,6 +237,13 @@
 - **Cost:** Pay for stopped instances (EBS only). Pay full cost for running instances in warm pool.
 - *Exam Trigger:* "Reduce time to scale out" → Warm Pool.
 
+### **4. ASG Instance Refresh**
+
+- **The Rule:** Rolling update to **replace all instances** in an ASG (e.g., deploy a new AMI).
+- **How:** Set a **minimum healthy percentage** (e.g., 90%) — ASG terminates and replaces instances in batches while keeping the minimum running.
+- **Use Case:** New AMI with patched OS, updated application code baked into AMI.
+- *Exam Trigger:* "Update all instances in ASG to new AMI without downtime" → Instance Refresh.
+
 ---
 
 ### **Exam Summary Cheat Sheet (Memorize This)**
@@ -238,6 +259,10 @@
 9. **Proactively scale before predicted spike?** → Predictive Scaling.
 10. **Run script before instance enters service?** → Lifecycle Hook.
 11. **Ensure in-flight requests complete before termination?** → Connection Draining.
+12. **Scale workers based on queue depth?** → SQS `ApproximateNumberOfMessagesVisible` + ASG Target Tracking.
+13. **App behind ALB needs original client IP?** → `X-Forwarded-For` header.
+14. **Update all ASG instances to new AMI without downtime?** → Instance Refresh (set minimum healthy percentage).
+15. **NLB cross-zone enabled — is it free?** → No. NLB charges inter-AZ data transfer (ALB is free).
 
 ---
 

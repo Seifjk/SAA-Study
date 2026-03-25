@@ -166,6 +166,37 @@
 
 **Exam Trigger:** "Lambda needs to access RDS in private subnet" → Attach Lambda to VPC.
 
+### **Lambda + EFS (Persistent Shared Storage)**
+
+- **The Rule:** Lambda can mount an **EFS file system** for persistent, shared storage across invocations.
+- **Requirements:** Lambda must be in a **VPC** (same VPC as EFS). Uses **EFS Access Points**.
+- **Use Case:** Share large ML models, reference data, or temp files across concurrent Lambda invocations.
+- **vs. /tmp:** /tmp is ephemeral and per-invocation. EFS is persistent and shared across all invocations.
+- **vs. S3:** EFS provides POSIX file system (read/write). S3 is object storage (no append, no file locking).
+
+**Exam Trigger:** "Lambda needs persistent shared storage" or "Lambda needs to share large files across invocations" → EFS mount.
+
+---
+
+### **Lambda Container Image Support**
+
+- **The Rule:** Lambda can run **container images up to 10 GB** from **ECR** (Elastic Container Registry).
+- **Requirement:** Container must implement the **Lambda Runtime API**.
+- **Use Case:** Large dependencies, existing container workflows, custom runtimes.
+- **NOT the same as ECS/Fargate:** Still runs as Lambda (event-driven, 15-min timeout, pay-per-invocation). Just packaged as a container.
+
+**Exam Trigger:** "Deploy existing container to Lambda" or "Lambda with large dependencies" → Container image from ECR.
+
+---
+
+### **SNS + Lambda Fan-Out Pattern**
+
+- **The Rule:** SNS Topic triggers **multiple Lambda functions in parallel**. Each subscription gets its own invocation.
+- **How It Works:** Event → SNS Topic → Lambda A, Lambda B, Lambda C (all invoked simultaneously).
+- **vs. SNS + SQS Fan-Out:** Use SQS when you need persistence/retry. Use Lambda directly for immediate parallel processing.
+
+**Exam Trigger:** "Process same event with multiple Lambda functions" → SNS fan-out to Lambda.
+
 ---
 
 ### **9. Reserved Concurrency & Provisioned Concurrency**
@@ -399,6 +430,9 @@
 10. **Coordinate multi-step serverless workflow?** → Step Functions.
 11. **Long-running workflow (hours)?** → Step Functions Standard.
 12. **High-volume short workflow (seconds)?** → Step Functions Express.
+13. **Lambda needs persistent shared storage?** → Mount EFS (Lambda must be in VPC).
+14. **Lambda with large dependencies or existing container?** → Container image from ECR (up to 10 GB).
+15. **Process same event with multiple Lambda functions?** → SNS fan-out to Lambda.
 
 ---
 

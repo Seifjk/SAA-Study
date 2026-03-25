@@ -10,7 +10,7 @@
 - **Use Case:** Decouple producers from consumers (Async processing).
 - **Scale:** Unlimited throughput, unlimited messages in queue.
 - **Retention:** 1 minute - 14 days (Default: 4 days).
-- **Message Size:** Max **256 KB** (Use S3 for larger payloads).
+- **Message Size:** Max **256 KB**. For larger payloads → **SQS Extended Client Library** (stores payload in S3, sends S3 reference in SQS message).
 
 **Pattern:** Producer → SQS Queue → Consumer (Poll)
 
@@ -262,6 +262,16 @@ AWS has **4 Kinesis services**:
 
 **Exam Trigger:** "Real-time data processing, Sub-second latency" → Kinesis Data Streams.
 
+### **Kinesis Client Library (KCL)**
+
+- **The Rule:** Library that runs on **consumers** to process Kinesis Data Streams records.
+- **Key Limit:** **One KCL worker per shard** (max). 6 shards → max 6 KCL workers processing in parallel.
+- **Adding more workers than shards = idle workers** (No benefit, wasted resources).
+- **Scaling Pattern:** To increase consumer throughput → **add shards** (shard splitting) + add KCL workers.
+- **Checkpoint:** KCL tracks which records have been processed (Uses DynamoDB table for checkpointing).
+
+**Exam Trigger:** "Scale Kinesis consumers" → Add shards + KCL workers. "More consumers than shards" → Idle workers, add shards first.
+
 ---
 
 ### **3. Amazon Data Firehose (The Loader)**
@@ -350,6 +360,8 @@ AWS has **4 Kinesis services**:
 10. **Load streaming data to S3 without code?** → Amazon Data Firehose.
 11. **Migrate RabbitMQ to AWS?** → Amazon MQ.
 12. **New cloud-native app?** → SQS/SNS (NOT Amazon MQ).
+13. **SQS message larger than 256 KB?** → SQS Extended Client Library (stores payload in S3).
+14. **Scale Kinesis consumers?** → Add shards + KCL workers (max 1 worker per shard).
 
 ---
 

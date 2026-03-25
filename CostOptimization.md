@@ -134,7 +134,16 @@
 - **How:** Install agent on source server → Continuous replication to AWS → Cutover when ready.
 - *Exam Trigger:* "Migrate on-prem servers to EC2 with minimal changes" → MGN.
 
-### **3. AWS DataSync**
+### **3. Snow Family (Offline Migration)**
+
+- **Snowcone:** 8 TB (HDD) or 14 TB (SSD). Smallest/lightest. Edge computing + data transfer.
+- **Snowball Edge Storage Optimized:** 80 TB. For large-scale data transfer.
+- **Snowball Edge Compute Optimized:** 42 TB + powerful compute (52 vCPUs). For edge processing workloads.
+- **Snowmobile:** 100 PB. Literal shipping-container truck. For exabyte-scale migration.
+- *Rule:* Use when network transfer would take > 1 week.
+- *Exam Trigger:* ">10 TB and slow internet" → **Snowball**. ">100 PB" → **Snowmobile**. "Edge computing in remote location" → **Snowcone** or **Snowball Edge Compute**.
+
+### **4. AWS DataSync**
 
 - **The Rule:** **Online data transfer** between on-prem storage and AWS (S3, EFS, FSx).
 - **Speed:** Up to 10 Gbps. Uses agent on-prem.
@@ -144,10 +153,16 @@
     - Snow Family = **Offline** migration (ship physical device).
 - *Exam Trigger:* "Transfer large dataset from on-prem NFS to S3 over network" → DataSync.
 
-### **4. AWS Transfer Family**
+### **5. AWS Transfer Family**
 
 - **The Rule:** Managed **SFTP/FTPS/FTP** server for transferring files to/from S3 or EFS.
 - *Exam Trigger:* "Partners upload files via SFTP to S3" → Transfer Family.
+
+### **6. AWS Migration Hub**
+
+- **The Rule:** Central place to **track migration progress** across multiple AWS migration tools (DMS, MGN, DataSync, etc.).
+- **Features:** Single dashboard for all migrations, tracks status per server/database.
+- *Exam Trigger:* "Track migration progress across multiple tools" → **Migration Hub**.
 
 ---
 
@@ -233,6 +248,8 @@
 23. **Near-zero RTO DR?** → Multi-Site Active-Active.
 24. **Restrict services across accounts?** → SCPs (Organizations).
 25. **Centralized backup?** → AWS Backup.
+26. **>10 TB + slow internet?** → Snowball. **>100 PB?** → Snowmobile. **Edge computing in remote location?** → Snowcone or Snowball Edge Compute.
+27. **Track migration progress across DMS, MGN, etc.?** → Migration Hub.
 
 ---
 
