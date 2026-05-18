@@ -10,6 +10,7 @@
 - **CIDR:** The IP range (e.g., `10.0.0.0/16`).
     - Min size: `/28` (16 IPs).
     - Max size: `/16` (65,536 IPs).
+    - **Secondary CIDRs:** Up to **5 CIDR blocks** per VPC (1 primary + 4 secondary) for expansion.
 - **Reserved IPs:** AWS reserves **5 IPs** in *every* subnet. (You cannot use them).
     - `.0` (Network), `.1` (Router), `.2` (DNS), `.3` (Future), `.255` (Broadcast).
     - *Exam Trap:* "You create a /28 subnet. How many usable IPs?" -> Answer: 16 - 5 = **11**.
@@ -35,14 +36,16 @@
 
 | **Feature** | **Security Group (SG)** | **Network ACL (NACL)** |
 | --- | --- | --- |
-| **Level** | **Instance Level** (Network Card/ENI) | **Subnet Level** |
+| **Level** | **ENI Level** (attached to network interfaces) | **Subnet Level** |
 | **State** | **Stateful** (Return traffic allowed auto) | **Stateless** (Must allow Inbound AND Outbound) |
 | **Rules** | **Allow Only** (Cannot DENY specific IPs) | **Allow AND Deny** |
 | **Order** | All rules evaluated (Order doesn't matter) | **Number order** (Lowest number wins) |
-| **Default** | Deny All Inbound / Allow All Outbound | Allow All Inbound / Allow All Outbound |
+| **Default** | Deny All Inbound / Allow All Outbound | **Default NACL:** Allow All. **Custom NACL:** Deny All (must add rules) |
 | **Exam Trigger** | "Timeout" | "Permission Denied" (usually) |
 | **Use Case** | Standard application security | Blocking a specific malicious IP |
+- **Ephemeral Ports:** NACLs are stateless — return traffic needs explicit rules. You must allow **ephemeral ports (1024-65535)** for outbound responses. SGs handle this automatically (stateful).
 - **Exam Trap:** "You blocked an IP in the Security Group but they can still access." -> You *can't* block in SG. You must use **NACL**.
+- **Exam Trap:** "Custom NACL created, instances can't communicate" → Custom NACLs deny all by default. You must add allow rules.
 
 ### **AWS Network Firewall**
 
@@ -70,7 +73,7 @@
 
 - **Purpose:** Allows **Private** instances to talk to the Internet (e.g., download updates) but **blocks** the Internet from initiating connections to them.
 - **Option A: NAT Gateway (The Standard)**
-    - **Managed:** AWS handles scaling.
+    - **Managed:** AWS handles scaling. Auto-scales up to **45 Gbps** bandwidth.
     - **Location:** Must be in a **Public Subnet**.
     - **Cost:** Hourly charge + Data processing fee.
     - **Availability:** **Zonal**. (If AZ goes down, NAT GW goes down). *Architecture:* Create one NAT GW per AZ for HA.
@@ -126,7 +129,8 @@
 - **Rule:** The "Hub and Spoke" router.
 - **Transitive?** **YES.** (Connects thousands of VPCs and On-Prem VPNs).
 - **Architecture:** Solves the messy "Peering Mesh" problem.
-- *Exam Trigger:* "Simplify network management", "Connect 100 VPCs", "Star Topology".
+- **TGW Peering:** Connect Transit Gateways across regions for cross-region connectivity.
+- *Exam Trigger:* "Simplify network management", "Connect 100 VPCs", "Star Topology", "Cross-region hub-and-spoke".
 
 ### **3. Site-to-Site VPN**
 
@@ -168,6 +172,28 @@
 - **Maximum Resiliency:** **2 DX connections per location at 2 different DX locations** (4 connections total). Survives device failure AND location failure.
 - **Cost vs. Resilience tradeoff:** Maximum resiliency costs 2x but is required for critical workloads.
 - *Exam Trigger:* "Mission-critical workload needs highest DX resiliency" → Maximum resiliency (2 connections x 2 locations).
+
+### **8. Client VPN**
+
+- **Purpose:** Managed VPN for **end-user remote access** to AWS or on-prem resources.
+- **How it works:** Users install OpenVPN client → connect to Client VPN endpoint → access VPC resources.
+- **Key distinction:** Client VPN = **user-to-AWS** (remote workers). Site-to-Site VPN = **network-to-network** (office to AWS).
+- *Exam Trigger:* "Remote employees need VPN access to private resources" → Client VPN.
+
+### **9. Route 53 Resolver (Hybrid DNS)**
+
+- **Purpose:** DNS resolution between on-premises and AWS in hybrid environments.
+- **Inbound Endpoint:** On-prem DNS servers forward queries **to AWS** → resolves AWS private hosted zones.
+- **Outbound Endpoint:** AWS forwards queries **to on-prem** DNS servers → resolves on-prem domains.
+- **Resolver Rules:** Define which domain queries get forwarded where (e.g., `corp.internal` → on-prem DNS server IPs).
+- *Exam Trigger:* "Hybrid DNS resolution", "On-prem resolves AWS private hosted zones", "AWS resolves on-prem domains" → Route 53 Resolver.
+
+### **10. VPC Sharing with RAM**
+
+- **Purpose:** Share subnets across AWS accounts within an Organization using **Resource Access Manager (RAM)**.
+- **How it works:** Owner account shares subnet → participant accounts launch resources (EC2, RDS, etc.) into the shared subnet.
+- **Benefit:** Reduces VPC sprawl, centralizes network management. No need for peering or Transit Gateway for same-VPC communication.
+- *Exam Trigger:* "Multiple accounts need resources in the same VPC" → VPC Sharing via RAM.
 
 ---
 
@@ -216,6 +242,10 @@
 14. **IPv6 outbound only (no inbound)?** → Egress-Only Internet Gateway.
 15. **Deep packet inspection / IDS/IPS at VPC level?** → AWS Network Firewall.
 16. **Increase VPN bandwidth?** → ECMP via Transit Gateway (not VGW).
+17. **Hybrid DNS resolution (on-prem ↔ AWS)?** → Route 53 Resolver (Inbound/Outbound Endpoints).
+18. **Share subnets across AWS accounts?** → RAM (Resource Access Manager).
+19. **Remote user VPN access to AWS?** → Client VPN.
+20. **Custom NACL blocks everything?** → Custom NACLs deny all by default. Add allow rules + ephemeral ports (1024-65535).
 17. **Connect multiple branch offices to each other through AWS?** → VPN CloudHub (hub-and-spoke via VGW).
 18. **Access private instances without SSH / most secure access?** → Session Manager (no ports, IAM-based, logged).
 

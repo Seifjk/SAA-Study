@@ -196,9 +196,10 @@
 
 **How It Works:**
 
-- Add a TTL attribute (Unix epoch timestamp) to items.
+- Add a TTL attribute (**Unix epoch timestamp in seconds**, not milliseconds) to items.
 - DynamoDB deletes expired items within **48 hours** (Background process).
-- Deletions don't consume WCUs.
+- Deletions do **NOT** consume WCUs (free cleanup).
+- Deleted items appear in DynamoDB Streams if enabled.
 
 **Use Cases:**
 
@@ -240,6 +241,8 @@
 
 **Cost:** Consumes **2x** RCU/WCU.
 
+**Limits:** Max **100 items** per transaction call. Max **4 MB** total size.
+
 **Use Cases:**
 
 - Financial transactions (Debit one account, Credit another).
@@ -249,7 +252,16 @@
 
 ---
 
-### **11. DynamoDB Export to S3**
+### **11. DynamoDB PartiQL**
+
+- **What it does:** SQL-compatible query language for DynamoDB. Use familiar `SELECT`, `INSERT`, `UPDATE`, `DELETE` syntax instead of DynamoDB-specific API calls.
+- **Supports:** Queries against tables and GSIs. Batch operations with PartiQL.
+- **Not a replacement:** Under the hood, still uses the same RCU/WCU capacity. Just a different query interface.
+- *Exam Trigger:* "SQL-like queries on DynamoDB" → PartiQL.
+
+---
+
+### **12. DynamoDB Export to S3**
 
 **The Rule:** Export full table data to **S3** without consuming any **RCUs** or affecting table performance.
 
@@ -364,6 +376,14 @@
 
 **Exam Trigger:** "Secure Redis cluster" → AUTH token + Encryption + Private Subnet.
 
+### **6. ElastiCache Global Datastore (Redis)**
+
+- **Purpose:** Cross-region replication for Redis. Active-passive with read replicas in secondary regions.
+- **Replication:** Typically < 1 second latency between regions.
+- **Failover:** Promote a secondary region to primary for DR (manual or automatic).
+- **Secondary clusters:** Read-only. Can serve local reads to reduce latency.
+- *Exam Trigger:* "Cross-region Redis for DR or global reads" → ElastiCache Global Datastore.
+
 ---
 
 ### **SECTION 3: PURPOSE-BUILT DATABASES**
@@ -452,6 +472,8 @@
 17. **Immutable ledger / Audit trail?** → QLDB (Not blockchain).
 18. **Cassandra migration?** → Keyspaces.
 19. **Durable in-memory database (not just cache)?** → MemoryDB for Redis.
+20. **SQL-like queries on DynamoDB?** → PartiQL.
+21. **Cross-region Redis for DR/global reads?** → ElastiCache Global Datastore.
 
 ---
 

@@ -28,9 +28,9 @@
 
 | **Type** | **Name** | **Use Case** | **Performance / IOPS** | **Exam "Trigger"** |
 | --- | --- | --- | --- | --- |
-| **General Purpose** | **gp2** | Boot volumes, Dev/Test | **IOPS Linked to Size.** 3 IOPS per GB. (Max 16,000 IOPS). | "Balance price/performance" |
+| **General Purpose** | **gp2** | Boot volumes, Dev/Test | **IOPS Linked to Size.** 3 IOPS per GB (min 100, max 16,000 IOPS). | "Balance price/performance" |
 | **General Purpose** | **gp3** | **Default Choice.** | **Decoupled Performance.** You get 3,000 IOPS baseline free. You pay to increase IOPS without increasing size. | "Independent scaling of storage and IOPS" |
-| **Provisioned IOPS** | **io1 / io2** | Mission Critical DBs | **High IOPS.** Up to 64,000 IOPS (both io1 and io2). | "Sub-millisecond latency", "Sustained IOPS" |
+| **Provisioned IOPS** | **io1 / io2** | Mission Critical DBs | **High IOPS.** io1: up to 32,000 IOPS. io2: up to 64,000 IOPS. | "Sub-millisecond latency", "Sustained IOPS" |
 | **Block Express** | **io2 Block Express** | The "SAN" Killer | Up to **256,000 IOPS**. Sub-millisecond latency. Highest EBS performance. | "Mission critical", "SAP HANA", "256K IOPS" |
 | **Throughput Opt HDD** | **st1** | Big Data, Logs, Kafka | Optimized for **Throughput (MB/s)**, not IOPS. Max 500 MB/s. | "Streaming", "Log processing", "Sequential I/O" |
 | **Cold HDD** | **sc1** | Archive | Cheapest EBS. Infrequent access. | "Lowest cost block storage" |
@@ -70,7 +70,7 @@
 | --- | --- | --- | --- | --- |
 | **Standard** | 99.99% | None | No | "Frequently accessed", "Instant" |
 | **Standard-IA** | 99.9% | 30 Days | Yes | "Disaster Recovery", "Once a month access" |
-| **Intelligent-Tiering** | 99.9% | None | No | "Unknown/Changing access patterns" |
+| **Intelligent-Tiering** | 99.9% | None | No | "Unknown/Changing access patterns" (has 6 tiers incl. Archive Access + Deep Archive Access) |
 | **One Zone-IA** | **Risk of Data Loss** | 30 Days | Yes | "Recreatable data", "Secondary backup", "Cheapest instant access" |
 | **Glacier Instant** | 99.9% | 90 Days | Yes | "Archive but need millisecond access" |
 | **Glacier Flexible** | 99.9% | 90 Days | No (Standard) | "Bulk retrieval", "Wait 3-5 hours" |
@@ -160,7 +160,29 @@
 - **EventBridge Advantage:** Supports 18+ AWS services as targets, advanced rules, and works with ALL event types. EventBridge is the modern, more flexible option.
 - *Exam Trigger:* "Process files on upload" → S3 Event Notification to Lambda. "Fan out to multiple services" → EventBridge.
 
-**11. S3 Static Website Hosting**
+**11. S3 Select / Glacier Select**
+
+- **What it does:** Use SQL expressions to retrieve only specific columns/rows from S3 objects (CSV, JSON, Parquet).
+- **Benefit:** Reduces data transfer and processing costs — S3 filters server-side, sends only what you need.
+- **Glacier Select:** Same concept for Glacier-archived objects.
+- **Not the same as Athena:** S3 Select works on single objects. Athena queries across many objects using Glue Catalog.
+- *Exam Trigger:* "Query specific columns from CSV in S3" or "Reduce data transfer from S3" → S3 Select.
+
+**12. S3 Object Lambda**
+
+- **What it does:** Intercepts S3 GET requests and transforms data on-the-fly using a Lambda function before returning it to the caller.
+- **Use Cases:** Redact PII before returning data, convert formats (XML → JSON), resize images on demand, filter rows for specific users.
+- **How it works:** Create an S3 Object Lambda Access Point → attach a Lambda function → clients call the access point instead of the bucket.
+- *Exam Trigger:* "Transform S3 objects on retrieval without storing multiple copies" → S3 Object Lambda.
+
+**13. S3 Batch Operations**
+
+- **What it does:** Perform bulk operations on billions of S3 objects in a single request.
+- **Operations:** Copy objects, replace tags, modify ACLs, restore from Glacier, invoke Lambda on each object, S3 Batch Replication (for existing objects).
+- **How it works:** Provide an inventory list (S3 Inventory or CSV) → define the operation → S3 Batch runs it at scale with completion reports.
+- *Exam Trigger:* "Bulk tag/copy/process existing S3 objects" → S3 Batch Operations.
+
+**14. S3 Static Website Hosting**
 
 - S3 can host a static website (HTML, CSS, JS) directly from a bucket.
 - **Endpoint format:** `http://<bucket-name>.s3-website-<region>.amazonaws.com`
@@ -283,6 +305,9 @@ Connects On-Premise to Cloud.
 22. **Existing SFTP/FTP workflow to S3?** → Transfer Family.
 23. **Multiple apps need separate S3 access policies on one bucket?** → S3 Access Points (dedicated DNS + policy per app).
 24. **Share large S3 dataset without paying transfer costs?** → S3 Requester Pays.
+25. **Transform S3 objects on retrieval (redact PII, convert format)?** → S3 Object Lambda.
+26. **Bulk operations on existing S3 objects (tag, copy, process)?** → S3 Batch Operations.
+27. **Auto-archive infrequently accessed objects with no retrieval fees?** → S3 Intelligent-Tiering (configure Archive Access + Deep Archive tiers).
 
 
 # Scenarios

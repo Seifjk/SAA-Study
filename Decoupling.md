@@ -283,7 +283,7 @@ AWS has **4 Kinesis services**:
 **How It Works:**
 
 1. Producers write to Firehose.
-2. Firehose buffers data (60 sec or 1 MB minimum).
+2. Firehose buffers data until **buffer time** (60 sec min) OR **buffer size** (1-128 MB) is reached — whichever comes first.
 3. Firehose writes to destination (S3, Redshift, etc.).
 
 **Features:**
@@ -346,6 +346,46 @@ AWS has **4 Kinesis services**:
 
 ---
 
+### **SECTION 5: AMAZON EVENTBRIDGE**
+
+*The "Central Event Router" for AWS — heavily tested on SAA-C03.*
+
+### **1. EventBridge Overview**
+
+- **The Rule:** Serverless event bus that routes events from sources to targets based on rules. The modern replacement for CloudWatch Events.
+- **Event Buses:**
+    - **Default Bus:** Receives events from AWS services automatically (EC2 state change, S3 events, CloudTrail API calls).
+    - **Custom Bus:** Your application sends custom events (e.g., "OrderPlaced", "PaymentFailed").
+    - **Partner Bus:** SaaS partners send events (Datadog, Zendesk, Auth0).
+
+### **2. Rules and Targets**
+
+- **Rules:** Match incoming events using event patterns (JSON) and route them to targets.
+- **Targets:** Lambda, SQS, SNS, Step Functions, Kinesis, API Gateway, ECS task, and 18+ more AWS services.
+- **Multiple Targets:** A single rule can route to **up to 5 targets**.
+- **Event Transformation:** Can transform the event before sending to target (extract fields, add constants).
+
+### **3. Key Features**
+
+- **Scheduling:** Cron expressions or rate expressions to trigger events on a schedule. (Replaces CloudWatch Events scheduled rules).
+- **Archive & Replay:** Archive events to replay later (useful for testing, debugging, or reprocessing).
+- **Cross-Account:** Send events between AWS accounts.
+- **Schema Registry:** Discover and store event schemas. Auto-generates code bindings.
+
+### **4. EventBridge vs SNS**
+
+| **Feature** | **EventBridge** | **SNS** |
+| --- | --- | --- |
+| **Filtering** | Advanced JSON pattern matching | Simple attribute-based filtering |
+| **Targets** | 18+ AWS services | SQS, Lambda, HTTP, Email, SMS |
+| **Scheduling** | Built-in cron/rate expressions | Not supported |
+| **Archive/Replay** | Yes | No |
+| **Use Case** | Event-driven architectures, AWS service events | Simple pub/sub fan-out |
+
+- *Exam Trigger:* "React to AWS service events" → EventBridge. "Schedule tasks / cron jobs" → EventBridge Scheduler. "Event-driven architecture with filtering" → EventBridge Rules. "Cross-account event routing" → EventBridge.
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **Decouple producers/consumers?** → SQS.
@@ -361,7 +401,11 @@ AWS has **4 Kinesis services**:
 11. **Migrate RabbitMQ to AWS?** → Amazon MQ.
 12. **New cloud-native app?** → SQS/SNS (NOT Amazon MQ).
 13. **SQS message larger than 256 KB?** → SQS Extended Client Library (stores payload in S3).
-14. **Scale Kinesis consumers?** → Add shards + KCL workers (max 1 worker per shard).
+14. **Scale Kinesis consumers?** → Add shards + KCL workers (max 1 worker per shard). Or use Enhanced Fan-Out for dedicated 2 MB/sec per consumer.
+15. **React to AWS service events (EC2 state, S3, API calls)?** → EventBridge.
+16. **Schedule tasks / cron in AWS?** → EventBridge Scheduler.
+17. **Event-driven with advanced filtering + many targets?** → EventBridge Rules.
+18. **Replay past events for debugging?** → EventBridge Archive & Replay.
 
 ---
 

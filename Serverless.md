@@ -72,7 +72,26 @@
 
 ---
 
-### **4. Execution Model**
+### **4. Lambda Execution Role & Destinations**
+
+**Execution Role (IAM):**
+
+- **The Rule:** Every Lambda function has an **IAM Execution Role** that it assumes when running.
+- **Trust Policy:** Must allow `lambda.amazonaws.com` to assume the role.
+- **Permissions:** Must include CloudWatch Logs (always needed for logging), plus whatever services the function accesses (S3, DynamoDB, SQS, etc.).
+- *Exam Trigger:* "Lambda can't write to S3" → Check Execution Role permissions. "Lambda needs DynamoDB access" → Add DynamoDB permissions to Execution Role.
+
+**Lambda Destinations (Preferred over DLQ for async):**
+
+- **Purpose:** Route async invocation results to different targets based on success or failure.
+- **Success path:** SQS, SNS, Lambda, or EventBridge.
+- **Failure path:** Separate SQS, SNS, Lambda, or EventBridge.
+- **Advantage over DLQ:** Captures both success AND failure. DLQ only captures failures. Destinations also include execution context (request/response).
+- *Exam Trigger:* "Route async Lambda results to different services" → Lambda Destinations.
+
+---
+
+### **5. Execution Model**
 
 **Lambda Lifecycle:**
 
@@ -227,11 +246,21 @@
 - **The Rule:** Create, publish, monitor, and secure APIs at any scale.
 - **Backend Integrations:** Lambda, HTTP endpoints, AWS services (DynamoDB, S3, Step Functions).
 - **API Types:**
-    - **REST API:** Full-featured. Supports caching, request validation, API keys.
-    - **HTTP API:** Simpler, cheaper (70% less), faster. Best for proxying to Lambda/HTTP.
+    - **REST API:** Full-featured. Supports caching, request validation, API keys, WAF integration, Lambda authorizers (Cognito + custom).
+    - **HTTP API:** Simpler, cheaper (70% less), faster. Best for proxying to Lambda/HTTP. Supports JWT authorizers, OIDC. No caching, no request validation.
     - **WebSocket API:** Two-way communication (Chat, Real-time).
 
-**Exam Trigger:** "Build RESTful API for Lambda" → API Gateway.
+| **Feature** | **REST API** | **HTTP API** |
+| --- | --- | --- |
+| **Cost** | Higher | **~70% cheaper** |
+| **Caching** | Yes | No |
+| **Request Validation** | Yes | No |
+| **WAF Integration** | Yes | No |
+| **API Keys / Usage Plans** | Yes | No |
+| **Authorizers** | Lambda, Cognito, IAM | JWT, OIDC, IAM |
+| **Use Case** | Full API management | Simple, low-cost proxy |
+
+- *Exam Trigger:* "Build RESTful API for Lambda" → API Gateway. "Cheapest API proxy" → HTTP API. "API needs caching/validation/WAF" → REST API.
 
 ---
 
@@ -414,6 +443,13 @@
 
 **Exam Trigger:** "Chain multiple AWS services without Lambda glue code" → Step Functions.
 
+### **6. Data Flow Control**
+
+- **InputPath:** Filter which part of the input JSON to pass to the task (select a subset).
+- **ResultPath:** Where to put the task's result within the original input (merge result into state).
+- **OutputPath:** Filter the final output before passing to the next state.
+- **Key Insight:** These three together control what data flows between states — critical for complex workflows.
+
 ---
 
 ### **Exam Summary Cheat Sheet (Memorize This)**
@@ -433,6 +469,10 @@
 13. **Lambda needs persistent shared storage?** → Mount EFS (Lambda must be in VPC).
 14. **Lambda with large dependencies or existing container?** → Container image from ECR (up to 10 GB).
 15. **Process same event with multiple Lambda functions?** → SNS fan-out to Lambda.
+16. **Lambda can't access S3/DynamoDB?** → Check Execution Role IAM permissions.
+17. **Simple cheap API proxy?** → HTTP API (~70% cheaper than REST API).
+18. **API needs caching, validation, WAF?** → REST API.
+19. **Route async Lambda results (success + failure)?** → Lambda Destinations.
 
 ---
 

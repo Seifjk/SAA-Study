@@ -186,7 +186,7 @@
 
 - Define a **filter pattern** on a Log Group (e.g., match all ERROR lines).
 - Matching log events are streamed to the chosen destination in real-time.
-- One subscription filter per Log Group (use Kinesis Data Streams to fan out to multiple destinations).
+- Up to **2 subscription filters per Log Group** (use Kinesis Data Streams to fan out to multiple destinations beyond that).
 
 **Exam Trigger:** "Real-time log processing" or "Stream logs to OpenSearch" --> CloudWatch Logs Subscription Filter.
 
@@ -209,6 +209,29 @@
 - Track specific application error patterns --> Operational alerting.
 
 **Exam Trigger:** "Create alarm based on log pattern" or "Alert when error count in logs exceeds threshold" --> CloudWatch Metric Filter + Alarm.
+
+---
+
+### **10. CloudWatch Contributor Insights**
+
+**The Rule:** Identify the **top-N contributors** to a metric using log data (e.g., top 10 IP addresses hitting your API, top accounts generating errors).
+
+- **Real-time analysis** of log data using rules you define.
+- Works with CloudWatch Logs and VPC Flow Logs.
+
+**Exam Trigger:** "Find top contributors to high API traffic" or "Identify top IPs causing errors" --> CloudWatch Contributor Insights.
+
+---
+
+### **11. CloudWatch Synthetics**
+
+**The Rule:** Create **Canary scripts** that monitor your APIs and websites on a schedule.
+
+- Test endpoint **availability and latency** before real users notice issues.
+- Scripts written in Node.js or Python (runs on Lambda under the hood).
+- Can monitor URLs, REST APIs, and multi-step workflows.
+
+**Exam Trigger:** "Proactively monitor API availability" or "Test website latency on a schedule" --> CloudWatch Synthetics Canaries.
 
 ---
 
@@ -511,6 +534,8 @@
 17. **Trace requests across microservices?** → X-Ray Service Map.
 18. **Stream logs to OpenSearch in real-time?** → CloudWatch Logs Subscription Filter.
 19. **Create alarm based on log pattern?** → CloudWatch Metric Filter + Alarm.
+20. **Top contributors to metrics?** → CloudWatch Contributor Insights.
+21. **Monitor API availability?** → CloudWatch Synthetics Canaries.
 
 ---
 

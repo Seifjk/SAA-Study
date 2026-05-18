@@ -19,19 +19,13 @@
 | **M5/M6** | General Purpose | Balanced workloads, App Servers | "Standard workload", "Balance compute/memory" |
 | **C5/C6** | Compute Optimized | Batch processing, HPC, Gaming Servers | "High CPU", "Compute-intensive" |
 | **R5/R6** | Memory Optimized | In-Memory DBs (Redis, SAP HANA) | "High memory", "Database", "Cache" |
-| **X1/X2** | Extreme Memory | SAP HANA, Big Data | "TB of RAM", "Mission critical in-memory" |
 | **I3/I4i** | Storage Optimized | NoSQL DBs, Data Warehousing, OLTP | "High IOPS", "Low latency storage" |
-| **G4/G5** | GPU | Machine Learning Training, Graphics | "GPU", "ML Training", "3D rendering" |
-| **P3/P4** | GPU Compute | Deep Learning, Scientific Computing | "Deep Learning", "Parallel processing" |
-| **Inf1** | Inferentia | ML Inference (Cost-efficient) | "ML Inference", "Deploy trained models" |
+| **G/P** | GPU | ML Training, Graphics, Deep Learning | "GPU", "ML Training", "3D rendering" |
 
-**Deep Dive: T2/T3 "Burstable" (CPU Credits)**
+> *Memory tip:* Only the 6 above get tested. Letter = job: **T**iny/burst, **M**ain/balanced, **C**ompute, **R**AM, **I**OPS storage, **G**PU.
 
-- **Concept:** You earn CPU credits when idle. Spend them during burst.
-- **Problem:** If credits run out, CPU is throttled.
-- **Solution A:** Switch to T2/T3 **Unlimited** (Auto-pay for extra CPU).
-- **Solution B:** Switch to M5/M6 (Steady performance).
-- *Exam Trap:* "Web server works fine at night, slow during day." → T2 exhausted credits.
+**Burstable (T2/T3) — CPU Credits:** Earn credits while idle, spend them during bursts. Run out → CPU throttled. Fix: enable **Unlimited** mode (auto-pay for extra CPU) or move to M5.
+- *Exam Trap:* "Web server fine at night, slow during day" → T2 credits exhausted.
 
 ---
 
@@ -49,13 +43,11 @@
 | **Dedicated Hosts** | Physical server for you. | Expensive | "Per-socket licensing" (Oracle, Windows Server), "Compliance" |
 | **Dedicated Instances** | Instances on hardware dedicated to you (but AWS controls placement). | Less expensive | "Regulatory isolation", "No per-socket needs" |
 
-**Deep Dive: Spot Instances**
+**Spot Instances — key facts:**
 
-- **How It Works:** AWS has spare capacity at a fluctuating market price. You set a **max price** (default = On-Demand price). If spot price exceeds your max price, your instance is interrupted (2-min warning). There is no bidding.
-- **Spot Fleet:** Launch a mix of Spot + On-Demand to maintain capacity.
-- **Spot Block:** ~~Fully deprecated (removed Dec 2022). Not a valid exam answer.~~
-- **Interruption Handling:** Use **Spot Instance Interruption Notices** (2-minute warning) to gracefully save state.
-- *Exam Trap:* "Cheapest for non-critical batch jobs" → Spot.
+- Spare AWS capacity at fluctuating price. You set a **max price**; if market price exceeds it → interrupted with **2-min warning** (no bidding).
+- **Spot Fleet:** mixes Spot + On-Demand to keep target capacity.
+- *Exam Trap:* "Cheapest for non-critical / fault-tolerant batch jobs" → Spot.
 
 ### **3. EC2 Capacity Reservations**
 
@@ -124,26 +116,26 @@
 
 ### **1. AMI (Amazon Machine Image)**
 
-- **The Rule:** The "Template" for an EC2 instance. Contains OS + Software.
-- **Scope:** **Regional**. (You must copy to another region to use there).
-- **Types:**
-    - **AWS-Provided:** Amazon Linux, Ubuntu, Windows, etc.
-    - **Marketplace:** Pre-packaged (e.g., NGINX, WordPress).
-    - **Custom:** Your own. Built from existing EC2.
-- **Create AMI Process:**
-    - Stop instance (Recommended for consistency) → Create Image → AMI stored (with snapshot of root EBS).
+- **The Rule:** Template for an EC2 instance — OS + software baked in.
+- **Scope:** **Regional**. Must copy to another region to use it there.
+- **Create:** Stop instance (consistency) → Create Image → AMI = config + root EBS snapshot.
+- **Sharing:** Can share across accounts. Can't share an AMI with an **encrypted snapshot** unless you also share the KMS key.
 
-**Deep Dive: Sharing AMIs**
-
-- Can share AMIs across AWS accounts.
-- Cannot share AMIs with **encrypted snapshots** unless you share the KMS key too.
-
-### **2. Instance Metadata**
+### **2. Instance Metadata (IMDSv2)**
 
 - **The Rule:** Access instance info from *inside* the instance.
 - **URL:** `http://169.254.169.254/latest/meta-data/`
 - **Data Includes:** Instance ID, Public IP, IAM Role credentials, User Data.
-- *Exam Trap:* "How does an instance retrieve its IAM role credentials?" → Metadata service.
+- **IMDSv1 vs IMDSv2:** v1 = simple GET, vulnerable to SSRF (credential theft). v2 = token-based (PUT for token, then GET), SSRF-resistant. Enforce **"IMDSv2 only"** to block v1.
+- *Exam Trigger:* "Secure metadata access", "Protect against SSRF credential theft" → Enforce IMDSv2.
+- *Exam Trap:* "How does an instance retrieve its IAM role credentials?" → Metadata service (IMDSv2).
+
+### **3. EC2 Instance Connect**
+
+- **Purpose:** Browser-based SSH access to EC2 instances directly from the AWS Console.
+- **No SSH key pairs needed** — AWS pushes a temporary public key for the session.
+- **Works on:** Linux instances.
+- *Exam Trigger:* "Access EC2 without managing SSH keys" → EC2 Instance Connect.
 
 ---
 
@@ -171,6 +163,7 @@
 
 - **The Rule:** Bash script that runs **ONCE** at instance **FIRST BOOT**.
 - **Use Case:** Install software, Configure settings, Pull code from S3.
+- **Size Limit:** 16 KB max.
 - **Access:** Available via Metadata service.
 - *Exam Trap:* "Automatically configure instance at launch" → User Data.
 
@@ -179,6 +172,12 @@
 - **The Rule:** Attaches an **IAM Role** to an EC2 instance.
 - **Credentials:** Auto-rotated by AWS. Retrieved via Metadata service.
 - *Exam Trap:* "EC2 needs to access S3 without storing credentials" → Attach IAM Role via Instance Profile.
+
+### **3. Launch Templates vs Launch Configurations**
+
+- **Launch Template** = modern. Versioning, mixed instance types (Spot + On-Demand), T2/T3 Unlimited.
+- **Launch Configuration** = legacy. No versioning, single instance type, no Spot mixing.
+- *Exam Trigger:* Always pick **Launch Template**.
 
 ---
 
@@ -196,6 +195,9 @@
 10. **EC2 needs S3 access without hardcoded keys?** → IAM Instance Profile.
 11. **Guarantee capacity in a specific AZ?** → Capacity Reservation (not a discount — combine with Savings Plans/RIs).
 12. **Static public IP that survives stop/start?** → Elastic IP (charged when unassociated).
+13. **Secure instance metadata / prevent SSRF?** → Enforce IMDSv2 (token-based).
+14. **SSH to EC2 without key pairs?** → EC2 Instance Connect.
+15. **ASG launch config?** → Launch Template (not Launch Configuration — it's legacy/deprecated).
 
 ---
 

@@ -250,6 +250,7 @@
 
 **Key Points (Aurora Serverless v2 - only current version):**
 
+- **Scaling Range:** 0.5 to 128 ACUs in 0.5 ACU increments. You set min/max boundaries.
 - Scales in **seconds**.
 - Supports **Read Replicas**.
 - Suitable for production workloads.
@@ -353,6 +354,31 @@
 
 ---
 
+### **SECTION 4: RDS OPERATIONS & MONITORING**
+
+### **1. Aurora Blue/Green Deployments**
+
+- **Purpose:** Zero-downtime database updates (engine upgrades, schema changes, parameter changes).
+- **How it works:** Create a staging environment (Green) alongside production (Blue). Test changes in Green. Switchover with minimal downtime (~1 minute). Rollback if issues found.
+- **Key Point:** Green environment stays in sync via replication. Switchover updates the DB endpoint — no application changes needed.
+- *Exam Trigger:* "Zero-downtime database upgrade", "Test DB changes before production switchover" → Blue/Green Deployment.
+
+### **2. RDS Performance Insights**
+
+- **Purpose:** Real-time database performance monitoring. Visual dashboard showing active sessions, wait events, and SQL queries.
+- **Identifies bottlenecks:** Is the issue CPU, I/O, lock contention, or a specific query?
+- **Available for:** All RDS engines and Aurora.
+- *Exam Trigger:* "Database slow, need to identify bottleneck" → RDS Performance Insights.
+
+### **3. RDS Event Notifications**
+
+- **Purpose:** Get alerts on DB events via **SNS** (email, SMS, Lambda, SQS).
+- **Events include:** Failover, backup, restore, maintenance, configuration change, deletion.
+- **How it works:** Create an Event Subscription → select event categories → choose SNS topic as destination.
+- *Exam Trigger:* "Alert when RDS fails over" or "Notify on DB maintenance" → RDS Event Subscription + SNS.
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **Scale read workload?** → Read Replicas (Async).
@@ -369,6 +395,9 @@
 12. **Quickly undo bad data change?** → Aurora Backtrack.
 13. **Create test copy of production DB fast?** → Aurora Cloning (copy-on-write, seconds).
 14. **Need OS-level access on managed DB?** → RDS Custom (Oracle/SQL Server only).
+15. **Zero-downtime DB upgrade?** → Aurora Blue/Green Deployment.
+16. **DB performance bottleneck analysis?** → RDS Performance Insights.
+17. **Alert on DB failover/maintenance?** → RDS Event Notifications → SNS.
 
 ---
 
