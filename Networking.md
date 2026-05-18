@@ -239,7 +239,7 @@ This covers the network logic. If you can draw the packet flow from a private in
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Bad Actor"**
+### **Scenario 1**
 
 **The Situation:** Your security team has detected a Denial of Service attack coming from a specific IP address `203.0.113.5`. You need to **immediately block** all traffic from this IP.
 
@@ -260,7 +260,7 @@ D. Use AWS WAF to inspect the traffic.
 - **Trap D — WAF:** WAF *can* block an IP, but it only protects Layer 7 resources (CloudFront, ALB, API Gateway). For a raw L3/L4 DoS hitting the subnet, and for an *immediate* block, NACL is the direct tool. WAF is also the slower thing to stand up if not already deployed.
 - **The Fix — Option B:** A **NACL** operates at the subnet level and supports explicit **Deny** rules. Add a Deny for `203.0.113.5` — it's the only option that surgically blocks one IP immediately.
 
-### **Scenario 2: The "Private Update"**
+### **Scenario 2**
 
 **The Situation:** You have a fleet of EC2 instances in a **Private Subnet**. They need to download security patches from the internet, but they must **not** be accessible from the public internet.
 
@@ -281,7 +281,7 @@ D. Use a VPC Endpoint for S3.
 - **Trap D — VPC Endpoint for S3:** A Gateway Endpoint only reaches **S3** (and DynamoDB). Security patches come from OS/vendor repos across the general internet — an S3 endpoint can't fetch them.
 - **The Fix — Option C:** Put the **NAT Gateway in a public subnet**, then point the private subnet's route table at it. Flow: Private instance → NAT GW (public subnet) → IGW → Internet. Outbound works; inbound stays blocked.
 
-### **Scenario 3: The "S3 Security"**
+### **Scenario 3**
 
 **The Situation:** An application in a private subnet needs to transfer sensitive data to an S3 bucket. Corporate policy states that this data **must not traverse the public internet**, even if encrypted.
 
@@ -302,7 +302,7 @@ D. Enable S3 Transfer Acceleration.
 - **Trap D — Transfer Acceleration:** This *speeds up* uploads by routing through edge locations over the **public internet** — it's a performance feature and makes the policy violation worse, not better.
 - **The Fix — Option B:** A **Gateway Endpoint for S3** adds a route so traffic to S3 stays entirely on the **AWS private network** — it never touches the public internet. It's also free.
 
-### **Scenario 4: The "Star Topology"**
+### **Scenario 4**
 
 **The Situation:** Your company has acquired 3 smaller startups. You now have **50 different VPCs** across different accounts that all need to communicate with each other and with an on-premise data center. Managing individual peering connections is becoming impossible.
 
