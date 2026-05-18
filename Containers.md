@@ -38,26 +38,9 @@
 
 ### **A. EC2 Launch Type (The Managed Fleet)**
 
-**The Rule:** You manage EC2 instances. ECS manages container placement.
+**The Rule:** You manage EC2 instances (running the ECS Agent, on the ECS-Optimized AMI); ECS handles container placement/scheduling. You manage EC2 (patching, scaling, instance types); pay for EC2 only (no extra ECS charge).
 
-**How It Works:**
-
-- Create ECS Cluster.
-- Launch EC2 instances with **ECS Agent** (AMI: Amazon ECS-Optimized AMI).
-- ECS schedules tasks on instances.
-
-**Responsibilities:**
-
-- **You Manage:** EC2 instances (Patching, Scaling, Instance Types).
-- **AWS Manages:** Container orchestration (Placement, Scheduling).
-
-**Pricing:** Pay for EC2 instances (No extra ECS charge).
-
-**Use Cases:**
-
-- Need control over instances.
-- Cost optimization with Reserved/Spot Instances.
-- Steady-state workloads.
+- **Use Cases:** Need instance control, cost optimization with Reserved/Spot Instances, steady-state workloads.
 
 **Exam Trigger:** "Run containers on EC2 with Reserved Instances" → ECS EC2 Launch Type.
 
@@ -65,25 +48,9 @@
 
 ### **B. Fargate Launch Type (The Serverless)**
 
-**The Rule:** AWS manages infrastructure. You only define task (CPU/Memory). No EC2 to manage.
+**The Rule:** AWS manages all infrastructure (servers, scaling, patching); you only define the Task Definition (image, CPU, memory). Pay per vCPU/GB-second — pricier per task but no idle instance cost.
 
-**How It Works:**
-
-- Create Task Definition (Specify CPU, Memory).
-- Run Task → AWS provisions infrastructure automatically.
-
-**Responsibilities:**
-
-- **You Manage:** Task Definition (Image, CPU, Memory).
-- **AWS Manages:** Infrastructure (Servers, Scaling, Patching).
-
-**Pricing:** Pay per vCPU/GB per second (More expensive per task, but no idle instance cost).
-
-**Use Cases:**
-
-- Don't want to manage instances.
-- Variable workloads (Scale to zero).
-- Microservices.
+- **Use Cases:** Don't want to manage instances, variable workloads (scale to zero), microservices.
 
 **Exam Trigger:** "Run containers without managing servers" → Fargate.
 
@@ -125,17 +92,10 @@
 
 ### **B. Service (The Long-Running)**
 
-**The Rule:** Ensures desired number of tasks always running.
+**The Rule:** Ensures a desired number of tasks always run.
 
-**Features:**
-
-- **Desired Count:** Number of tasks to run.
-- **Load Balancer Integration:** ALB/NLB distributes traffic across tasks.
-- **Auto Scaling:** Scale tasks based on CloudWatch metrics (CPU, Memory, ALB Request Count).
-- **Deployment Types:**
-    - **Rolling Update:** Replace old tasks gradually (Default).
-    - **Blue/Green:** Deploy new version, test, then switch traffic (Requires CodeDeploy).
-- **Service Discovery:** Use AWS Cloud Map (DNS-based discovery for microservices).
+- **Desired Count:** number of tasks. **Load Balancer:** ALB/NLB distributes traffic. **Auto Scaling:** scale tasks on CloudWatch metrics (CPU, Memory, ALB Request Count).
+- **Deployment Types:** Rolling Update (gradual, default) or Blue/Green (deploy, test, switch — requires CodeDeploy). **Service Discovery** via AWS Cloud Map.
 
 **Exam Trigger:** "Ensure 10 containers always running" → ECS Service.
 
@@ -157,9 +117,7 @@
 
 ### **B. Cluster Auto Scaling (EC2 Launch Type Only)**
 
-- **The Rule:** Automatically add/remove EC2 instances when tasks can't fit.
-- **Mechanism:** Uses **Capacity Provider** (Links ECS Service to ASG).
-- **Note:** Fargate doesn't need this (Infinite capacity).
+- Automatically adds/removes EC2 instances when tasks can't fit, via a **Capacity Provider** (links ECS Service to ASG). Fargate doesn't need this.
 
 **Exam Trigger:** "Scale EC2 instances when tasks pending" → Capacity Provider + ASG.
 
@@ -167,17 +125,8 @@
 
 ### **5. ECS Networking**
 
-### **A. awsvpc Network Mode (Recommended)**
-
-- **The Rule:** Each task gets its own **ENI** (Elastic Network Interface) and **private IP**.
-- **Security Groups:** Attach SG directly to task (Fine-grained security).
-- **Required for Fargate.**
-
-### **B. bridge Network Mode (Legacy)**
-
-- Uses Docker bridge network.
-- Multiple containers share instance's network.
-- Less secure (No task-level SG).
+- **awsvpc Mode (recommended, required for Fargate):** Each task gets its own **ENI** and **private IP**; attach a Security Group directly to the task for fine-grained security.
+- **bridge Mode (legacy):** Docker bridge network — containers share the instance's network, no task-level SG, less secure.
 
 **Exam Trigger:** "Task-level Security Groups" → awsvpc mode.
 
@@ -185,22 +134,11 @@
 
 ### **6. ECS Storage**
 
-### **A. EFS (Elastic File System)**
-
-- **The Rule:** Persistent shared storage for tasks.
-- **Use Case:** Multiple tasks need access to same files (Shared content, Config files).
-- **Supports:** Both EC2 and Fargate.
+- **EFS:** Persistent shared storage for tasks (multiple tasks accessing the same files). Supports both EC2 and Fargate.
+- **Docker Volumes (EC2 only):** Bind mounts a host directory; ephemeral, lost when the task stops.
+- **Fargate Ephemeral Storage:** 20 GB per task, non-persistent.
 
 **Exam Trigger:** "Persistent shared storage for containers" → EFS.
-
-### **B. Docker Volumes (EC2 Launch Type Only)**
-
-- **Bind Mounts:** Mount host directory into container.
-- **Ephemeral:** Data lost when task stops.
-
-### **C. Fargate Ephemeral Storage**
-
-- Fargate tasks get 20 GB ephemeral storage (Non-persistent).
 
 ---
 
@@ -210,30 +148,14 @@
 
 ### **1. EKS Overview**
 
-- **The Rule:** Fully managed Kubernetes control plane.
-- **Kubernetes:** Open-source container orchestration (Industry standard).
-- **Why EKS:** Run Kubernetes without managing control plane (Master nodes).
-
-**When to Use EKS:**
-
-- Already using Kubernetes on-prem (Migration).
-- Need Kubernetes features (Helm, Operators, Custom controllers).
-- Multi-cloud (Kubernetes portable).
-
-**When to Use ECS:**
-
-- AWS-native (Simpler, cheaper).
-- No Kubernetes expertise required.
+- **The Rule:** Fully managed Kubernetes control plane — run Kubernetes (industry-standard, open-source orchestration) without managing master nodes.
+- **Use EKS** for on-prem Kubernetes migration, Kubernetes-specific features (Helm, Operators, custom controllers), or multi-cloud portability. **Use ECS** for AWS-native, simpler, cheaper workloads with no Kubernetes expertise.
 
 ---
 
 ### **2. EKS Worker Nodes**
 
-**Options:**
-
-- **Managed Node Groups:** AWS manages EC2 instances (Patching, Updates).
-- **Self-Managed Nodes:** You provision and manage EC2 instances.
-- **Fargate:** Serverless (No EC2 to manage).
+- **Managed Node Groups:** AWS manages the EC2 instances (patching, updates). **Self-Managed Nodes:** you provision/manage EC2. **Fargate:** serverless, no EC2.
 
 ---
 
@@ -273,19 +195,11 @@
 
 ### **1. App Runner Overview**
 
-- **The Rule:** Point to an ECR image or source code repo → App Runner builds, deploys, scales, and load-balances automatically. Zero infrastructure configuration.
-- **No Task Definitions, No Services, No Clusters.** Just provide the container image or code.
-- **Auto Scaling:** Built-in. Scales up on traffic, scales down to zero.
-- **Auto Deploy:** Push a new image or commit → App Runner redeploys automatically.
-- **Networking:** HTTPS endpoint out of the box. Can connect to private VPC resources via VPC Connector.
-- **Pricing:** Pay per vCPU/memory while active + a small pause fee when scaled to zero.
+- **The Rule:** Point to an ECR image or source repo → App Runner builds, deploys, scales, and load-balances automatically. No Task Definitions, Services, or Clusters.
+- Built-in auto scaling (up on traffic, down to zero); auto-redeploy on new image/commit; HTTPS endpoint out of the box; private VPC access via VPC Connector. Pay per vCPU/memory while active + small pause fee when scaled to zero.
+- **vs Fargate:** App Runner = zero orchestration config (best for simple web apps/APIs); Fargate still needs Task Definitions, Services, LB setup (more control, more config).
 
-**App Runner vs. Fargate:**
-
-- **App Runner:** No orchestration config at all. Best for simple web apps/APIs.
-- **Fargate:** Still requires Task Definitions, Services, Load Balancer setup. More control, more config.
-
-**Exam Trigger:** "Deploy container with zero infrastructure management" → App Runner. "Simplest way to run a web app from a container image" → App Runner. Simpler than Fargate.
+**Exam Trigger:** "Deploy container with zero infrastructure management" / "Simplest way to run a web app from a container image" → App Runner (simpler than Fargate).
 
 ---
 
@@ -293,10 +207,7 @@
 
 ### **1. Image Scanning**
 
-- **The Rule:** Scan images for vulnerabilities (CVEs).
-- **Types:**
-    - **Basic Scanning:** Free. Scans on push (Uses Clair).
-    - **Enhanced Scanning (Inspector):** Continuous scanning. More detailed findings.
+- **The Rule:** Scan images for vulnerabilities (CVEs). **Basic Scanning** (free, on push, uses Clair) vs **Enhanced Scanning** (Inspector, continuous, more detailed findings).
 
 **Exam Trigger:** "Scan container images for vulnerabilities" → ECR Image Scanning.
 
@@ -304,9 +215,7 @@
 
 ### **2. Lifecycle Policies**
 
-- **The Rule:** Automatically delete old/unused images.
-- **Rules:** Based on image age or count.
-- **Example:** "Keep only last 10 images" or "Delete images older than 30 days."
+- Automatically delete old/unused images by age or count (e.g., "keep only last 10 images", "delete images older than 30 days").
 
 **Exam Trigger:** "Automatically clean up old container images" → ECR Lifecycle Policies.
 

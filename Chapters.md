@@ -1,49 +1,64 @@
-# Untitled
+# SAA-C03 Chapter Index
 
-### **THE INFRASTRUCTURE CORE (Must Master)**
+15 content chapters covering the four SAA-C03 exam domains. Each file = core content + Exam Cheat Sheet + 5 real exam scenarios.
 
-- [x]  **1. Networking (VPC)** (*Covered*)
-    - *Gaps to fill:* VPN vs. Direct Connect deep dive, Transit Gateway architectures.
-- [x]  **2. Storage** (*Covered*)
-- [ ]  **3. Compute (EC2)**
-    - *Scope:* Instance Types (Spot vs. Reserved), Placement Groups (Cluster vs. Spread), ENI vs. ENA vs. EFA, AMIs.
-- [ ]  **4. High Availability (The "Elastic" Part)**
-    - *Scope:* **Load Balancers** (ALB vs. NLB vs. GWLB) and **Auto Scaling Groups** (Scaling policies). *This is 20% of the exam.*
-
-### **THE DATA LAYER (The Confusing Part)**
-
-- [ ]  **5. Databases (Relational)**
-    - *Scope:* **RDS** vs. **Aurora** (Serverless v2, Global Database).
-    - *Key:* Read Replicas vs. Multi-AZ.
-- [ ]  **6. Databases (NoSQL & Caching)**
-    - *Scope:* **DynamoDB** (DAX, Streams, GSI/LSI) and **ElastiCache** (Redis vs. Memcached).
-
-### **THE MODERN STACK (Your Strong Suit)**
-
-- [ ]  **7. Serverless**
-    - *Scope:* **Lambda** (Limits, Layers, Versions), **API Gateway** (Throttling, Stages), **Step Functions**.
-- [ ]  **8. Containers**
-    - *Scope:* **ECS** (Fargate vs. EC2 mode), **EKS** (High level), **ECR**. *Since you know K8s, we just need to map your knowledge to AWS terms.*
-- [ ]  **9. Decoupling (Queues)**
-    - *Scope:* **SQS** (Standard vs. FIFO), **SNS** (Fan-out), **Kinesis** (Data Streams vs. Firehose).
-
-### **THE GLOBAL & SECURITY LAYER**
-
-- [ ]  **10. Content Delivery & DNS**
-    - *Scope:* **Route 53** (Routing Policies like Latency, Geolocation), **CloudFront** (OAC, Signed URLs), **Global Accelerator**.
-- [ ]  **11. Security & Identity**
-    - *Scope:* **IAM** (Deep dive), **KMS** (Key types), **Cognito** (User Pools vs. Identity Pools), **WAF & Shield**.
-- [ ]  **12. Monitoring & Audit**
-    - *Scope:* **CloudWatch** (Logs, Metrics, Events) vs. **CloudTrail** (Who did what) vs. **Config** (Compliance).
-
-### **COST, MIGRATION & GOVERNANCE (Domain 4 = 20% of exam)**
-
-- [ ]  **13. Cost Optimization & Migration**
-    - *Scope:* **Cost Explorer**, **Budgets**, **Compute Optimizer**, **DMS**, **DataSync**, **DR Patterns** (Backup/Restore, Pilot Light, Warm Standby, Multi-Site), **AWS Organizations** (SCPs), **AWS Backup**.
-
-### **ADDITIONAL SERVICES (1-2 Questions Each)**
-
-- [ ]  **14. Additional Services**
-    - *Scope:* **Athena** (SQL on S3), **Redshift** (Data Warehouse), **Glue** (ETL), **EventBridge** (Event Bus), **CloudFormation** (IaC), **Elastic Beanstalk** (PaaS), **OpenSearch** (Search/Log Analytics), **AppSync** (GraphQL), **MSK** (Kafka), **SES** (Email).
+**Status legend:** ✅ studied · 🔲 not yet
 
 ---
+
+## The Infrastructure Core
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 1 | Networking (VPC) | [Networking.md](./Networking.md) | ✅ | High — VPC/SG/NACL heavily tested |
+| 2 | Storage (EBS, S3, EFS, FSx) | [Storage.md](./Storage.md) | 🔲 | High — S3 classes + EBS types |
+| 3 | Compute (EC2) | [Compute.md](./Compute.md) | 🔲 | High — purchasing, placement groups |
+| 4 | High Availability (ELB + Auto Scaling) | [HighAvailability.md](./HighAvailability.md) | 🔲 | **Very high — ~20% of exam** |
+
+## The Data Layer
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 5 | Databases — Relational (RDS, Aurora) | [DatabasesRelational.md](./DatabasesRelational.md) | 🔲 | High — Multi-AZ vs Read Replicas |
+| 6 | Databases — NoSQL & Caching (DynamoDB, ElastiCache) | [DatabasesNoSQL.md](./DatabasesNoSQL.md) | 🔲 | High — DynamoDB + purpose-built DBs |
+
+## The Modern Stack
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 7 | Serverless (Lambda, API Gateway, Step Functions) | [Serverless.md](./Serverless.md) | 🔲 | High |
+| 8 | Containers (ECS, EKS, Fargate, ECR) | [Containers.md](./Containers.md) | 🔲 | Medium |
+| 9 | Decoupling (SQS, SNS, Kinesis, EventBridge) | [Decoupling.md](./Decoupling.md) | 🔲 | High |
+
+## The Global & Security Layer
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 10 | Content Delivery & DNS (Route 53, CloudFront, GA) | [ContentDeliveryDNS.md](./ContentDeliveryDNS.md) | 🔲 | Medium-High |
+| 11 | Security & Identity (IAM, KMS, Cognito, WAF) | [SecurityIdentity.md](./SecurityIdentity.md) | 🔲 | **Very high — Domain 1 = 30%** |
+| 12 | Monitoring & Audit (CloudWatch, CloudTrail, Config) | [MonitoringAudit.md](./MonitoringAudit.md) | 🔲 | Medium |
+
+## Cost, Migration & Governance — Domain 4 = 20%
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 13 | Cost Optimization & Migration & DR | [CostOptimization.md](./CostOptimization.md) | 🔲 | High — DR patterns + cost tools |
+
+## Additional Services — 1-2 questions each
+
+| # | Chapter | File | Status | Exam weight |
+|---|---------|------|--------|-------------|
+| 14 | Additional Services (Athena, Redshift, Glue, etc.) | [AdditionalServices.md](./AdditionalServices.md) | 🔲 | Low per topic, adds up |
+
+---
+
+## Exam domain mapping
+
+| Domain | Weight | Covered by chapters |
+|--------|--------|---------------------|
+| 1 — Design Secure Architectures | 30% | 11, 1 |
+| 2 — Design Resilient Architectures | 26% | 4, 5, 13 (DR) |
+| 3 — Design High-Performing Architectures | 24% | 3, 2, 5, 6, 9, 10 |
+| 4 — Design Cost-Optimized Architectures | 20% | 13 |
+
+**The day-by-day plan with dates lives in [StudyGuide.md](./StudyGuide.md).** Update the Status column here as you finish each chapter.

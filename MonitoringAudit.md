@@ -24,16 +24,8 @@
 
 **Custom Metrics:**
 
-- **The Rule:** Application-level metrics (PutMetricData API). Examples: Queue depth, User logins, Business metrics.
-- **Resolution:**
-    - Standard: 1 minute.
-    - High Resolution: 1 second (Higher cost).
-- **Dimensions:** Key-value pairs to filter metrics (e.g., `InstanceId=i-1234`, `Environment=Prod`).
-
-**EC2 Memory/Disk Utilization:**
-
-- **NOT** included in default metrics (Only hypervisor-level metrics like CPU).
-- **Solution:** Install **CloudWatch Agent** on EC2 → Sends custom metrics (Memory, Disk).
+- Application-level metrics via the PutMetricData API (queue depth, user logins, business metrics). Resolution: Standard 1 min, High Resolution 1 sec (higher cost). Dimensions are key-value filters (e.g., `InstanceId=i-1234`).
+- **EC2 Memory/Disk:** NOT in default metrics (only hypervisor-level like CPU) — install the **CloudWatch Agent** to send memory/disk metrics.
 
 **Exam Trigger:** "Monitor EC2 memory usage" → CloudWatch Agent (Custom Metrics).
 
@@ -43,29 +35,10 @@
 
 **The Rule:** Store, monitor, and analyze log files.
 
-**Sources:**
-
-- EC2 (via CloudWatch Agent)
-- Lambda (Automatic)
-- ECS/EKS
-- VPC Flow Logs
-- CloudTrail
-- Route 53 Query Logs
-
-**Log Structure:**
-
-- **Log Group:** Container for log streams (e.g., `/aws/lambda/my-function`).
-- **Log Stream:** Sequence of log events from a single source (e.g., Instance ID).
-
-**Retention:**
-
-- Default: Never expire.
-- Configurable: 1 day to 10 years (Or never).
-
-**Log Insights:**
-
-- **The Rule:** Query logs using SQL-like syntax.
-- **Use Case:** Analyze logs (e.g., "Find all 5xx errors in last hour").
+- **Sources:** EC2 (via CloudWatch Agent), Lambda (automatic), ECS/EKS, VPC Flow Logs, CloudTrail, Route 53 Query Logs.
+- **Structure:** Log Group = container for log streams (e.g., `/aws/lambda/my-function`); Log Stream = log events from a single source.
+- **Retention:** Default never expire; configurable 1 day – 10 years.
+- **Log Insights:** Query logs with SQL-like syntax (e.g., "find all 5xx errors in last hour").
 
 **Exam Trigger:** "Query application logs for errors" → CloudWatch Logs Insights.
 
@@ -75,29 +48,10 @@
 
 **The Rule:** Trigger actions based on metric thresholds.
 
-**Actions:**
-
-- **SNS:** Send notification (Email, SMS, Lambda trigger).
-- **Auto Scaling:** Scale EC2 instances.
-- **EC2 Action:** Stop, Terminate, Reboot, Recover instance.
-
-**Alarm States:**
-
-- **OK:** Metric within threshold.
-- **ALARM:** Metric breached threshold.
-- **INSUFFICIENT_DATA:** Not enough data.
-
-**Configuration:**
-
-- **Metric:** Which metric to monitor (e.g., CPU).
-- **Threshold:** Value to trigger (e.g., > 80%).
-- **Evaluation Period:** How many data points to evaluate (e.g., 3 out of 5 periods).
-- **Datapoints to Alarm:** How many breaches trigger alarm.
-
-**Composite Alarms:**
-
-- **The Rule:** Combine multiple alarms with AND/OR logic.
-- **Use Case:** Reduce alarm noise (Alert only if CPU **AND** Network high).
+- **Actions:** SNS (notify via email/SMS/Lambda), Auto Scaling (scale EC2), EC2 Action (stop/terminate/reboot/recover).
+- **States:** OK, ALARM, INSUFFICIENT_DATA.
+- **Config:** metric, threshold, evaluation period, datapoints to alarm.
+- **Composite Alarms:** Combine multiple alarms with AND/OR logic to reduce noise (e.g., alert only if CPU AND Network high).
 
 **Exam Trigger:** "Alert when CPU > 80% for 5 minutes" → CloudWatch Alarm.
 
@@ -105,29 +59,11 @@
 
 ### **5. CloudWatch Events / EventBridge**
 
-**The Rule:** Event-driven automation. React to AWS events or schedule tasks.
+**The Rule:** Event-driven automation — react to AWS events or schedule tasks. **EventBridge = CloudWatch Events 2.0** (more features, 3rd-party SaaS integrations).
 
-**EventBridge = CloudWatch Events 2.0** (More features, supports 3rd-party SaaS integrations).
-
-**Event Sources:**
-
-- **AWS Services:** EC2 state change, S3 object created, Auto Scaling action.
-- **Custom Applications:** PutEvents API.
-- **SaaS Partners:** Datadog, Zendesk, PagerDuty.
-
-**Targets:**
-
-- Lambda
-- SNS/SQS
-- Step Functions
-- ECS Task
-- CodePipeline
-- Kinesis
-
-**Scheduled Events (Cron/Rate):**
-
-- **The Rule:** Run tasks on schedule (e.g., "Every day at 9 AM" or "Every 5 minutes").
-- **Use Case:** Backup automation, Periodic Lambda invocation, Start/Stop EC2 instances.
+- **Sources:** AWS services (EC2 state change, S3 object created), custom apps (PutEvents API), SaaS partners (Datadog, Zendesk, PagerDuty).
+- **Targets:** Lambda, SNS/SQS, Step Functions, ECS Task, CodePipeline, Kinesis.
+- **Scheduled Events (cron/rate):** Run tasks on a schedule for backup automation, periodic Lambda, start/stop EC2.
 
 **Exam Trigger:** "Run Lambda every hour" → EventBridge Scheduled Rule.
 
@@ -135,37 +71,15 @@
 
 ### **6. CloudWatch Dashboards**
 
-**The Rule:** Visual representation of metrics (Graphs, numbers).
-
-**Features:**
-
-- Cross-region (View metrics from multiple regions).
-- Cross-account (Aggregate metrics from multiple accounts).
-- Automatic refresh.
-
-**Use Case:** Operations dashboard, Real-time monitoring.
+**The Rule:** Visual metric display (graphs, numbers) — cross-region, cross-account, auto-refresh. For operations dashboards and real-time monitoring.
 
 ---
 
 ### **7. CloudWatch Agent (Deep Dive)**
 
-**The Rule:** Collect **custom metrics** and **logs** from EC2/On-Prem servers.
+**The Rule:** Collects **custom metrics** (memory, disk, swap) and **logs** (app/system logs) from EC2/on-prem servers. Install the agent, configure `config.json` for which metrics/logs to collect, and attach an IAM Role with send permissions.
 
-**What It Collects:**
-
-- System-level metrics (Memory, Disk, Swap).
-- Logs (Application logs, System logs).
-
-**Installation:**
-
-1. Install CloudWatch Agent on instance.
-2. Configure `config.json` (Which metrics/logs to collect).
-3. Attach IAM Role to instance (Permissions to send metrics/logs).
-
-**Unified Agent vs. Logs Agent:**
-
-- **Unified Agent:** Collects metrics + logs (Recommended).
-- **Logs Agent:** Only logs (Legacy).
+- **Unified Agent** (metrics + logs, recommended) vs **Logs Agent** (logs only, legacy).
 
 **Exam Trigger:** "Monitor EC2 disk usage" → CloudWatch Agent.
 
@@ -173,20 +87,10 @@
 
 ### **8. CloudWatch Logs Subscription Filters**
 
-**The Rule:** Stream log data in **real-time** from CloudWatch Logs to a destination for processing or analysis.
+**The Rule:** Stream log data in **real-time** from CloudWatch Logs to a destination. Define a **filter pattern** on a Log Group; matching events stream to the destination.
 
-**Destinations:**
-
-- **Lambda:** Process/transform logs in real-time.
-- **Kinesis Data Streams:** Custom real-time processing pipeline.
-- **Kinesis Data Firehose:** Deliver to S3, Redshift, or OpenSearch (near real-time).
-- **OpenSearch:** Log analytics with dashboards.
-
-**How It Works:**
-
-- Define a **filter pattern** on a Log Group (e.g., match all ERROR lines).
-- Matching log events are streamed to the chosen destination in real-time.
-- Up to **2 subscription filters per Log Group** (use Kinesis Data Streams to fan out to multiple destinations beyond that).
+- **Destinations:** Lambda (process/transform), Kinesis Data Streams (custom pipeline), Kinesis Data Firehose (to S3/Redshift/OpenSearch), OpenSearch (log analytics).
+- Up to **2 subscription filters per Log Group** (use Kinesis Data Streams to fan out beyond that).
 
 **Exam Trigger:** "Real-time log processing" or "Stream logs to OpenSearch" --> CloudWatch Logs Subscription Filter.
 
@@ -194,19 +98,9 @@
 
 ### **9. CloudWatch Metric Filters**
 
-**The Rule:** Extract metric data from log events using **filter patterns**. Turn log patterns into custom CloudWatch Metrics, then alarm on them.
+**The Rule:** Extract metric data from log events using **filter patterns** — turn log patterns into custom metrics, then alarm on them. Define a filter pattern on a Log Group (e.g., `"404"`, `"ERROR"`); CloudWatch creates a custom metric incremented on each match; create an alarm on it.
 
-**How It Works:**
-
-1. Define a **filter pattern** on a Log Group (e.g., match `"404"` or `"ERROR"`).
-2. CloudWatch creates a **custom metric** that increments each time the pattern matches.
-3. Create a **CloudWatch Alarm** on that custom metric.
-
-**Use Cases:**
-
-- Count 404 errors in access logs --> Alarm if > 100 in 5 minutes.
-- Count failed login attempts --> Alarm for security monitoring.
-- Track specific application error patterns --> Operational alerting.
+- **Use Cases:** Count 404s / failed logins / app error patterns → alarm above a threshold.
 
 **Exam Trigger:** "Create alarm based on log pattern" or "Alert when error count in logs exceeds threshold" --> CloudWatch Metric Filter + Alarm.
 
@@ -241,20 +135,9 @@
 
 ### **1. X-Ray Overview**
 
-- **The Rule:** Analyze and debug distributed applications. Trace requests as they travel across **microservices** (Lambda, API Gateway, ECS, EC2, Elastic Beanstalk).
-- **Service Map:** Visual representation of your application's architecture. Shows services, connections, latency, errors, and fault rates.
-
-**Key Capabilities:**
-
-- **Tracing:** Follow a single request across multiple services end-to-end.
-- **Segments & Subsegments:** Each service creates a segment. External calls (DB, HTTP) create subsegments.
-- **Annotations:** Key-value pairs for filtering traces (indexed, searchable).
-- **Groups:** Filter traces by annotation or error type.
-
-**Integration:**
-
-- Lambda, API Gateway, ECS, EC2, Elastic Beanstalk, App Mesh.
-- Install **X-Ray Daemon** on EC2/ECS (Lambda and API Gateway have built-in integration).
+- **The Rule:** Analyze and debug distributed apps — trace requests across **microservices** (Lambda, API Gateway, ECS, EC2, Elastic Beanstalk). The **Service Map** visualizes architecture, connections, latency, errors, and fault rates.
+- **Capabilities:** End-to-end request tracing; segments per service + subsegments for external calls (DB, HTTP); annotations (indexed key-value pairs for filtering); groups (filter by annotation/error type).
+- **Integration:** Lambda and API Gateway have built-in integration; install the **X-Ray Daemon** on EC2/ECS.
 
 **Exam Triggers:**
 
@@ -271,30 +154,15 @@
 
 ### **1. CloudTrail Overview**
 
-- **The Rule:** Records **API calls** made in your AWS account (Who did what, when, from where).
-- **Scope:** Regional by default, Can enable for all regions.
-- **Audit Use Cases:** Security analysis, Compliance, Troubleshooting.
-
-**What It Logs:**
-
-- **Management Events:** Control plane actions (CreateInstance, DeleteBucket, AttachUserPolicy).
-- **Data Events:** Data plane actions (S3 GetObject, Lambda Invoke, DynamoDB PutItem) - High volume, optional.
-- **Insights Events:** Detect unusual API activity (ML-based anomaly detection).
+- **The Rule:** Records **API calls** in your account (who did what, when, from where). Regional by default, can enable all regions. For security analysis, compliance, troubleshooting.
+- **What it logs:** Management Events (control plane — CreateInstance, DeleteBucket); Data Events (data plane — S3 GetObject, Lambda Invoke; high volume, optional); Insights Events (ML-based anomaly detection of unusual API activity).
 
 ---
 
 ### **2. CloudTrail Structure**
 
-**Trail:**
-
-- **The Rule:** Configuration that defines which events to log and where to store them.
-- **Storage:** S3 bucket (Logs stored as JSON).
-- **Optional:** Send to CloudWatch Logs for real-time analysis.
-
-**Event Retention:**
-
-- **CloudTrail Console:** 90 days (Free).
-- **S3 Bucket:** Forever (Until you delete). Use S3 Lifecycle policies to archive to Glacier.
+- **Trail:** Configuration defining which events to log and where to store them — logs stored as JSON in an S3 bucket; optionally sent to CloudWatch Logs for real-time analysis.
+- **Retention:** CloudTrail console 90 days (free); S3 bucket forever (use Lifecycle policies to archive to Glacier).
 
 **Exam Trigger:** "Audit who deleted an S3 object" → Enable CloudTrail Data Events for S3.
 
@@ -312,12 +180,7 @@
 
 ### **4. CloudTrail Log File Integrity**
 
-**The Rule:** Validate that log files haven't been tampered with (Digest files).
-
-**How It Works:**
-
-- CloudTrail generates **digest files** (Hash of log files).
-- Use digest to verify log integrity.
+**The Rule:** Validate that log files haven't been tampered with — CloudTrail generates **digest files** (hashes of log files) used to verify integrity.
 
 **Exam Trigger:** "Ensure audit logs haven't been modified" → Enable Log File Validation.
 
@@ -329,14 +192,8 @@
 
 ### **1. AWS Config Overview**
 
-- **The Rule:** Record **configuration changes** over time (Not API calls like CloudTrail, but resource state).
-- **Use Cases:** Compliance auditing, Resource inventory, Configuration history.
-
-**What It Tracks:**
-
-- Resource configurations (e.g., "Is S3 bucket public?", "Is encryption enabled?").
-- Configuration changes (e.g., "Security Group rule added at 2:30 PM").
-- Resource relationships (e.g., "This EC2 instance uses this Security Group").
+- **The Rule:** Records **configuration changes** over time (resource state, not API calls). For compliance auditing, resource inventory, configuration history.
+- **Tracks:** Resource configurations ("Is S3 bucket public?"), configuration changes ("SG rule added at 2:30 PM"), and resource relationships ("This EC2 uses this SG").
 
 ---
 
@@ -344,20 +201,9 @@
 
 **The Rule:** Evaluate resource compliance against rules.
 
-**Types:**
-
-- **AWS Managed Rules:** Pre-built (e.g., `s3-bucket-public-read-prohibited`, `encrypted-volumes`).
-- **Custom Rules:** Write Lambda function to evaluate compliance.
-
-**Triggers:**
-
-- **Configuration Change:** Evaluate when resource changes.
-- **Periodic:** Evaluate on schedule (e.g., Every 24 hours).
-
-**Remediation:**
-
-- **Manual:** View non-compliant resources and fix manually.
-- **Automatic:** Trigger **SSM Automation Document** or **Lambda** to auto-remediate.
+- **Types:** AWS Managed Rules (pre-built, e.g. `s3-bucket-public-read-prohibited`, `encrypted-volumes`) or Custom Rules (Lambda-based).
+- **Triggers:** on configuration change, or periodic (e.g., every 24 hours).
+- **Remediation:** manual fix, or automatic via **SSM Automation Document** or **Lambda**.
 
 **Exam Trigger:** "Ensure all S3 buckets are private, Auto-remediate if not" → Config Rule + Remediation Action.
 
@@ -389,18 +235,9 @@
 
 ### **2. SSM Parameter Store**
 
-**The Rule:** Store configuration data and secrets (Centralized).
+**The Rule:** Centralized store for configuration data and secrets. Organize parameters in paths (e.g., `/app/prod/db-password`). Integrates with Lambda, ECS, CloudFormation, CodeBuild.
 
-**Types:**
-
-- **Standard:** Free. Max 10,000 parameters. Max 4 KB per parameter.
-- **Advanced:** Paid. Max 100,000 parameters. Max 8 KB per parameter. Parameter policies (TTL, expiration notifications).
-
-**Hierarchy:**
-
-- Organize parameters in paths (e.g., `/app/prod/db-password`).
-
-**Integration:** Lambda, ECS, CloudFormation, CodeBuild.
+- **Standard:** Free, max 10,000 parameters, 4 KB each. **Advanced:** Paid, max 100,000 parameters, 8 KB each, parameter policies (TTL, expiration notifications).
 
 **Parameter Store vs. Secrets Manager:**
 
@@ -416,19 +253,9 @@
 
 ### **3. SSM Session Manager**
 
-**The Rule:** Connect to EC2 instances **without SSH/RDP** (Browser-based shell or CLI).
+**The Rule:** Connect to EC2 instances **without SSH/RDP** (browser shell or CLI). No open port 22, no Bastion Host; session logs to S3/CloudWatch Logs for audit; IAM-based access control.
 
-**Benefits:**
-
-- No open SSH ports (Security Group doesn't need port 22).
-- No Bastion Host needed.
-- Session logs sent to S3 or CloudWatch Logs (Audit trail).
-- IAM-based access control.
-
-**Requirements:**
-
-- EC2 must have **SSM Agent** installed (Pre-installed on Amazon Linux 2, Ubuntu, Windows).
-- EC2 must have **IAM Role** with SSM permissions.
+- **Requirements:** EC2 needs the **SSM Agent** (pre-installed on Amazon Linux 2, Ubuntu, Windows) and an **IAM Role** with SSM permissions.
 
 **Exam Trigger:** "Connect to EC2 without SSH key or open port 22" → Session Manager.
 
@@ -436,13 +263,7 @@
 
 ### **4. SSM Run Command**
 
-**The Rule:** Execute commands on EC2/on-prem servers **remotely** (No SSH).
-
-**Use Cases:**
-
-- Install software on 100 instances simultaneously.
-- Restart services.
-- Collect system inventory.
+**The Rule:** Execute commands on EC2/on-prem servers **remotely** (no SSH) — install software on many instances at once, restart services, collect inventory.
 
 **Exam Trigger:** "Run script on 50 EC2 instances" → SSM Run Command.
 
@@ -450,13 +271,7 @@
 
 ### **5. SSM Patch Manager**
 
-**The Rule:** Automate OS patching for EC2 and on-prem servers.
-
-**How It Works:**
-
-- Define **Patch Baseline** (Which patches to install).
-- Create **Maintenance Window** (When to patch).
-- Patch Manager installs patches during window.
+**The Rule:** Automate OS patching for EC2/on-prem servers — define a **Patch Baseline** (which patches), set a **Maintenance Window** (when), and Patch Manager applies them.
 
 **Exam Trigger:** "Automate OS patching" → SSM Patch Manager.
 
@@ -468,26 +283,9 @@
 
 ### **1. Trusted Advisor Overview**
 
-- **The Rule:** Automated checks and recommendations across **5 pillars**.
-
-**Pillars:**
-
-1. **Cost Optimization:** Idle resources, Unused Reserved Instances, Low-utilization EC2.
-2. **Performance:** High-utilization instances, EBS throughput optimization.
-3. **Security:** Open Security Group ports, IAM password policy, MFA on root account.
-4. **Fault Tolerance:** Multi-AZ RDS, ELB without instances, S3 bucket versioning.
-5. **Service Limits:** Approaching service limits (VPC, EIP, EC2 instances).
-
-**Check Results:**
-
-- **Green:** No problem detected.
-- **Yellow:** Investigation recommended.
-- **Red:** Action recommended.
-
-**Access Levels:**
-
-- **Basic/Developer Support:** 7 core checks (Free).
-- **Business/Enterprise Support:** **All checks** + API access + CloudWatch integration.
+- **The Rule:** Automated checks and recommendations across **5 pillars:** Cost Optimization (idle resources, unused RIs), Performance (high-utilization instances, EBS throughput), Security (open SG ports, IAM password policy, root MFA), Fault Tolerance (Multi-AZ RDS, empty ELBs, S3 versioning), Service Limits (approaching VPC/EIP/EC2 limits).
+- **Results:** Green (OK), Yellow (investigate), Red (action recommended).
+- **Access:** Basic/Developer Support → 7 core checks (free); Business/Enterprise → all checks + API + CloudWatch.
 
 **Exam Trigger:** "Identify underutilized EC2 instances" → Trusted Advisor (Cost Optimization).
 
@@ -499,15 +297,7 @@
 
 ### **1. Personal Health Dashboard**
 
-- **The Rule:** Alerts about AWS events impacting **your** resources (Not just general AWS status).
-
-**Examples:**
-
-- "Scheduled maintenance on your EC2 instance in us-east-1."
-- "Performance degradation on your RDS instance."
-- "Security vulnerability in AMI you're using."
-
-**Integration:** EventBridge (Automate responses, e.g., Failover, Send SNS alert).
+- **The Rule:** Alerts about AWS events impacting **your** resources (not just general AWS status) — e.g., scheduled EC2 maintenance, RDS performance degradation, AMI security vulnerabilities. Integrates with EventBridge to automate responses (failover, SNS alert).
 
 **Exam Trigger:** "Automated notification when AWS event affects your resources" → Personal Health Dashboard + EventBridge.
 

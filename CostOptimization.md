@@ -64,28 +64,16 @@
 
 ### **Savings Plans — Deep Dive**
 
-- **Compute Savings Plans (most flexible):**
-    - Applies to **any instance family, region, OS, tenancy**.
-    - Also covers **Fargate** and **Lambda** usage.
-    - Commit to $/hr for 1 or 3 years.
-- **EC2 Instance Savings Plans (highest discount):**
-    - Locked to a **specific instance family in a specific region** (e.g., M5 in us-east-1).
-    - Can still change size, OS, and tenancy within that family.
-    - Higher discount than Compute SP because less flexible.
+- **Compute Savings Plans (most flexible):** Commit to $/hr for 1/3 years; applies to any instance family/region/OS/tenancy, and also covers **Fargate** and **Lambda**.
+- **EC2 Instance Savings Plans (highest discount):** Locked to a specific instance family in a specific region (e.g., M5 in us-east-1); can still change size/OS/tenancy. Higher discount because less flexible.
 - *Exam Trigger:* "Flexible commitment across regions and compute types" → Compute Savings Plans. "Highest discount, same instance family" → EC2 Instance Savings Plans.
 
 ### **Reserved Instances — Deep Dive**
 
-- **Standard RI:**
-    - Up to **72% discount**. Committed to a specific instance family.
-    - **Cannot change** instance family, OS, or tenancy.
-    - **Can sell** on the RI Marketplace.
-- **Convertible RI:**
-    - Up to **66% discount**. Lower discount = more flexibility.
-    - **Can change** instance family, OS, tenancy, and scope.
-    - **Cannot sell** on the RI Marketplace.
-- **Payment options (discount order):** All Upfront (highest discount) > Partial Upfront > No Upfront (lowest discount).
-- *Exam Trap:* "Change instance family mid-term" → must be **Convertible RI** (Standard cannot). "Sell unused reservation" → must be **Standard RI** (Convertible cannot be sold).
+- **Standard RI:** Up to **72%** discount; cannot change instance family/OS/tenancy; **can sell** on the RI Marketplace.
+- **Convertible RI:** Up to **66%** discount; **can change** instance family/OS/tenancy/scope; **cannot sell** on the Marketplace.
+- **Payment (discount order):** All Upfront > Partial Upfront > No Upfront.
+- *Exam Trap:* "Change instance family mid-term" → **Convertible RI**. "Sell unused reservation" → **Standard RI**.
 
 ### **Data Transfer Costs — Must Know**
 
@@ -121,11 +109,8 @@
 
 ### **1. AWS DMS (Database Migration Service)**
 
-- **The Rule:** Migrate databases to AWS with **minimal downtime**.
-- **Types:**
-    - **Homogeneous:** Same engine (e.g., Oracle → Oracle on RDS). Direct migration.
-    - **Heterogeneous:** Different engine (e.g., Oracle → PostgreSQL). Requires **SCT (Schema Conversion Tool)** first.
-- **CDC (Change Data Capture):** Replicate ongoing changes during migration (Near-zero downtime).
+- **The Rule:** Migrate databases to AWS with **minimal downtime**. Homogeneous (same engine, direct) vs heterogeneous (different engine, requires **SCT — Schema Conversion Tool** first).
+- **CDC (Change Data Capture):** Replicate ongoing changes during migration for near-zero downtime.
 - *Exam Trigger:* "Migrate on-prem database to RDS with minimal downtime" → DMS.
 
 ### **2. AWS Application Migration Service (MGN)**
@@ -145,12 +130,8 @@
 
 ### **4. AWS DataSync**
 
-- **The Rule:** **Online data transfer** between on-prem storage and AWS (S3, EFS, FSx).
-- **Speed:** Up to 10 Gbps. Uses agent on-prem.
-- **Features:** Automatic encryption, data integrity validation, scheduling.
-- **Comparison:**
-    - DataSync = **Online** migration, automated, fast.
-    - Snow Family = **Offline** migration (ship physical device).
+- **The Rule:** **Online data transfer** between on-prem storage and AWS (S3, EFS, FSx) — up to 10 Gbps via an on-prem agent, with auto encryption, integrity validation, scheduling.
+- **vs Snow Family:** DataSync = online/automated; Snow Family = offline (ship a device).
 - *Exam Trigger:* "Transfer large dataset from on-prem NFS to S3 over network" → DataSync.
 
 ### **5. AWS Transfer Family**
@@ -200,10 +181,8 @@
 
 ### **1. AWS Organizations**
 
-- **The Rule:** Manage **multiple AWS accounts** centrally.
-- **Consolidated Billing:** Single bill, volume discounts, RI sharing across accounts.
-- **SCPs (Service Control Policies):** Restrict what services/actions accounts can use.
-    - SCPs **don't grant** permissions. They set **guardrails** (maximum allowed permissions).
+- **The Rule:** Manage **multiple AWS accounts** centrally. Consolidated Billing = single bill, volume discounts, RI sharing.
+- **SCPs (Service Control Policies):** Guardrails that set the **maximum** allowed permissions — they restrict, they don't grant.
 - *Exam Trigger:* "Prevent any account from launching in unapproved region" → SCP.
 
 ### **2. AWS Control Tower**

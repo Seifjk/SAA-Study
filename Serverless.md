@@ -6,16 +6,9 @@
 
 ### **1. Lambda Overview**
 
-- **The Rule:** Event-driven compute. No servers to manage. Pay only for compute time.
-- **Execution Model:** Code runs in response to triggers (events).
-- **Scaling:** Automatically scales from 0 to thousands of concurrent executions.
-- **Pricing:** Pay per request and compute duration (100 ms increments).
-    - **Free Tier:** 1 million requests/month + 400,000 GB-seconds.
-
-**Supported Languages:**
-
-- Native: Node.js, Python, Java, C#, Go, Ruby, PowerShell
-- Custom: Any language via Custom Runtime or Container Image (up to 10 GB).
+- **The Rule:** Event-driven compute — no servers, code runs on triggers, auto-scales from 0 to thousands of concurrent executions.
+- **Pricing:** Pay per request + compute duration (100 ms increments). Free Tier: 1M requests/month + 400,000 GB-seconds.
+- **Languages:** Native Node.js, Python, Java, C#, Go, Ruby, PowerShell; any language via Custom Runtime or Container Image (up to 10 GB).
 
 ---
 
@@ -43,30 +36,20 @@
 
 ### **A. Synchronous (The Wait)**
 
-- **The Rule:** Caller waits for response. Lambda returns result directly.
-- **Use Cases:** API Gateway, ALB, Cognito, Step Functions.
-- **Error Handling:** Caller receives error. Caller must retry.
-- **Timeout:** Caller waits up to 15 minutes.
+- Caller waits for the response (up to 15 min) and receives errors directly — caller must retry. Use cases: API Gateway, ALB, Cognito, Step Functions.
 
-### **B. Asynchronous (The Fire and Forget)**
+### **B. Asynchronous (Fire and Forget)**
 
-- **The Rule:** Caller gets immediate acknowledgment. Lambda processes in background.
-- **Use Cases:** S3 events, SNS, EventBridge, SES.
-- **Retries:** Lambda retries **2 times** automatically on failure (Total 3 attempts).
-- **Dead Letter Queue (DLQ):** Send failed events to **SQS** or **SNS** after retries exhausted.
-- **Destinations:** Send results to SQS, SNS, Lambda, EventBridge (Success or Failure paths).
+- Caller gets immediate ack; Lambda processes in background. Use cases: S3 events, SNS, EventBridge, SES.
+- Retries **2 times** on failure (3 total attempts). Exhausted retries → DLQ (SQS or SNS). **Destinations** route results to SQS/SNS/Lambda/EventBridge on success or failure paths.
 
 **Exam Trigger:** "Lambda invoked by S3" → Asynchronous.
 
 ### **C. Event Source Mapping (The Poller)**
 
-- **The Rule:** Lambda **polls** the source and pulls records.
-- **Use Cases:** **Kinesis Data Streams**, **DynamoDB Streams**, **SQS**.
-- **Batch Processing:** Lambda processes batches (configurable batch size).
-- **Concurrency:** Kinesis/DynamoDB → 1 Lambda per shard. SQS → Scales up to 1,000 concurrent.
-- **Error Handling:**
-    - **Kinesis/DynamoDB:** Failed batch blocks shard until success or TTL expires.
-    - **SQS:** Failed messages return to queue (After retries → DLQ).
+- Lambda **polls** the source and pulls record batches (configurable size). Use cases: Kinesis Data Streams, DynamoDB Streams, SQS.
+- **Concurrency:** Kinesis/DynamoDB → 1 Lambda per shard; SQS → scales up to 1,000 concurrent.
+- **Errors:** Kinesis/DynamoDB → failed batch blocks the shard until success or TTL expires; SQS → failed messages return to queue, then DLQ after retries.
 
 **Exam Trigger:** "Lambda reads from Kinesis" → Event Source Mapping.
 
@@ -76,60 +59,30 @@
 
 **Execution Role (IAM):**
 
-- **The Rule:** Every Lambda function has an **IAM Execution Role** that it assumes when running.
-- **Trust Policy:** Must allow `lambda.amazonaws.com` to assume the role.
-- **Permissions:** Must include CloudWatch Logs (always needed for logging), plus whatever services the function accesses (S3, DynamoDB, SQS, etc.).
-- *Exam Trigger:* "Lambda can't write to S3" → Check Execution Role permissions. "Lambda needs DynamoDB access" → Add DynamoDB permissions to Execution Role.
+- Every function assumes an **IAM Execution Role**; trust policy must allow `lambda.amazonaws.com`. Permissions must cover CloudWatch Logs (always) plus any services the function accesses.
+- *Exam Trigger:* "Lambda can't write to S3 / needs DynamoDB access" → Check/add permissions on the Execution Role.
 
 **Lambda Destinations (Preferred over DLQ for async):**
 
-- **Purpose:** Route async invocation results to different targets based on success or failure.
-- **Success path:** SQS, SNS, Lambda, or EventBridge.
-- **Failure path:** Separate SQS, SNS, Lambda, or EventBridge.
-- **Advantage over DLQ:** Captures both success AND failure. DLQ only captures failures. Destinations also include execution context (request/response).
+- Route async invocation results to SQS/SNS/Lambda/EventBridge on **separate success and failure paths**.
+- **Advantage over DLQ:** Captures both success and failure (DLQ = failures only) and includes execution context (request/response).
 - *Exam Trigger:* "Route async Lambda results to different services" → Lambda Destinations.
 
 ---
 
 ### **5. Execution Model**
 
-**Lambda Lifecycle:**
+**Lambda Lifecycle:** Cold Start (first invocation, AWS provisions environment, 100-1000 ms) → Warm Execution (reuses environment, < 10 ms) → Freeze (after idle, stays warm) → Shutdown (after extended idle).
 
-1. **Cold Start:** First invocation. AWS provisions execution environment (Slow, 100-1000 ms).
-2. **Warm Execution:** Subsequent invocations reuse environment (Fast, < 10 ms).
-3. **Freeze:** After idle time (minutes), environment freezes but stays warm.
-4. **Shutdown:** After extended idle, environment destroyed.
-
-**Optimization Tips:**
-
-- **Minimize Cold Starts:**
-    - Use **Provisioned Concurrency** (Pre-warmed environments).
-    - Keep functions small (Fast initialization).
-    - Avoid heavy SDKs in function code.
-- **Reuse Connections:** Initialize DB connections outside handler (Reused across invocations).
+**Optimization:** Minimize cold starts with Provisioned Concurrency, small functions, and lean SDKs. Initialize DB connections **outside the handler** so they're reused across invocations.
 
 ---
 
 ### **5. Lambda Layers**
 
-**The Rule:** Package libraries and dependencies separately from function code.
+**The Rule:** Package libraries/dependencies separately from function code, then attach to multiple functions — shares code, speeds deployments, shrinks deployment packages.
 
-**How It Works:**
-
-- Create Layer (e.g., common libraries, SDKs).
-- Attach Layer to multiple functions.
-- Reduces deployment package size.
-
-**Benefits:**
-
-- Share code across functions.
-- Faster deployments.
-- Separate dependencies from business logic.
-
-**Limits:**
-
-- **5 Layers per function**.
-- **250 MB total** (unzipped) including all layers + function code.
+- **Limits:** 5 layers per function; 250 MB total unzipped (layers + function code).
 
 **Exam Trigger:** "Share common libraries across Lambda functions" → Layers.
 
@@ -139,17 +92,11 @@
 
 ### **A. Versions**
 
-- **The Rule:** Immutable snapshot of function code + configuration.
-- **$LATEST:** The working version (Mutable).
-- **Numbered Versions:** Published versions (v1, v2, v3) - Immutable.
+- Immutable snapshot of code + configuration. `$LATEST` = the mutable working version; numbered versions (v1, v2…) are immutable.
 
 ### **B. Aliases**
 
-- **The Rule:** Pointer to a specific version (Mutable).
-- **Use Cases:**
-    - **Blue/Green Deployment:** Alias points to v1. Test v2. Switch alias to v2.
-    - **Weighted Routing:** Route 90% traffic to v1, 10% to v2 (Canary testing).
-- **Example:** Alias `PROD` → v5. Alias `DEV` → $LATEST.
+- Mutable pointer to a specific version (e.g., `PROD` → v5). Used for Blue/Green deployment (switch alias to new version) and Weighted Routing (e.g., 90% v1, 10% v2 canary).
 
 **Exam Trigger:** "Gradually shift traffic to new Lambda version" → Aliases with Weighted Routing.
 
@@ -167,42 +114,25 @@
 
 ### **8. Lambda with VPC**
 
-**The Rule:** By default, Lambda runs in AWS-managed VPC (Can access internet and AWS services, but NOT your VPC resources).
+**The Rule:** By default Lambda runs in an AWS-managed VPC (internet + AWS service access, but NOT your VPC resources). To reach VPC resources (RDS, ElastiCache), attach Lambda to **your VPC** (subnets + Security Groups) — it gets an **ENI** in your subnet.
 
-**To Access VPC Resources (RDS, ElastiCache):**
-
-- Attach Lambda to **your VPC** (Specify subnets + Security Groups).
-- Lambda gets **ENI** in your subnet.
-
-**Consequences:**
-
-- **Internet Access:** Lost by default. Need **NAT Gateway** in public subnet to access internet.
-- **Cold Start:** Slightly slower (ENI provisioning).
-
-**VPC Endpoint:**
-
-- To access AWS services (S3, DynamoDB) without NAT Gateway → Use **VPC Endpoints**.
+- **Consequences:** Loses internet access by default — need a **NAT Gateway** for internet; slightly slower cold start (ENI provisioning). Use **VPC Endpoints** to reach AWS services (S3, DynamoDB) without a NAT Gateway.
 
 **Exam Trigger:** "Lambda needs to access RDS in private subnet" → Attach Lambda to VPC.
 
 ### **Lambda + EFS (Persistent Shared Storage)**
 
-- **The Rule:** Lambda can mount an **EFS file system** for persistent, shared storage across invocations.
-- **Requirements:** Lambda must be in a **VPC** (same VPC as EFS). Uses **EFS Access Points**.
-- **Use Case:** Share large ML models, reference data, or temp files across concurrent Lambda invocations.
-- **vs. /tmp:** /tmp is ephemeral and per-invocation. EFS is persistent and shared across all invocations.
-- **vs. S3:** EFS provides POSIX file system (read/write). S3 is object storage (no append, no file locking).
+- Lambda can mount an **EFS file system** (via EFS Access Points) for persistent storage shared across invocations. Requires Lambda in the **same VPC** as EFS.
+- **vs. /tmp:** /tmp is ephemeral and per-invocation; EFS is persistent and shared. **vs. S3:** EFS is a POSIX file system (read/write, locking); S3 is object storage.
 
-**Exam Trigger:** "Lambda needs persistent shared storage" or "Lambda needs to share large files across invocations" → EFS mount.
+**Exam Trigger:** "Lambda needs persistent shared storage" or "share large files across invocations" → EFS mount.
 
 ---
 
 ### **Lambda Container Image Support**
 
-- **The Rule:** Lambda can run **container images up to 10 GB** from **ECR** (Elastic Container Registry).
-- **Requirement:** Container must implement the **Lambda Runtime API**.
-- **Use Case:** Large dependencies, existing container workflows, custom runtimes.
-- **NOT the same as ECS/Fargate:** Still runs as Lambda (event-driven, 15-min timeout, pay-per-invocation). Just packaged as a container.
+- Lambda can run **container images up to 10 GB** from **ECR**; the container must implement the **Lambda Runtime API**. For large dependencies, existing container workflows, or custom runtimes.
+- **NOT ECS/Fargate:** Still runs as Lambda (event-driven, 15-min timeout, pay-per-invocation) — just packaged as a container.
 
 **Exam Trigger:** "Deploy existing container to Lambda" or "Lambda with large dependencies" → Container image from ECR.
 
@@ -210,9 +140,8 @@
 
 ### **SNS + Lambda Fan-Out Pattern**
 
-- **The Rule:** SNS Topic triggers **multiple Lambda functions in parallel**. Each subscription gets its own invocation.
-- **How It Works:** Event → SNS Topic → Lambda A, Lambda B, Lambda C (all invoked simultaneously).
-- **vs. SNS + SQS Fan-Out:** Use SQS when you need persistence/retry. Use Lambda directly for immediate parallel processing.
+- SNS Topic triggers **multiple Lambda functions in parallel**, each subscription invoked independently.
+- **vs. SNS + SQS Fan-Out:** Use SQS for persistence/retry; use Lambda directly for immediate parallel processing.
 
 **Exam Trigger:** "Process same event with multiple Lambda functions" → SNS fan-out to Lambda.
 
@@ -220,18 +149,8 @@
 
 ### **9. Reserved Concurrency & Provisioned Concurrency**
 
-### **A. Reserved Concurrency**
-
-- **The Rule:** Guarantee a number of concurrent executions for a function.
-- **Effect:** Reserves capacity (Other functions cannot use it).
-- **Cost:** Free.
-- **Use Case:** Prevent one function from consuming all account concurrency.
-
-### **B. Provisioned Concurrency**
-
-- **The Rule:** Pre-warmed execution environments (Eliminates cold starts).
-- **Cost:** Pay for provisioned capacity (Even if unused).
-- **Use Case:** Latency-sensitive applications (APIs requiring < 10 ms).
+- **Reserved Concurrency:** Guarantees concurrent executions for a function (reserves capacity from other functions). Free. Prevents one function from consuming all account concurrency.
+- **Provisioned Concurrency:** Pre-warmed execution environments that eliminate cold starts. Pay for provisioned capacity even if unused. For latency-sensitive APIs.
 
 **Exam Trigger:** "Eliminate cold starts" → Provisioned Concurrency.
 
@@ -266,13 +185,7 @@
 
 ### **2. Deployment Stages**
 
-**The Rule:** APIs deployed to **stages** (e.g., `dev`, `test`, `prod`).
-
-**Features:**
-
-- Each stage has unique URL (e.g., `https://api.example.com/prod`).
-- Stage Variables: Environment-specific config (e.g., Lambda alias, backend URL).
-- Canary Deployments: Route % of traffic to new stage version.
+**The Rule:** APIs deployed to **stages** (`dev`, `test`, `prod`), each with a unique URL. Stage Variables hold environment-specific config (Lambda alias, backend URL); canary deployments route a % of traffic to a new stage version.
 
 **Exam Trigger:** "Separate dev and prod APIs" → Stages.
 
@@ -280,16 +193,8 @@
 
 ### **3. Throttling & Quotas**
 
-**Throttling Limits:**
-
-- **Account-Level:** 10,000 requests per second (Soft limit).
-- **Burst:** 5,000 concurrent requests.
-- **Method-Level:** Set custom throttle per API method.
-
-**Usage Plans & API Keys:**
-
-- **Usage Plan:** Define throttle and quota per customer/tier (e.g., Free tier: 1,000 req/day, Paid: 100,000).
-- **API Key:** Identify client + Associate with Usage Plan.
+- **Throttling:** Account-level 10,000 req/sec (soft), burst 5,000 concurrent; custom throttle per method.
+- **Usage Plans & API Keys:** Usage Plan defines throttle + quota per customer/tier; API Key identifies the client and ties it to a plan.
 
 **Exam Trigger:** "Limit API requests per customer" → Usage Plans + API Keys.
 
@@ -297,16 +202,7 @@
 
 ### **4. Caching**
 
-**The Rule:** Cache responses at API Gateway to reduce backend load.
-
-**How It Works:**
-
-- Enable cache per stage (0.5 GB - 237 GB).
-- TTL: 0-3600 seconds (Default: 300).
-- Cache Key: Based on query strings, headers (Configurable).
-- Invalidation: Client can send `Cache-Control: max-age=0` header (If authorized).
-
-**Cost:** Hourly charge for cache size.
+**The Rule:** Cache responses at API Gateway to reduce backend load. Enabled per stage (0.5–237 GB), TTL 0–3600 sec (default 300), cache key from query strings/headers. Authorized clients invalidate via `Cache-Control: max-age=0`. Hourly charge for cache size.
 
 **Exam Trigger:** "Reduce Lambda invocations for repeated requests" → Enable Caching.
 
@@ -314,11 +210,7 @@
 
 ### **5. CORS (Cross-Origin Resource Sharing)**
 
-**The Rule:** Browser blocks API calls from different domain unless CORS enabled.
-
-**Scenario:** Frontend at `www.example.com` calls API at `api.example.com` → CORS required.
-
-**Fix:** Enable CORS in API Gateway (Returns `Access-Control-Allow-Origin: *` header).
+**The Rule:** Browsers block API calls from a different domain unless CORS is enabled (e.g., frontend `www.example.com` calling API `api.example.com`). Fix: enable CORS in API Gateway (returns `Access-Control-Allow-Origin` header).
 
 **Exam Trigger:** "Browser blocks API call" → Enable CORS.
 
@@ -326,16 +218,8 @@
 
 ### **6. Authorizers**
 
-### **A. Lambda Authorizer (Custom)**
-
-- **The Rule:** Use Lambda function to validate token (e.g., OAuth, SAML).
-- **Flow:** Client sends token → API Gateway calls Lambda → Lambda returns IAM policy (Allow/Deny).
-- **Caching:** Auth result cached (TTL 0-3600 sec).
-
-### **B. Cognito User Pools**
-
-- **The Rule:** Use Cognito for user authentication.
-- **Flow:** User logs in via Cognito → Gets JWT token → Sends token to API Gateway → API Gateway validates token.
+- **Lambda Authorizer (Custom):** A Lambda validates the token (OAuth, SAML) and returns an Allow/Deny IAM policy. Auth result cached (TTL 0–3600 sec).
+- **Cognito User Pools:** User logs in via Cognito → gets JWT token → API Gateway validates it.
 
 **Exam Trigger:** "Custom authentication logic" → Lambda Authorizer. "User sign-up/sign-in" → Cognito.
 
@@ -359,36 +243,15 @@
 
 ### **1. Step Functions Overview**
 
-- **The Rule:** Visual workflow for serverless applications. Chain Lambda, ECS, SNS, DynamoDB, etc.
-- **State Machine:** JSON definition (Amazon States Language - ASL).
-- **Use Cases:** Order processing, ETL pipelines, Multi-step approvals.
-
-**Benefits:**
-
-- Automatic retry and error handling.
-- Built-in state management.
-- Visual monitoring.
+- **The Rule:** Visual workflow chaining Lambda, ECS, SNS, DynamoDB, etc. State machine defined in JSON (Amazon States Language).
+- **Use Cases:** Order processing, ETL pipelines, multi-step approvals. **Benefits:** automatic retry/error handling, built-in state management, visual monitoring.
 
 ---
 
 ### **2. Workflow Types**
 
-### **A. Standard Workflows**
-
-- **Duration:** Up to **1 year**.
-- **Execution Rate:** 2,000 per second.
-- **Pricing:** Pay per state transition.
-- **Use Case:** Long-running workflows (Data processing, batch jobs).
-
-### **B. Express Workflows**
-
-- **Duration:** Up to **5 minutes**.
-- **Execution Rate:** 100,000 per second.
-- **Pricing:** Pay per execution (Cheaper for high-volume, short workflows).
-- **Types:**
-    - **Synchronous:** Wait for response (API Gateway integration).
-    - **Asynchronous:** Fire and forget (EventBridge).
-- **Use Case:** High-volume event processing (IoT, Streaming).
+- **Standard Workflows:** Up to **1 year**, 2,000 executions/sec, pay per state transition. For long-running workflows (data processing, batch jobs).
+- **Express Workflows:** Up to **5 minutes**, 100,000 executions/sec, pay per execution (cheaper for high-volume short workflows). Synchronous (API Gateway) or Asynchronous (EventBridge). For high-volume event processing (IoT, streaming).
 
 **Exam Trigger:** "Long-running multi-step workflow" → Standard. "High-volume short tasks" → Express.
 
@@ -410,14 +273,8 @@
 
 ### **4. Error Handling**
 
-**Retry:**
-
-- Automatically retry failed tasks.
-- Configurable: Max attempts, backoff rate, interval.
-
-**Catch:**
-
-- Catch specific errors → Route to fallback state.
+- **Retry:** Automatically retry failed tasks — configurable max attempts, backoff rate, interval.
+- **Catch:** Catch specific errors and route to a fallback state.
 
 **Example:**
 

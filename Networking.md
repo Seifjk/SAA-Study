@@ -49,12 +49,8 @@
 
 ### **AWS Network Firewall**
 
-- **Purpose:** Managed firewall service for **VPC-level traffic inspection**. Goes far beyond what SGs and NACLs can do.
-- **Capabilities:** Deep packet inspection, intrusion detection/prevention (IDS/IPS), protocol filtering, domain-based filtering (block traffic to specific domains).
-- **Placement:** Deployed in a dedicated **firewall subnet**. Route tables direct traffic through it.
-- **Key Distinction:**
-    - **SGs/NACLs:** Simple IP/port rules. Cannot inspect packet contents.
-    - **Network Firewall:** Full L3-L7 inspection, Suricata-compatible rules, stateful filtering.
+- **Purpose:** Managed firewall for **VPC-level traffic inspection** — goes far beyond SGs/NACLs. Deep packet inspection, IDS/IPS, protocol filtering, domain-based filtering. Deployed in a dedicated **firewall subnet** with route tables directing traffic through it.
+- **vs SGs/NACLs:** Those do simple IP/port rules and can't inspect packet contents; Network Firewall does full L3-L7 inspection with Suricata-compatible stateful rules.
 - *Exam Trigger:* "Inspect traffic for malicious payloads", "IDS/IPS", "Filter outbound traffic by domain name", "Deep packet inspection at VPC level".
 
 ---
@@ -105,12 +101,9 @@
 
 ### **5. AWS PrivateLink (Exposing Your Own Services)**
 
-- **Purpose:** Expose a service **you built** in your VPC to other VPCs (even in other accounts) **privately**, without VPC Peering, IGW, NAT, or public IPs.
-- **Architecture:**
-    - **Provider VPC:** Put your service behind a **Network Load Balancer (NLB)**, then create a **VPC Endpoint Service**.
-    - **Consumer VPC:** Creates an **Interface Endpoint** (ENI) that connects to your service.
-- **Key Distinction:** Interface Endpoints (above) connect to **AWS services**. PrivateLink Endpoint Services connect to **your own services** via NLB.
-- **Scalability:** Works across accounts and even with AWS Marketplace services.
+- **Purpose:** Expose a service **you built** to other VPCs (even other accounts) **privately**, without VPC Peering, IGW, NAT, or public IPs.
+- **Architecture:** Provider VPC puts the service behind an **NLB** and creates a **VPC Endpoint Service**; Consumer VPC creates an **Interface Endpoint** (ENI) to connect.
+- **vs Interface Endpoints:** Those connect to **AWS services**; PrivateLink Endpoint Services connect to **your own services** via NLB. Works across accounts and AWS Marketplace.
 - *Exam Trigger:* "Expose service to hundreds of customer VPCs without peering", "NLB + PrivateLink", "Service provider/consumer model".
 
 ---
@@ -144,10 +137,7 @@
 
 ### **4. VPN CloudHub**
 
-- **Purpose:** Connect **multiple branch offices** to each other through AWS using a hub-and-spoke model.
-- **How It Works:** Each branch has its own Site-to-Site VPN connection to the **same VGW**. The VGW routes traffic between branches.
-- **Cost:** Low-cost. Uses existing VPN connections over the public internet.
-- **Key Point:** Branch-to-branch traffic flows through the VGW (hub). No direct branch-to-branch link needed.
+- **Purpose:** Connect **multiple branch offices** to each other through AWS via hub-and-spoke. Each branch has its own Site-to-Site VPN to the **same VGW**, which routes branch-to-branch traffic — no direct branch links needed. Low-cost, uses VPN over public internet.
 - *Exam Trigger:* "Connect multiple branch offices to each other through AWS", "Hub-and-spoke VPN for remote offices" → VPN CloudHub.
 
 ### **5. Direct Connect (DX)**
@@ -160,9 +150,8 @@
 
 ### **6. DX + VPN (Encryption over Direct Connect)**
 
-- **The Problem:** Direct Connect is a private connection, but it is **NOT encrypted** by default. Data travels in cleartext over the dedicated fiber.
-- **The Fix:** Run a **Site-to-Site VPN connection over the Direct Connect** link. This adds IPSec encryption on top of the dedicated connection.
-- **Architecture:** DX provides the reliable pipe, VPN provides the encryption. Best of both worlds.
+- **The Problem:** Direct Connect is private but **NOT encrypted** — data travels in cleartext over the fiber.
+- **The Fix:** Run a **Site-to-Site VPN over the Direct Connect** link, adding IPSec encryption. DX provides the reliable pipe, VPN provides encryption.
 - *Exam Trigger:* "Encrypted connection with consistent latency", "Encrypt Direct Connect traffic", "Compliance requires encryption in transit over dedicated link".
 - *Exam Trap:* "Direct Connect is private, so it's encrypted." → **Wrong.** Private ≠ Encrypted.
 
@@ -182,17 +171,12 @@
 
 ### **9. Route 53 Resolver (Hybrid DNS)**
 
-- **Purpose:** DNS resolution between on-premises and AWS in hybrid environments.
-- **Inbound Endpoint:** On-prem DNS servers forward queries **to AWS** → resolves AWS private hosted zones.
-- **Outbound Endpoint:** AWS forwards queries **to on-prem** DNS servers → resolves on-prem domains.
-- **Resolver Rules:** Define which domain queries get forwarded where (e.g., `corp.internal` → on-prem DNS server IPs).
+- **Purpose:** Hybrid DNS resolution between on-premises and AWS. **Inbound Endpoint:** on-prem DNS forwards queries to AWS (resolves private hosted zones). **Outbound Endpoint:** AWS forwards queries to on-prem DNS (resolves on-prem domains). **Resolver Rules** define which domains forward where (e.g., `corp.internal` → on-prem DNS IPs).
 - *Exam Trigger:* "Hybrid DNS resolution", "On-prem resolves AWS private hosted zones", "AWS resolves on-prem domains" → Route 53 Resolver.
 
 ### **10. VPC Sharing with RAM**
 
-- **Purpose:** Share subnets across AWS accounts within an Organization using **Resource Access Manager (RAM)**.
-- **How it works:** Owner account shares subnet → participant accounts launch resources (EC2, RDS, etc.) into the shared subnet.
-- **Benefit:** Reduces VPC sprawl, centralizes network management. No need for peering or Transit Gateway for same-VPC communication.
+- **Purpose:** Share subnets across AWS accounts within an Organization via **Resource Access Manager (RAM)** — owner shares a subnet, participant accounts launch resources into it. Reduces VPC sprawl, centralizes network management, no peering/TGW needed for same-VPC communication.
 - *Exam Trigger:* "Multiple accounts need resources in the same VPC" → VPC Sharing via RAM.
 
 ---
@@ -253,7 +237,7 @@ This covers the network logic. If you can draw the packet flow from a private in
 
 
 
-### **3. SOLVE: VPC Scenarios (The "Plumbing" Tests)**
+# **REAL EXAM SCENARIOS**
 
 ### **Scenario 1: The "Bad Actor" (NACL vs. SG)**
 
@@ -352,16 +336,3 @@ D. The Subnet's Route Table is missing a route to `0.0.0.0/0` targeting the Inte
 
 ---
 
-### **4. SYNTHESIZE: How to Use This**
-
-**Clear Answer:**
-
-These 5 scenarios map directly to the core networking rules above.
-
-- **Scenario 1 (Bad Actor)** proves why you memorize "Security Groups = Allow Only" → use NACL to deny.
-- **Scenario 2 (Private Update)** proves the NAT Gateway placement rule → Public Subnet only.
-- **Scenario 3 (S3 Security)** proves Gateway Endpoints keep traffic off the public internet.
-- **Scenario 4 (Star Topology)** proves Transit Gateway solves the peering mesh problem.
-- **Scenario 5 (Broken Internet)** proves that a Public IP alone isn't enough → Route Table must point to IGW.
-
-**Next Step:** Read one scenario, cover the answer, and explain *why* the other three are wrong. That is how you pass.

@@ -75,6 +75,8 @@
 - **Spread:** Can span AZs. Limit = 7 instances per AZ per group.
 - **Partition:** Can span AZs. Each partition is isolated (1 partition = 1 rack).
 
+![alt text](image.png)
+
 ---
 
 ### **SECTION 4: NETWORKING (ELASTIC NETWORK INTERFACES)**

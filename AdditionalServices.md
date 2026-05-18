@@ -86,31 +86,7 @@
 
 ### **SECTION 4: AMAZON EVENTBRIDGE**
 
-*Serverless event bus for event-driven architectures.*
-
-**Key Facts:**
-
-- **The Rule:** Successor to CloudWatch Events. Receives events and routes them to targets based on rules.
-- **Event Bus Types:**
-    - **Default Event Bus:** Receives all AWS service events automatically (EC2 state change, S3 events, etc.).
-    - **Custom Event Bus:** For your application events.
-    - **Partner Event Bus:** Receive events from SaaS partners (Zendesk, Datadog, Auth0).
-- **Rules:** Match events using event patterns (content-based filtering) or run on a schedule (cron/rate).
-- **Targets:** Lambda, SQS, SNS, Step Functions, Kinesis, ECS tasks, API Gateway, and more.
-- **Schema Registry:** Discover and store event schemas. Generate code bindings.
-- **Archive & Replay:** Archive events and replay them later (useful for debugging).
-
-**Exam Triggers:**
-
-- "React to AWS service events" or "Event-driven architecture" --> EventBridge.
-- "Schedule Lambda function" --> EventBridge rule with schedule expression.
-- "Receive events from SaaS providers" --> EventBridge Partner Event Bus.
-- "Decouple microservices with events" --> EventBridge.
-
-**Common Traps:**
-
-- EventBridge is NOT a message queue (that is SQS). Events are routed, not queued.
-- CloudWatch Events and EventBridge use the same underlying API -- EventBridge is the newer, preferred service.
+> **Covered in full in [Decoupling.md](./Decoupling.md) Section 5.** EventBridge lives there to avoid duplication. Quick reminder: serverless event bus, content-based routing rules, default/custom/partner buses, schedule expressions. *Trigger:* "react to AWS events", "event-driven", "schedule Lambda" → EventBridge.
 
 ---
 

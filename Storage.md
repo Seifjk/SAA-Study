@@ -1,5 +1,3 @@
-# Solution Architect
-
 # Storage
 
 ### **SECTION 1: BLOCK STORAGE (EBS & INSTANCE STORE)**
@@ -8,21 +6,15 @@
 
 ### **1. Instance Store (Ephemeral Storage)**
 
-- **The Hardware:** Physically attached SSD/HDD on the host server.
-- **The Rule:** **Ephemeral = Temporary.**
-    - If you **STOP** the instance → Data is **LOST** (Disk is wiped).
-    - If you **REBOOT** the instance → Data **SURVIVES**.
-    - If hardware fails → Data is **LOST**.
+- **The Rule:** Physically-attached SSD/HDD on the host. **Ephemeral** — survives **reboot**, lost on **stop** or hardware failure.
+- **Performance:** Highest possible IOPS (millions) — local, not network-attached.
 - **Use Case:** Cache, buffers, temporary content, distributed data stores (Kafka, Cassandra) where the app handles replication.
-- **Performance:** Highest possible IOPS (millions) because it’s local, not network-attached.
-- **Exam Trap:** "An instance has high I/O needs and data can be lost. Which storage?" → **Instance Store**.
+- **Exam Trap:** "High I/O needs and data can be lost" → **Instance Store**.
 
 ### **2. EBS (Elastic Block Store)**
 
-- **The Hardware:** Network-attached drive. (Latency is slightly higher than Instance Store).
-- **The Rule:** **Persistent.** Data survives an instance stop.
-- **Scope:** Locked to **ONE Availability Zone (AZ)**.
-    - *To move to another AZ:* Snapshot → Copy Snapshot to Region/AZ → Create Volume from Snapshot.
+- **The Rule:** Network-attached, **persistent** drive (data survives a stop). Slightly higher latency than Instance Store.
+- **Scope:** Locked to **ONE AZ**. To move: Snapshot → Copy Snapshot to Region/AZ → Create Volume.
 
 **EBS Volume Types (The IOPS/Throughput Game)**
 
@@ -62,7 +54,7 @@
 
 **1. Consistency Model**
 
-- **Strong Consistency:** If you write a file and immediately read it, you get the *new* version. (No more "eventual consistency" delays).
+- **Strong Consistency:** Write then immediately read → you get the new version. No eventual-consistency delay.
 
 **2. Storage Classes (Memorize the Waterfall)**
 
@@ -93,13 +85,10 @@
 
 **5. S3 Versioning**
 
-- **What it does:** Keeps every version of every object (including deletions).
-- **Enable vs Suspend:** Once enabled, you can only **suspend** versioning (not disable). Existing versions are preserved when suspended.
-- **Delete Behavior:**
-    - **Simple DELETE** on a versioned bucket → places a **Delete Marker** (soft delete). The object appears gone but all versions still exist. You can recover by removing the delete marker.
-    - **Permanent DELETE** requires specifying the exact **Version ID**.
-- **MFA Delete:** Optional. Requires MFA to permanently delete versions or change versioning state. Can only be enabled by the **root account** via CLI (not console).
-- **Required for Replication:** You cannot enable CRR or SRR without versioning on both source and destination buckets.
+- Keeps every version of every object (including deletions). Once enabled, can only be **suspended**, not disabled — existing versions are preserved.
+- **Delete Behavior:** Simple DELETE → places a **Delete Marker** (soft delete; recover by removing it). Permanent DELETE requires the exact **Version ID**.
+- **MFA Delete:** Optional. Requires MFA to permanently delete versions or change versioning state. Enabled only by **root account** via CLI.
+- **Required for Replication** (CRR/SRR) on both source and destination buckets.
 - *Exam Trap:* "Protect against accidental deletion" → Enable Versioning (+ optionally MFA Delete).
 
 **6. S3 Lifecycle Policies**
@@ -117,17 +106,10 @@
 
 **7. S3 Replication**
 
-- **CRR (Cross-Region Replication):** Replicate objects to a bucket in a **different region**. Use cases: compliance, lower-latency access, DR.
-- **SRR (Same-Region Replication):** Replicate within the **same region**. Use cases: log aggregation, live replication between prod/test.
-- **Requirements:**
-    - **Versioning must be enabled** on both source and destination buckets.
-    - Proper **IAM role** for S3 to replicate on your behalf.
-- **Key Rules:**
-    - **Existing objects** are NOT replicated when you enable replication. Use **S3 Batch Replication** to copy existing objects.
-    - **No chaining:** If Bucket A replicates to B, and B replicates to C, objects from A do **not** propagate to C.
-    - **Delete markers** are NOT replicated by default (optional setting to enable).
-    - Permanent deletes (by version ID) are **never** replicated (prevents malicious deletes).
-- *Exam Trap:* "Replicate existing objects" → S3 Batch Replication (not just enabling replication rules).
+- **CRR (Cross-Region):** to a **different region** — compliance, low-latency access, DR. **SRR (Same-Region):** within one region — log aggregation, prod/test replication.
+- **Requirements:** Versioning enabled on both buckets + an IAM role for S3.
+- **Key Rules:** Existing objects are NOT replicated (use **S3 Batch Replication**). No chaining (A→B→C doesn't propagate A to C). Delete markers not replicated by default (optional). Permanent deletes by version ID are never replicated.
+- *Exam Trap:* "Replicate existing objects" → S3 Batch Replication.
 
 **8. S3 Object Lock & Glacier Vault Lock**
 
@@ -143,52 +125,39 @@
 
 **9. S3 Pre-signed URLs**
 
-- **What it does:** Generate a temporary URL that grants time-limited access to a **private** S3 object.
-- The URL inherits the permissions of the IAM user/role that generated it.
-- **Expiration:** Configurable (default 1 hour, max 7 days with IAM user credentials).
-- **Use Cases:** Allow a user to download a private file without making the bucket public. Allow a user to upload to a specific key.
+- Temporary URL granting time-limited access to a **private** object; inherits the generating IAM identity's permissions.
+- **Expiration:** Default 1 hour, max 7 days (IAM user credentials). Works for download or upload to a specific key.
 - *Exam Trigger:* "Temporary access to a private object", "Share a file without making it public", "Allow upload without AWS credentials" → Pre-signed URL.
 
 **10. S3 Event Notifications**
 
-- **Triggers:** S3 can emit events on `s3:ObjectCreated:*`, `s3:ObjectRemoved:*`, `s3:ObjectRestore:*`, etc.
-- **Destinations:**
-    - **SQS** — queue for async processing.
-    - **SNS** — fan-out to multiple subscribers.
-    - **Lambda** — serverless processing (e.g., thumbnail generation on upload).
-    - **Amazon EventBridge** — **all** S3 events can be sent to EventBridge for advanced filtering, multiple destinations, and archive/replay.
-- **EventBridge Advantage:** Supports 18+ AWS services as targets, advanced rules, and works with ALL event types. EventBridge is the modern, more flexible option.
+- **Triggers:** `s3:ObjectCreated:*`, `s3:ObjectRemoved:*`, `s3:ObjectRestore:*`, etc.
+- **Destinations:** SQS (async queue), SNS (fan-out), Lambda (serverless processing), EventBridge.
+- **EventBridge Advantage:** All event types, advanced filtering, archive/replay, 18+ service targets — the modern, flexible option.
 - *Exam Trigger:* "Process files on upload" → S3 Event Notification to Lambda. "Fan out to multiple services" → EventBridge.
 
 **11. S3 Select / Glacier Select**
 
-- **What it does:** Use SQL expressions to retrieve only specific columns/rows from S3 objects (CSV, JSON, Parquet).
-- **Benefit:** Reduces data transfer and processing costs — S3 filters server-side, sends only what you need.
-- **Glacier Select:** Same concept for Glacier-archived objects.
-- **Not the same as Athena:** S3 Select works on single objects. Athena queries across many objects using Glue Catalog.
-- *Exam Trigger:* "Query specific columns from CSV in S3" or "Reduce data transfer from S3" → S3 Select.
+- SQL expressions to retrieve only specific columns/rows from objects (CSV, JSON, Parquet) — S3 filters server-side, cutting data transfer/cost. Glacier Select = same for archived objects.
+- **Not Athena:** S3 Select = single object; Athena = many objects via Glue Catalog.
+- *Exam Trigger:* "Query specific columns from CSV in S3" / "Reduce data transfer from S3" → S3 Select.
 
 **12. S3 Object Lambda**
 
-- **What it does:** Intercepts S3 GET requests and transforms data on-the-fly using a Lambda function before returning it to the caller.
-- **Use Cases:** Redact PII before returning data, convert formats (XML → JSON), resize images on demand, filter rows for specific users.
-- **How it works:** Create an S3 Object Lambda Access Point → attach a Lambda function → clients call the access point instead of the bucket.
+- Intercepts S3 GET requests and transforms data on-the-fly via Lambda before returning it (redact PII, convert XML→JSON, resize images, filter rows). Clients call an Object Lambda Access Point instead of the bucket.
 - *Exam Trigger:* "Transform S3 objects on retrieval without storing multiple copies" → S3 Object Lambda.
 
 **13. S3 Batch Operations**
 
-- **What it does:** Perform bulk operations on billions of S3 objects in a single request.
-- **Operations:** Copy objects, replace tags, modify ACLs, restore from Glacier, invoke Lambda on each object, S3 Batch Replication (for existing objects).
-- **How it works:** Provide an inventory list (S3 Inventory or CSV) → define the operation → S3 Batch runs it at scale with completion reports.
+- Bulk operations on billions of objects in one request: copy, replace tags, modify ACLs, restore from Glacier, invoke Lambda per object, Batch Replication. Driven by an inventory list (S3 Inventory or CSV).
 - *Exam Trigger:* "Bulk tag/copy/process existing S3 objects" → S3 Batch Operations.
 
 **14. S3 Static Website Hosting**
 
-- S3 can host a static website (HTML, CSS, JS) directly from a bucket.
-- **Endpoint format:** `http://<bucket-name>.s3-website-<region>.amazonaws.com`
-- **Must enable public access** (Bucket Policy allowing `s3:GetObject` to `*`) OR use CloudFront with **OAC (Origin Access Control)** to keep the bucket private.
-- *Exam Combo:* Static website on S3 + CloudFront (CDN) + OAC (restrict direct S3 access) + Route 53 (custom domain) + ACM (HTTPS). This is a very common architecture question.
-- *Exam Trap:* S3 website endpoint does NOT support HTTPS natively. You need CloudFront in front for HTTPS.
+- Hosts static sites (HTML/CSS/JS). Endpoint: `http://<bucket>.s3-website-<region>.amazonaws.com`
+- Requires public access (Bucket Policy `s3:GetObject` to `*`) OR CloudFront with **OAC** to keep the bucket private.
+- *Exam Combo:* S3 + CloudFront (CDN) + OAC + Route 53 (domain) + ACM (HTTPS) — very common architecture question.
+- *Exam Trap:* S3 website endpoint does NOT support HTTPS natively — need CloudFront in front.
 
 ---
 
@@ -198,83 +167,50 @@
 
 **1. EFS (Elastic File System)**
 
-- **Protocol:** NFS v4.
-- **OS:** **Linux Only**. (POSIX).
-- **Scale:** Petabytes. Grow/Shrink automatically.
-- **Scope:** **Multi-AZ** (Data is stored across multiple AZs).
-- **Performance Modes:**
-    - *General Purpose:* Default. Low latency. Web servers.
-    - *Max I/O:* High throughput, higher latency. Big Data.
-- **Throughput Modes:**
-    - *Elastic:* **Default (recommended).** Auto-scales throughput up/down. Best for unpredictable workloads.
-    - *Provisioned:* Pay for fixed speed (e.g., 500 MB/s) regardless of size.
-    - *Bursting:* Throughput tied to size. (Legacy default, still available).
+- **NFS v4**, **Linux only** (POSIX). Scales to petabytes automatically. **Multi-AZ**.
+- **Performance Modes:** *General Purpose* (default, low latency, web servers); *Max I/O* (high throughput, higher latency, Big Data).
+- **Throughput Modes:** *Elastic* (default/recommended, auto-scales); *Provisioned* (fixed speed); *Bursting* (tied to size, legacy).
 
 **2. FSx (File System for X)**
 
-- **FSx for Windows:**
-    - Protocol: **SMB**.
-    - Integration: **Active Directory**.
-    - Features: DFS (Distributed File System), Deduplication.
-    - *Trigger:* "Migrate Windows File Server", "SharePoint", "SMB share".
-- **FSx for Lustre:**
-    - Protocol: Parallel Distributed.
-    - Use Case: **HPC (High Performance Computing)**, Machine Learning, Video Rendering.
-    - *Superpower:* Can "lazy load" from S3. (It reads data from S3 as a file system).
-- **FSx for NetApp ONTAP:**
-    - Exam Trigger: "Migrate NetApp", "Multi-protocol (NFS/SMB/iSCSI)", "Deduplication/Compression needed".
+- **FSx for Windows:** SMB protocol, Active Directory integration, DFS + Deduplication. *Trigger:* "Migrate Windows File Server", "SharePoint", "SMB share".
+- **FSx for Lustre:** Parallel distributed file system for **HPC**, ML, video rendering. Can "lazy load" from S3 as a file system.
+- **FSx for NetApp ONTAP:** *Trigger:* "Migrate NetApp", "Multi-protocol (NFS/SMB/iSCSI)", "Deduplication/Compression".
 
 ---
 
 ### **SECTION 4: HYBRID & MIGRATION**
 
-**1. Storage Gateway (The Bridge)**
+**1. Storage Gateway (The Bridge)** — connects on-premise to cloud.
 
-Connects On-Premise to Cloud.
-
-- **File Gateway (S3 File Gateway):**
-    - Interface: NFS/SMB.
-    - Backend: S3.
-    - Behavior: Local **Cache** of most recent files.
-- **Volume Gateway:**
-    - Interface: iSCSI (Block storage).
-    - *Stored Mode:* All data on-prem, Async backup to EBS. (Low latency, full dataset local).
-    - *Cached Mode:* Only hot data on-prem, Full data in S3/EBS. (Save local disk space).
-- **Tape Gateway:** Virtual Tape Library (VTL). Replaces physical tapes with Glacier.
+- **File Gateway (S3):** NFS/SMB interface, S3 backend, local cache of recent files.
+- **Volume Gateway:** iSCSI block storage. *Stored Mode* = all data on-prem, async backup to EBS. *Cached Mode* = hot data on-prem, full data in S3/EBS.
+- **Tape Gateway:** Virtual Tape Library (VTL) replacing physical tapes with Glacier.
 
 **2. Snow Family (The Truck)**
 
-- **Snowcone:** Portable, rugged, 8TB. (Mailing a backpack).
-- **Snowball Edge:**
-    - *Storage Optimized:* 80TB. Data migration.
-    - *Compute Optimized:* Run EC2/Lambda on the truck (Edge computing).
-- **Snowmobile:** 100PB. (An actual 45-foot shipping container truck).
+- **Snowcone:** Portable, rugged, 8TB. **Snowball Edge:** *Storage Optimized* (80TB, migration); *Compute Optimized* (run EC2/Lambda for edge computing). **Snowmobile:** 100PB shipping container truck.
 - *Rule:* Use when network transfer would take > 1 week.
 
 **3. AWS DataSync**
 
-- **The Rule:** Agent-based service for migrating data between on-prem and AWS (or between AWS services).
-- **Protocols:** Supports NFS, SMB, HDFS → S3, EFS, FSx.
-- **Features:** Automatic encryption, data integrity validation, scheduling.
-- **Comparison:** DataSync = **migration/sync** (move data). Storage Gateway = **ongoing hybrid access** (keep on-prem connected).
-- *Exam Trigger:* "Migrate NFS share to EFS", "One-time large data migration to S3", "Ongoing data sync between on-prem and AWS" → **DataSync**.
+- Agent-based service to migrate/sync data between on-prem and AWS (or between AWS services). Supports NFS, SMB, HDFS → S3, EFS, FSx. Auto encryption, integrity validation, scheduling.
+- **vs Storage Gateway:** DataSync = migration/sync (move data). Storage Gateway = ongoing hybrid access.
+- *Exam Trigger:* "Migrate NFS share to EFS", "One-time large data migration to S3", "Ongoing on-prem → AWS sync" → **DataSync**.
 
 **4. AWS Transfer Family**
 
-- **The Rule:** Managed **SFTP/FTPS/FTP** service for transferring files to/from S3 and EFS.
-- **Use Case:** Existing file-transfer workflows that use SFTP/FTP and need to land files in S3.
+- Managed **SFTP/FTPS/FTP** service for transferring files to/from S3 and EFS.
 - *Exam Trigger:* "Existing SFTP workflow needs to transfer files to S3", "FTP server for S3" → **Transfer Family**.
 
 **5. S3 Access Points**
 
-- **The Rule:** Named network endpoints with dedicated access policies attached to a shared S3 bucket.
-- **How:** Each access point has its own **DNS name** and **IAM policy**. Simplifies managing access for multiple applications hitting the same bucket.
+- Named network endpoints, each with its own **DNS name** and **IAM policy**, attached to a shared bucket — simplifies access for multiple apps hitting one bucket.
 - *Exam Trigger:* "Simplify S3 access for multiple applications", "Dedicated S3 endpoint per application" → **S3 Access Points**.
 
 **6. S3 Requester Pays**
 
-- **The Rule:** The **requester** (not bucket owner) pays for data transfer and request costs. Bucket owner still pays for storage.
-- **Requirement:** Requester must be an authenticated AWS user (anonymous access is disabled).
+- The **requester** (not bucket owner) pays for transfer and request costs; owner still pays storage. Requester must be an authenticated AWS user.
 - *Exam Trigger:* "Share large dataset without paying for transfer" → **Requester Pays**.
 
 ---
@@ -310,7 +246,7 @@ Connects On-Premise to Cloud.
 27. **Auto-archive infrequently accessed objects with no retrieval fees?** → S3 Intelligent-Tiering (configure Archive Access + Deep Archive tiers).
 
 
-# Scenarios
+# **REAL EXAM SCENARIOS**
 
 ---
 

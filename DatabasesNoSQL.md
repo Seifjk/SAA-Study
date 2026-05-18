@@ -6,20 +6,9 @@
 
 ### **1. DynamoDB Overview**
 
-- **The Rule:** Fully managed, serverless NoSQL. Millisecond latency at any scale.
-- **Data Model:** Key-Value and Document (JSON).
-- **Schema:** Flexible (No fixed schema).
-- **Scale:** Automatically scales to handle trillions of requests per day.
-- **Replication:** Data stored across **3 AZs** automatically.
-
-**Core Concepts:**
-
-- **Table:** Collection of items (like rows).
-- **Item:** Single record (like a row). Max size: **400 KB**.
-- **Attribute:** Field in an item (like a column).
-- **Primary Key:** Uniquely identifies each item. Two types:
-    - **Partition Key (PK):** Single attribute (e.g., `UserID`).
-    - **Composite Key (PK + Sort Key):** Two attributes (e.g., `UserID` + `Timestamp`).
+- **The Rule:** Fully managed, serverless NoSQL — key-value and document (JSON), flexible schema, millisecond latency at any scale. Auto-scales to trillions of requests/day; data stored across **3 AZs**.
+- **Core Concepts:** Table = collection of items; Item = a record (max **400 KB**); Attribute = a field.
+- **Primary Key:** Either a **Partition Key** alone (e.g., `UserID`) or a **Composite Key** = Partition Key + Sort Key (e.g., `UserID` + `Timestamp`).
 
 ---
 
@@ -27,30 +16,13 @@
 
 ### **A. Provisioned Mode (The Planned Capacity)**
 
-- **The Rule:** Pre-allocate read/write capacity.
-- **Units:**
-    - **RCU (Read Capacity Unit):** 1 RCU = 1 strongly consistent read per second of 4 KB (or 2 eventually consistent reads).
-    - **WCU (Write Capacity Unit):** 1 WCU = 1 write per second of 1 KB.
-- **Auto Scaling:** Can enable auto-scaling to adjust based on load.
-- **Cost:** Pay for provisioned capacity (even if unused).
-- **Burst Capacity:** Short bursts above provisioned allowed (Limited buffer).
-- **Throttling:** If you exceed capacity → `ProvisionedThroughputExceededException`.
-
-**Calculation Examples:**
-
-- **Example 1:** Read 10 items per second, each 8 KB, strongly consistent.
-    - 8 KB / 4 KB = 2 RCUs per item.
-    - 10 items * 2 = **20 RCUs**.
-- **Example 2:** Write 5 items per second, each 3 KB.
-    - 3 KB rounds up to 3 WCUs per item.
-    - 5 items * 3 = **15 WCUs**.
+- Pre-allocate capacity (pay even if unused), with optional auto-scaling and limited burst buffer. Exceeding capacity → `ProvisionedThroughputExceededException`.
+- **RCU:** 1 RCU = 1 strongly consistent read/sec of 4 KB (or 2 eventually consistent reads). **WCU:** 1 WCU = 1 write/sec of 1 KB.
+- **Calc examples:** Read 10 items/sec × 8 KB strongly consistent → 2 RCU each → **20 RCUs**. Write 5 items/sec × 3 KB → 3 WCU each → **15 WCUs**.
 
 ### **B. On-Demand Mode (The Serverless)**
 
-- **The Rule:** No capacity planning. Pay per request.
-- **Scaling:** Auto-scales instantly to handle any load.
-- **Cost:** More expensive per request, but no upfront capacity planning.
-- **Use Case:** Unpredictable workloads, New applications, Spiky traffic.
+- No capacity planning, pay per request, auto-scales instantly. Pricier per request. Use for unpredictable workloads, new apps, spiky traffic.
 
 **Exam Trigger:** "Unknown or variable workload" → On-Demand Mode.
 
@@ -58,13 +30,8 @@
 
 ### **3. Consistency Models**
 
-- **Eventually Consistent Reads (Default):**
-    - Data may be stale (Replication lag across AZs).
-    - **50% cheaper** than strongly consistent reads (2x RCU efficiency).
-- **Strongly Consistent Reads:**
-    - Always returns latest data.
-    - Higher cost (1 RCU = 4 KB).
-    - Use `ConsistentRead=true` in API call.
+- **Eventually Consistent Reads (Default):** May be stale (AZ replication lag); **50% cheaper** (2x RCU efficiency).
+- **Strongly Consistent Reads:** Always latest data; higher cost (1 RCU = 4 KB); set `ConsistentRead=true`.
 
 **Exam Trigger:** "Must always read latest data" → Strongly Consistent Reads.
 
@@ -72,30 +39,17 @@
 
 ### **4. Indexes (Querying Beyond Primary Key)**
 
-**Problem:** DynamoDB queries require Partition Key. What if you want to query by another attribute?
-
-**Solution:** Indexes.
+**Problem:** Queries require the Partition Key — indexes let you query by other attributes.
 
 ### **A. Global Secondary Index (GSI)**
 
-- **The Rule:** Create an **alternate Primary Key** (Different PK and/or Sort Key).
-- **Scope:** Spans **entire table**.
-- **Projection:** Choose which attributes to copy to index (ALL, KEYS_ONLY, INCLUDE).
-- **Capacity:** GSI has **its own** RCU/WCU (Separate from base table).
-- **Limit:** 20 GSIs per table.
-- **Eventual Consistency:** GSI reads are **always eventually consistent** (Cannot be strongly consistent).
-- **Creation:** Can create GSI **after** table creation.
-
-**Example:** Base table PK = `UserID`, Sort Key = `Timestamp`. Create GSI with PK = `Email` to query by email.
+- **Alternate Primary Key** (different PK and/or Sort Key), spans the **entire table**. Projection = ALL/KEYS_ONLY/INCLUDE.
+- Has **its own** RCU/WCU; max 20 per table; reads are **always eventually consistent**; can be created **after** table creation.
+- *Example:* Base PK `UserID` + Sort `Timestamp` → add GSI with PK `Email` to query by email.
 
 ### **B. Local Secondary Index (LSI)**
 
-- **The Rule:** **Same Partition Key** as base table, but **different Sort Key**.
-- **Scope:** Only within the **same partition**.
-- **Capacity:** Shares RCU/WCU with base table.
-- **Limit:** 5 LSIs per table.
-- **Consistency:** Can use **strongly consistent** or eventually consistent reads.
-- **Creation:** Must create LSI **at table creation** (Cannot add later).
+- **Same Partition Key** as base table, **different Sort Key**; scoped to a single partition. Shares RCU/WCU; max 5 per table; supports strongly consistent reads; must be created **at table creation**.
 
 **Exam Contrast: GSI vs. LSI**
 
@@ -114,26 +68,10 @@
 
 ### **5. DynamoDB Streams**
 
-**The Rule:** Captures **time-ordered sequence** of item-level changes (INSERT, UPDATE, DELETE).
+**The Rule:** Captures a **time-ordered sequence** of item-level changes (INSERT, UPDATE, DELETE), retained **24 hours**, and can trigger **Lambda** for real-time processing.
 
-**How It Works:**
-
-- Change happens in table → Event written to Stream (Retained for **24 hours**).
-- Stream can trigger **Lambda** for real-time processing.
-
-**Use Cases:**
-
-- Send welcome email when new user inserted.
-- Replicate data to another table/region.
-- Audit log of changes.
-- Analytics on change patterns.
-
-**Stream View Types:**
-
-- `KEYS_ONLY`: Only PK and Sort Key.
-- `NEW_IMAGE`: Entire item after change.
-- `OLD_IMAGE`: Entire item before change.
-- `NEW_AND_OLD_IMAGES`: Both before and after.
+- **Use Cases:** Welcome emails on insert, cross-table/region replication, audit logs, change analytics.
+- **View Types:** `KEYS_ONLY`, `NEW_IMAGE`, `OLD_IMAGE`, `NEW_AND_OLD_IMAGES`.
 
 **Exam Trigger:** "React to changes in DynamoDB" → DynamoDB Streams + Lambda.
 
@@ -141,21 +79,9 @@
 
 ### **6. DynamoDB Accelerator (DAX)**
 
-**The Rule:** In-memory cache for DynamoDB. **Microsecond latency**.
+**The Rule:** In-memory cache that sits in front of DynamoDB — reduces read latency from **milliseconds to microseconds**. Reads hit DAX first; writes are write-through to DynamoDB.
 
-**How It Works:**
-
-- DAX sits in front of DynamoDB.
-- Read requests hit DAX first (If cached → Return immediately, else → Fetch from DynamoDB + Cache).
-- Write requests go through DAX to DynamoDB (Write-through cache).
-
-**Features:**
-
-- **Latency:** Reduces read latency from **milliseconds** to **microseconds**.
-- **Compatibility:** Drop-in replacement (Minimal code changes).
-- **Caching:** Item cache + Query cache.
-- **TTL:** Default 5 minutes (Configurable).
-- **Cluster:** Multi-node for HA (3+ nodes recommended).
+- Drop-in (minimal code changes); item cache + query cache; TTL default 5 min; multi-node cluster for HA (3+ recommended).
 
 **Exam Trigger:** "Reduce DynamoDB read latency to microseconds" → DAX.
 
@@ -168,23 +94,10 @@
 
 ### **7. Global Tables**
 
-**The Rule:** Multi-region, multi-active (All regions can read/write).
+**The Rule:** Multi-region, multi-active — all regions can read/write. Writes propagate to other regions typically < 1 sec; conflicts resolved Last-Writer-Wins (timestamp).
 
-**How It Works:**
-
-- Data replicated across selected regions.
-- Writes in any region automatically propagate to others (Typically < 1 second).
-- Conflict resolution: Last Writer Wins (Based on timestamp).
-
-**Requirements:**
-
-- **DynamoDB Streams must be enabled**.
-- **On-Demand or Auto Scaling** recommended for capacity.
-
-**Use Cases:**
-
-- Global applications (Low-latency reads/writes for users worldwide).
-- Disaster Recovery (Multi-region active-active).
+- **Requirements:** DynamoDB Streams enabled; On-Demand or Auto Scaling recommended.
+- **Use Cases:** Global low-latency apps; multi-region active-active DR.
 
 **Exam Trigger:** "Multi-region, low-latency reads and writes" → Global Tables.
 
@@ -192,20 +105,9 @@
 
 ### **8. Time to Live (TTL)**
 
-**The Rule:** Automatically delete items after expiration timestamp.
+**The Rule:** Auto-delete items after an expiration timestamp. Add a TTL attribute (**Unix epoch seconds**, not ms); DynamoDB deletes expired items within **48 hours**. Deletions consume no WCUs and appear in Streams if enabled.
 
-**How It Works:**
-
-- Add a TTL attribute (**Unix epoch timestamp in seconds**, not milliseconds) to items.
-- DynamoDB deletes expired items within **48 hours** (Background process).
-- Deletions do **NOT** consume WCUs (free cleanup).
-- Deleted items appear in DynamoDB Streams if enabled.
-
-**Use Cases:**
-
-- Session data (Auto-expire after 24 hours).
-- Temporary logs.
-- Event data (Keep only last 30 days).
+- **Use Cases:** Session data, temporary logs, time-limited event data.
 
 **Exam Trigger:** "Automatically delete old data" → TTL.
 
@@ -215,16 +117,11 @@
 
 ### **A. On-Demand Backups**
 
-- **The Rule:** Manual backups. Retained until deleted.
-- **Process:** Full backup. Does not affect performance or consume RCU/WCU.
-- **Restore:** Creates new table (Same region or cross-region).
+- Manual full backups, retained until deleted. No performance/capacity impact. Restore creates a new table (same or cross-region).
 
 ### **B. Point-in-Time Recovery (PITR)**
 
-- **The Rule:** Continuous backups. Restore to any second in last **35 days**.
-- **Enable:** Must be explicitly enabled.
-- **Restore:** Creates new table.
-- **Use Case:** Protect against accidental deletes/updates.
+- Continuous backups, restore to any second in the last **35 days**. Must be explicitly enabled; restore creates a new table. Protects against accidental deletes/updates.
 
 **Exam Trigger:** "Restore to specific timestamp" → PITR.
 
@@ -232,21 +129,10 @@
 
 ### **10. Transactions**
 
-**The Rule:** ACID transactions across **multiple items/tables**.
+**The Rule:** ACID transactions across **multiple items/tables**. `TransactWriteItems` = atomic write (all-or-nothing); `TransactGetItems` = atomic strongly-consistent read.
 
-**APIs:**
-
-- `TransactWriteItems`: Atomic write (All succeed or all fail).
-- `TransactGetItems`: Atomic read (Strongly consistent).
-
-**Cost:** Consumes **2x** RCU/WCU.
-
-**Limits:** Max **100 items** per transaction call. Max **4 MB** total size.
-
-**Use Cases:**
-
-- Financial transactions (Debit one account, Credit another).
-- Order processing (Update inventory + Create order atomically).
+- **Cost:** 2x RCU/WCU. **Limits:** max 100 items, 4 MB total per call.
+- **Use Cases:** Financial transfers (debit + credit), order processing (inventory + order atomically).
 
 **Exam Trigger:** "All-or-nothing operation across multiple items" → Transactions.
 
@@ -263,20 +149,9 @@
 
 ### **12. DynamoDB Export to S3**
 
-**The Rule:** Export full table data to **S3** without consuming any **RCUs** or affecting table performance.
+**The Rule:** Export full table data to **S3** with no RCU consumption or performance impact. Requires PITR; exports DynamoDB JSON or Amazon Ion at any point within the 35-day PITR window. Query exports with Athena, EMR, or Redshift Spectrum.
 
-**How It Works:**
-
-- Uses **PITR** (Must be enabled).
-- Exports data in **DynamoDB JSON** or **Amazon Ion** format.
-- Export is a point-in-time snapshot (Any point within PITR window — last 35 days).
-- Exported data can be queried with **Athena**, **EMR**, or **Redshift Spectrum**.
-
-**Use Cases:**
-
-- Analytics on DynamoDB data without impacting production reads.
-- Data lake ingestion (Export → S3 → Athena for ad-hoc queries).
-- Archival/compliance snapshots.
+- **Use Cases:** Analytics without impacting production, data lake ingestion, archival/compliance snapshots.
 
 **Exam Trigger:** "Analyze DynamoDB data without impacting performance" or "Export DynamoDB to S3 without consuming RCUs" → DynamoDB Export to S3.
 
@@ -288,17 +163,8 @@
 
 ### **1. ElastiCache Overview**
 
-- **The Rule:** Managed in-memory data store. **Sub-millisecond latency**.
-- **Engines:**
-    - **Redis:** Feature-rich. Persistence, Replication, Backup.
-    - **Memcached:** Simple. Multi-threaded. No persistence.
-
-**Use Cases:**
-
-- Cache database query results.
-- Session storage.
-- Real-time analytics.
-- Leaderboards, Rate limiting.
+- **The Rule:** Managed in-memory data store, **sub-millisecond latency**. Engines: **Redis** (feature-rich — persistence, replication, backup) and **Memcached** (simple, multi-threaded, no persistence).
+- **Use Cases:** Cache query results, session storage, real-time analytics, leaderboards, rate limiting.
 
 ---
 
@@ -325,20 +191,13 @@
 
 ### **3. Redis Cluster Mode**
 
-### **A. Cluster Mode Disabled (The Simple Setup)**
+### **A. Cluster Mode Disabled (Simple)**
 
-- **The Rule:** One primary node + Up to 5 replicas.
-- **Replication:** Async replication to replicas.
-- **Failover:** Automatic promotion of replica to primary (Multi-AZ).
-- **Scaling:** **Vertical only** (Change node type). Cannot scale horizontally.
+- One primary + up to 5 replicas (async replication). Automatic failover (Multi-AZ). Scales **vertically only** (change node type) — no horizontal scaling.
 
-### **B. Cluster Mode Enabled (The Distributed)**
+### **B. Cluster Mode Enabled (Distributed)**
 
-- **The Rule:** Data **sharded** across multiple primary nodes (Each shard = 1 primary + up to 5 replicas).
-- **Shards:** Up to **500 nodes** total (90 shards * 5 replicas + 90 primaries).
-- **Scaling:** **Horizontal** (Add/remove shards).
-- **Performance:** Higher throughput.
-- **Use Case:** Large datasets, High throughput.
+- Data **sharded** across multiple primaries (each shard = 1 primary + up to 5 replicas), up to **500 nodes** total. Scales **horizontally** for higher throughput and large datasets.
 
 **Exam Trigger:** "Scale Redis horizontally" → Cluster Mode Enabled.
 
@@ -348,20 +207,11 @@
 
 ### **A. Lazy Loading (Cache-Aside)**
 
-- **Flow:**
-    1. App requests data from cache.
-    2. If **Cache Hit** → Return data.
-    3. If **Cache Miss** → Fetch from DB → Write to cache → Return data.
-- **Pros:** Only requested data is cached (Efficient memory use).
-- **Cons:** First request is slow (Miss penalty). Stale data possible.
+- Cache hit → return; cache miss → fetch from DB, write to cache, return. **Pros:** only requested data cached (efficient memory). **Cons:** miss penalty on first request, possible stale data.
 
 ### **B. Write-Through**
 
-- **Flow:**
-    1. App writes data to DB.
-    2. App writes data to cache (Simultaneously).
-- **Pros:** Data always fresh in cache. No stale reads.
-- **Cons:** Every write hits cache (Even if data never read). Write penalty.
+- App writes to DB and cache simultaneously. **Pros:** cache always fresh, no stale reads. **Cons:** write penalty, caches data that may never be read.
 
 **Exam Best Practice:** Combine Lazy Loading + Write-Through + TTL.
 
@@ -378,10 +228,7 @@
 
 ### **6. ElastiCache Global Datastore (Redis)**
 
-- **Purpose:** Cross-region replication for Redis. Active-passive with read replicas in secondary regions.
-- **Replication:** Typically < 1 second latency between regions.
-- **Failover:** Promote a secondary region to primary for DR (manual or automatic).
-- **Secondary clusters:** Read-only. Can serve local reads to reduce latency.
+- Cross-region Redis replication, active-passive with read-only secondary clusters serving local reads. < 1 sec cross-region latency. Promote a secondary region to primary for DR.
 - *Exam Trigger:* "Cross-region Redis for DR or global reads" → ElastiCache Global Datastore.
 
 ---
