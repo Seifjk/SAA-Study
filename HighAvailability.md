@@ -252,7 +252,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Sticky Sessions"**
+### **Scenario 1**
 
 **The Situation:** A web application stores user session data **in-memory** on each EC2 instance (not in a database). Users report being randomly logged out because the load balancer sends their requests to different instances.
 
@@ -275,7 +275,7 @@ D. Increase the instance size.
 
 ---
 
-### **Scenario 2: The "Static IP"**
+### **Scenario 2**
 
 **The Situation:** A third-party payment gateway requires you to whitelist specific IP addresses in their firewall. Your application runs on EC2 behind a load balancer. The payment gateway refuses to whitelist CIDR ranges—they need **exact static IPs**.
 
@@ -298,7 +298,7 @@ D. Use Route 53 with Alias records.
 
 ---
 
-### **Scenario 3: The "Morning Spike"**
+### **Scenario 3**
 
 **The Situation:** A SaaS application experiences a predictable traffic spike every weekday at 9:00 AM when employees log in. By 9:15 AM, CPU hits 90% and users experience slow performance. By 9:30 AM, Auto Scaling finally adds enough instances, but damage is done.
 
@@ -321,7 +321,7 @@ D. Switch to Spot Instances.
 
 ---
 
-### **Scenario 4: The "Microservices Router"**
+### **Scenario 4**
 
 **The Situation:** A company is migrating from a monolith to microservices. They have three separate services: `/api/users`, `/api/orders`, and `/api/inventory`, each running on separate EC2 Auto Scaling Groups. They want **one domain** (`api.example.com`) to route to all three services.
 
@@ -344,7 +344,7 @@ D. Use CloudFront with multiple origins.
 
 ---
 
-### **Scenario 5: The "Slow Startup"**
+### **Scenario 5**
 
 **The Situation:** Your application takes **8 minutes** to initialize on startup (loads large datasets into memory). When traffic spikes, Auto Scaling launches new instances, but they don't enter service fast enough. Users experience 503 errors during the 8-minute startup window.
 
