@@ -335,7 +335,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Root Domain Problem"**
+### Scenario 1
 
 **The Situation:** A company hosts a website on an Application Load Balancer. They want users to access the site using the **root domain** (`example.com`) instead of a subdomain (`www.example.com`). They try to create a CNAME record but Route 53 rejects it.
 
@@ -358,7 +358,7 @@ D. Use a TXT Record.
 
 ---
 
-### **Scenario 2: The "Global Performance"**
+### Scenario 2
 
 **The Situation:** A SaaS application has users worldwide. The application runs in **three regions**: `us-east-1`, `eu-west-1`, and `ap-southeast-1`. The company wants users automatically routed to the **fastest region** based on their location.
 
@@ -381,7 +381,7 @@ D. Use CloudFront.
 
 ---
 
-### **Scenario 3: The "Premium Content"**
+### Scenario 3
 
 **The Situation:** A streaming service hosts video files in S3 and serves them via CloudFront. Only **paid subscribers** should access videos. Free users should be blocked. The company wants to prevent URL sharing (User shares URL → Another user watches free).
 
@@ -404,7 +404,7 @@ D. Use WAF to block unauthorized IPs.
 
 ---
 
-### **Scenario 4: The "Static IP Requirement"**
+### Scenario 4
 
 **The Situation:** A gaming company runs multiplayer servers on EC2 behind Network Load Balancers in **four regions**. Players complain about lag when connecting over the public internet. The game client requires **static IPs** to connect (Hardcoded in client config). The company needs to improve latency and provide failover.
 
@@ -427,7 +427,7 @@ D. Use Elastic IPs for each NLB and distribute to clients.
 
 ---
 
-### **Scenario 5: The "Cache Invalidation"**
+### Scenario 5
 
 **The Situation:** A website uses CloudFront to serve static assets (CSS, JS, Images) from S3. When developers deploy updates, users see **old cached versions** for hours (24-hour TTL). The company pays $500/month for CloudFront invalidations. They want a better solution.
 

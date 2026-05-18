@@ -234,7 +234,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Cheapest DR"**
+### Scenario 1
 
 **The Situation:** A company runs a non-critical internal application on EC2 with an RDS MySQL database. They need a DR strategy for their secondary region. The business accepts up to **24 hours of downtime** and up to **4 hours of data loss**. They want the **lowest cost** DR option.
 
@@ -256,7 +256,7 @@ D. Keep a Pilot Light with the RDS database always running in the DR region.
 
 ---
 
-### **Scenario 2: The "Database Migration"**
+### Scenario 2
 
 **The Situation:** A company needs to migrate their on-premises **Oracle** database to **Amazon Aurora PostgreSQL**. They require **near-zero downtime** during migration and the application must continue serving traffic throughout the migration.
 
@@ -279,7 +279,7 @@ D. Use AWS DataSync to transfer the database files to Aurora.
 
 ---
 
-### **Scenario 3: The "Multi-Account Governance"**
+### Scenario 3
 
 **The Situation:** A large enterprise uses AWS Organizations with 50 accounts. The security team requires that **no account can launch resources outside of us-east-1 and eu-west-1**. Some developers have administrator access in their accounts.
 

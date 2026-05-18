@@ -250,7 +250,7 @@
 
 ---
 
-### **Scenario 1: The "Cluster" Problem**
+### Scenario 1
 
 **The Situation:** A legacy application runs on a cluster of 3 EC2 instances in a **single Availability Zone**. The application requires high-performance **block storage** that can be accessed by all three instances simultaneously to ensure data consistency.
 
@@ -271,7 +271,9 @@ D. Use EFS with General Purpose performance mode.
 - **Trap D — EFS:** EFS is genuinely shared and multi-writer, but it's a **file** system (NFS), not **block** storage. The question explicitly says block storage — EFS is the wrong category.
 - **The Fix — Option C:** **EBS Multi-Attach** is supported only on **io1/io2** volumes and lets multiple EC2 instances in the **same AZ** share one block volume — exactly the requirement. (The app must be cluster-aware to handle concurrent writes, which the scenario implies.)
 
-### **Scenario 2: The "Ephemeral" Trap**
+---
+
+### Scenario 2
 
 **The Situation:** You are designing a distributed cache using Redis on EC2. The application handles data replication at the software layer. You need the **highest possible disk I/O performance** and low latency. Data persistence on the disk is **not critical** if the instance stops.
 
@@ -292,7 +294,9 @@ D. EFS Max I/O mode.
 - **Trap D — EFS Max I/O:** EFS is a shared **file** system over the network — highest latency of all the options. Max I/O mode raises throughput ceilings but *increases* per-operation latency.
 - **The Fix — Option C:** **Instance Store** is physically attached to the host — lowest possible latency, millions of IOPS. The line "data persistence not critical if the instance stops" is the explicit green light to accept ephemeral storage, and the app already replicates data itself.
 
-### **Scenario 3: The "Windows Migration"**
+---
+
+### Scenario 3
 
 **The Situation:** A company is migrating 50 TB of data from an on-premise Windows File Server to AWS. The application uses **SMB protocol** and requires integration with **Active Directory** for permissions management.
 
@@ -313,7 +317,9 @@ D. Amazon EBS Multi-Attach.
 - **Trap D — EBS Multi-Attach:** EBS is raw block storage for a few instances in one AZ — not a file server, no SMB, no AD integration. Doesn't fit a file-server migration at all.
 - **The Fix — Option C:** **FSx for Windows File Server** natively provides **SMB** shares and integrates with **Active Directory** for permissions. The keyword triple — Windows + SMB + Active Directory — always points here.
 
-### **Scenario 4: The "Compliance Archive"**
+---
+
+### Scenario 4
 
 **The Situation:** A hospital must retain patient records for 7 years for regulatory compliance. These records are almost never accessed, but if an audit occurs, the data must be retrievable within **12 hours**. The solution must be the **lowest possible cost**.
 
@@ -334,7 +340,9 @@ D. S3 Intelligent-Tiering.
 - **Trap D — Intelligent-Tiering:** Auto-moves objects between tiers based on access patterns and charges a per-object monitoring fee. For data with a *known* never-accessed pattern, you'd just pay the monitoring overhead for nothing.
 - **The Fix — Option C:** **Glacier Deep Archive** is the **cheapest** S3 class. Its standard retrieval is ~12 hours — which exactly satisfies the "retrievable within 12 hours" audit requirement. Lowest cost + meets the SLA.
 
-### **Scenario 5: The "KMS Bottleneck"**
+---
+
+### Scenario 5
 
 **The Situation:** You are uploading millions of small files to an S3 bucket encrypted with **SSE-KMS**. Your application is receiving HTTP 503 "Slow Down" errors, but S3 metrics show you are well below the bucket throughput limits.
 

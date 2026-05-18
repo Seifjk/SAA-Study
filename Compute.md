@@ -205,7 +205,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Burst Exhaustion"**
+### Scenario 1
 
 **The Situation:** Your development team is running a web application on a `t2.medium` instance. During business hours (9 AM - 5 PM), users report that the application becomes extremely slow. At night and on weekends, the application performs normally. CloudWatch shows CPU at 100% during business hours but low at night.
 
@@ -228,7 +228,7 @@ D. Enable Auto Scaling.
 
 ---
 
-### **Scenario 2: The "Batch Job"**
+### Scenario 2
 
 **The Situation:** A company needs to process large video rendering jobs overnight. The jobs are **fault-tolerant** (can restart from checkpoints) and not time-sensitive. The current On-Demand fleet costs $5,000/month. The CFO wants to reduce costs by at least 70%.
 
@@ -251,7 +251,7 @@ D. Use Dedicated Hosts.
 
 ---
 
-### **Scenario 3: The "HPC Cluster"**
+### Scenario 3
 
 **The Situation:** A financial modeling application requires **10 Gbps network bandwidth** between nodes for tightly-coupled parallel processing. The workload cannot tolerate network latency spikes. All instances must be in the **same Availability Zone** for the application to function correctly.
 
@@ -274,7 +274,7 @@ D. Place instances in different AZs with VPC Peering.
 
 ---
 
-### **Scenario 4: The "License Server"**
+### Scenario 4
 
 **The Situation:** Your company uses Oracle Database with per-socket licensing. Oracle requires you to track exactly how many physical CPU sockets are in use for licensing compliance. The database workload is steady and runs 24/7.
 
@@ -297,7 +297,7 @@ D. Use Spot Instances.
 
 ---
 
-### **Scenario 5: The "Failover IP"**
+### Scenario 5
 
 **The Situation:** You have a critical application running on an EC2 instance with a **static private IP** that is hardcoded in many downstream systems. If the primary instance fails, you need to launch a standby instance and have it immediately take over the **same private IP** to avoid reconfiguring downstream systems.
 

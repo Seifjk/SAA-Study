@@ -248,7 +248,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Read-Heavy Analytics"**
+### Scenario 1
 
 **The Situation:** A production MySQL database serves a web application with thousands of users. The data team wants to run long-running analytical queries but these queries slow down the primary database, causing performance issues for users.
 
@@ -271,7 +271,7 @@ D. Migrate to Aurora Serverless.
 
 ---
 
-### **Scenario 2: The "Production Failover"**
+### Scenario 2
 
 **The Situation:** A financial application requires a MySQL database with **zero data loss** during failures. The database must automatically failover to a standby instance if the primary AZ becomes unavailable. RTO (Recovery Time Objective) must be under 2 minutes.
 
@@ -294,7 +294,7 @@ D. Use Aurora Serverless.
 
 ---
 
-### **Scenario 3: The "Lambda Connection Storm"**
+### Scenario 3
 
 **The Situation:** A serverless application uses Lambda functions to query a PostgreSQL RDS database. During traffic spikes, Lambda scales to 2000 concurrent executions. The database starts rejecting connections with "too many connections" errors.
 
@@ -317,7 +317,7 @@ D. Enable Multi-AZ.
 
 ---
 
-### **Scenario 4: The "Global Reads"**
+### Scenario 4
 
 **The Situation:** An e-commerce company has customers in North America (us-east-1) and Europe (eu-west-1). The application requires **low-latency reads** in both regions. Writes only happen in North America. In case of regional failure, they need to promote the European region to primary in **under 1 minute**.
 
@@ -340,7 +340,7 @@ D. Use S3 Cross-Region Replication.
 
 ---
 
-### **Scenario 5: The "Accidental DELETE"**
+### Scenario 5
 
 **The Situation:** A developer accidentally runs `DELETE FROM orders WHERE status='pending'` without a WHERE clause, deleting **all orders** from the production Aurora database. The mistake is discovered 30 minutes later. The business needs the data back **immediately** with minimal downtime.
 

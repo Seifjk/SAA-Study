@@ -334,7 +334,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Microsecond Latency"**
+### Scenario 1
 
 **The Situation:** A mobile gaming application uses DynamoDB to store player profiles and game state. The read latency is currently 5-10 milliseconds, but the product team wants to improve user experience by reducing latency to **under 1 millisecond**. Read traffic is 10x higher than write traffic.
 
@@ -357,7 +357,7 @@ D. Enable DynamoDB Global Tables.
 
 ---
 
-### **Scenario 2: The "Email Query"**
+### Scenario 2
 
 **The Situation:** A DynamoDB table stores user data with `UserID` (Partition Key) and `RegistrationDate` (Sort Key). The application now needs to query users by their **email address**. Currently, scanning the entire table is too slow and expensive.
 
@@ -380,7 +380,7 @@ D. Use DynamoDB Streams to maintain a separate table indexed by email.
 
 ---
 
-### **Scenario 3: The "Session Store"**
+### Scenario 3
 
 **The Situation:** A web application needs to store user session data for 30 minutes. The application runs on an Auto Scaling Group across multiple AZs. Session data must be shared across all instances. If the cache cluster fails, session data must be recoverable.
 
@@ -403,7 +403,7 @@ D. Store sessions on EC2 instance storage.
 
 ---
 
-### **Scenario 4: The "Real-Time Notifications"**
+### Scenario 4
 
 **The Situation:** An e-commerce application stores orders in DynamoDB. When a new order is created, the system must send a confirmation email to the customer and update inventory in a separate table. This must happen **in real-time** without polling.
 
@@ -426,7 +426,7 @@ D. Use CloudWatch Events to monitor the table.
 
 ---
 
-### **Scenario 5: The "Throttling Hell"**
+### Scenario 5
 
 **The Situation:** A DynamoDB table has **1000 WCUs** provisioned. A Global Secondary Index (GSI) on the table has **50 WCUs** provisioned. During peak hours, write operations fail with `ProvisionedThroughputExceededException`, but the base table's write metrics show only 40% utilization.
 

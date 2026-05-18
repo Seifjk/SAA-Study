@@ -341,7 +341,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Long Video Processing"**
+### Scenario 1
 
 **The Situation:** A video processing application needs to transcode uploaded videos. The transcoding process takes **25 minutes** per video. The architect proposes using Lambda triggered by S3 uploads.
 
@@ -364,7 +364,7 @@ D. Use Step Functions to chain multiple Lambda functions.
 
 ---
 
-### **Scenario 2: The "Cold Start Killer"**
+### Scenario 2
 
 **The Situation:** A customer-facing API uses Lambda behind API Gateway. Users report that the **first request** after periods of inactivity takes 2 seconds (cold start), but subsequent requests are < 100 ms. The business requires **all requests** to complete in < 200 ms.
 
@@ -387,7 +387,7 @@ D. Switch to EC2 instances.
 
 ---
 
-### **Scenario 3: The "API Rate Limit"**
+### Scenario 3
 
 **The Situation:** A SaaS company offers a public API with three tiers: **Free** (100 requests/day), **Basic** (10,000 requests/day), and **Premium** (unlimited). They need to enforce these limits and identify which customer made each request.
 
@@ -410,7 +410,7 @@ D. Use CloudWatch alarms to alert on high usage.
 
 ---
 
-### **Scenario 4: The "Shared Dependencies"**
+### Scenario 4
 
 **The Situation:** A company has 50 Lambda functions that all use the same data validation library (200 MB). Deploying updates requires uploading 200 MB to each function (slow). Developers want a way to share this library across all functions.
 
@@ -433,7 +433,7 @@ D. Use EFS to mount shared storage.
 
 ---
 
-### **Scenario 5: The "Order Orchestration"**
+### Scenario 5
 
 **The Situation:** An e-commerce platform's order processing involves: (1) Validate payment (Lambda), (2) Update inventory (DynamoDB), (3) Send confirmation email (SNS), (4) Wait 30 minutes, (5) Check if shipped (Lambda). If any step fails, send alert and stop. Need visual monitoring and automatic retries.
 

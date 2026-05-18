@@ -407,7 +407,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "SQL on S3"**
+### Scenario 1
 
 **The Situation:** A company stores 5 TB of web analytics data in S3 as compressed JSON files. Business analysts need to run ad-hoc SQL queries against this data to generate weekly reports. The company wants the simplest, most cost-effective solution with no infrastructure to manage.
 
@@ -430,7 +430,7 @@ D. Set up an EMR cluster with Hive to query the data.
 
 ---
 
-### **Scenario 2: The "Batch Processing"**
+### Scenario 2
 
 **The Situation:** A genomics research company needs to process 10,000 DNA sequence files. Each file takes 2-4 hours to process and requires 16 GB of memory. The processing is packaged as a Docker container. The workload runs once per week.
 
@@ -453,7 +453,7 @@ D. Use Amazon ECS with a fixed cluster of EC2 instances running 24/7.
 
 ---
 
-### **Scenario 3: The "Data Lake"**
+### Scenario 3
 
 **The Situation:** A healthcare company has data scattered across S3 (CSV files), RDS (patient records), and DynamoDB (IoT sensor data). They want to build a centralized data lake on S3 with the ability to query across all sources. Different departments need different levels of access -- some can see all columns, others only non-PII columns.
 
@@ -476,7 +476,7 @@ D. Use EMR to process and consolidate all data into a single S3 bucket.
 
 ---
 
-### **Scenario 4: The "Legacy Migration"**
+### Scenario 4
 
 **The Situation:** A company is migrating a monolithic Java web application from on-premises to AWS. The team has limited AWS experience and wants to deploy quickly with minimal infrastructure management. They want automated scaling, load balancing, and deployment management. The application is NOT containerized.
 
@@ -499,7 +499,7 @@ D. Refactor the app into Lambda functions.
 
 ---
 
-### **Scenario 5: The "Event-Driven Architecture"**
+### Scenario 5
 
 **The Situation:** An e-commerce platform needs to react to order events (order placed, shipped, delivered, returned). Different microservices need different events: the inventory service needs "order placed," the notification service needs "shipped" and "delivered," and the analytics service needs all events. Events also need to integrate with a third-party SaaS returns-processing system.
 

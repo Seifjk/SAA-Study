@@ -310,7 +310,7 @@ AWS has **4 Kinesis services**:
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Order Processing"**
+### Scenario 1
 
 **The Situation:** An e-commerce platform processes orders. Each order has multiple steps: Validate Payment → Update Inventory → Ship Order. Steps must execute **in exact order** for each order. The system currently uses SQS Standard Queue, but orders are occasionally processed out of order, causing inventory errors.
 
@@ -333,7 +333,7 @@ D. Use SNS Topic with Lambda.
 
 ---
 
-### **Scenario 2: The "Fan-Out Notification"**
+### Scenario 2
 
 **The Situation:** When a user uploads a photo, the system must: (1) Send confirmation email, (2) Generate thumbnail (Lambda), (3) Store metadata in DynamoDB, (4) Audit log in S3. Currently, the upload service calls each system directly (Tight coupling). If one system is down, upload fails.
 
@@ -356,7 +356,7 @@ D. Use SNS Topic with 4 SQS Queues (One per service) in a Fan-Out pattern.
 
 ---
 
-### **Scenario 3: The "Cost Reduction"**
+### Scenario 3
 
 **The Situation:** A Lambda function polls an SQS queue every second using short polling. CloudWatch shows **86,400 API calls per day** (1 call/sec * 86,400 sec), but only **500 messages** are processed per day. Most API calls return empty (No messages).
 
@@ -379,7 +379,7 @@ D. Use Kinesis Data Streams.
 
 ---
 
-### **Scenario 4: The "Real-Time Dashboard"**
+### Scenario 4
 
 **The Situation:** A gaming company collects player telemetry (Position, Score, Actions) from 100,000 concurrent players. Data must be processed **in real-time** (< 1 second latency) to update live leaderboards. The analytics team also needs to **replay data** from the last 7 days for model training.
 
@@ -402,7 +402,7 @@ D. Write directly to DynamoDB.
 
 ---
 
-### **Scenario 5: The "ETL Pipeline"**
+### Scenario 5
 
 **The Situation:** IoT devices send telemetry data (JSON) to AWS. The data must be **compressed**, **transformed** (Convert Celsius to Fahrenheit), and loaded into **S3** for analytics with Athena. The company wants a **fully managed solution** with no servers or custom consumers.
 

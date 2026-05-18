@@ -249,7 +249,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "No Ops Containers"**
+### Scenario 1
 
 **The Situation:** A startup wants to run microservices in Docker containers. They have a small team with **no DevOps experience** and don't want to manage servers. The workload is **variable** (spikes during business hours, near-zero at night).
 
@@ -271,7 +271,7 @@ D. Run Docker directly on EC2 with Docker Compose.
 
 ---
 
-### **Scenario 2: The "Shared Content"**
+### Scenario 2
 
 **The Situation:** A media processing application runs 50 ECS tasks (Fargate) that all need **read/write access** to the same set of video files. The files must persist even if tasks restart. Tasks may run concurrently and need **shared access**.
 
@@ -294,7 +294,7 @@ D. Use Fargate ephemeral storage.
 
 ---
 
-### **Scenario 3: The "Cost Optimization"**
+### Scenario 3
 
 **The Situation:** A batch processing workload runs in ECS 24/7. The workload is **fault-tolerant** (tasks can restart). The company wants to reduce costs by **70%** while maintaining throughput.
 
@@ -316,7 +316,7 @@ D. Use Lambda instead.
 
 ---
 
-### **Scenario 4: The "S3 Access"**
+### Scenario 4
 
 **The Situation:** An ECS task (Fargate) needs to read files from an S3 bucket. The developer hardcoded AWS credentials in the container image. Security team flags this as a violation.
 
@@ -339,7 +339,7 @@ D. Use Secrets Manager to store credentials and fetch at runtime.
 
 ---
 
-### **Scenario 5: The "Kubernetes Migration"**
+### Scenario 5
 
 **The Situation:** A company runs a large application on **Kubernetes** in their on-premise datacenter using Helm charts, custom operators, and StatefulSets. They want to migrate to AWS with **minimal changes** to their Kubernetes manifests.
 
