@@ -333,7 +333,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Memory Alert"**
+### **Scenario 1**
 
 **The Situation:** An EC2 instance runs a Java application with a memory leak. The instance becomes unresponsive when memory usage exceeds 90%. CloudWatch Alarms are configured for CPU, but the CPU stays low even when the application fails.
 
@@ -356,7 +356,7 @@ D. Use VPC Flow Logs to detect the issue.
 
 ---
 
-### **Scenario 2: The "Compliance Audit"**
+### **Scenario 2**
 
 **The Situation:** A company must prove to auditors that **all S3 buckets have been private** for the last 6 months. They need historical evidence showing no buckets were ever public during this period.
 
@@ -379,7 +379,7 @@ D. Use Trusted Advisor to check for public buckets.
 
 ---
 
-### **Scenario 3: The "SSH-Less Access"**
+### **Scenario 3**
 
 **The Situation:** A security policy requires **no open SSH ports** (port 22) on EC2 instances. Developers need to troubleshoot instances by running commands remotely. The current solution uses a Bastion Host in a public subnet with port 22 open.
 
@@ -402,7 +402,7 @@ D. Use EC2 Instance Connect.
 
 ---
 
-### **Scenario 4: The "Deleted Resource Mystery"**
+### **Scenario 4**
 
 **The Situation:** A production RDS instance was deleted at 3:47 AM. No one on the team admits to deleting it. The team needs to identify **who** deleted the instance and **from which IP address**.
 
@@ -430,7 +430,7 @@ D. Use Trusted Advisor to identify the issue.
 
 ---
 
-### **Scenario 5: The "Auto-Remediation"**
+### **Scenario 5**
 
 **The Situation:** Security policy requires **all EBS volumes to be encrypted**. Developers occasionally launch unencrypted volumes by mistake. The security team manually detects and fixes these violations weekly. They want **automatic detection and remediation**.
 
