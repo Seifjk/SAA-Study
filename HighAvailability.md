@@ -364,3 +364,118 @@ D. Switch to Lambda.
 - **Trap B — Increase cooldown:** Cooldown *delays* further scaling actions to prevent thrashing. It does the opposite of what's needed — it would make the ASG slower to respond, not faster.
 - **Trap D — Switch to Lambda:** Lambda has a 15-minute cap and isn't built for a long-lived stateful app that loads large datasets into memory. Re-architecting to Lambda is a massive change, not a fix for ASG startup time.
 - **The Fix — Option C:** A **Warm Pool** keeps pre-initialized instances in a **stopped** state (app already loaded into memory). On a spike the ASG just **starts** one (30–60s) instead of launching cold (8 min). You only pay EBS storage while they sit stopped.
+
+---
+
+### **Scenario 6**
+
+**The Situation:** An application runs behind an ALB on an Auto Scaling Group. During scale-in and deployments, users on long-running file uploads suddenly get **connection reset errors** — the instance handling their request is terminated mid-transfer. The team needs in-flight requests to finish gracefully before an instance is removed.
+
+**The Options:**
+
+A. Increase the ALB idle timeout to 4000 seconds.
+
+B. Enable Connection Draining (Deregistration Delay) on the Target Group.
+
+C. Enable Cross-Zone Load Balancing.
+
+D. Increase the ASG cooldown period.
+
+**The Logic:**
+
+- **Trap A — ALB idle timeout:** Idle timeout closes a connection after a period of *no data flowing*. An active upload is never idle, and this setting does nothing when the *instance itself* is being terminated. Wrong knob.
+- **Trap C — Cross-Zone Load Balancing:** This evens out traffic *distribution* across AZs. It has zero effect on what happens to in-flight requests when a target is deregistered.
+- **Trap D — ASG cooldown:** Cooldown spaces out *scaling actions*. It doesn't tell the load balancer to wait for active connections to drain before killing a target.
+- **The Fix — Option B:** **Connection Draining** (a.k.a. Deregistration Delay) makes the load balancer **stop sending new requests** to a deregistering target while **letting existing in-flight requests complete** (up to the configured timeout, 1–3600s). Exactly the graceful-termination behavior needed.
+
+---
+
+### **Scenario 7**
+
+**The Situation:** A company runs a fleet behind a **Network Load Balancer** across 3 AZs. Most backend instances live in one AZ. Engineers notice traffic is unevenly distributed — instances in the smaller AZs are overloaded while others sit idle. They enable Cross-Zone Load Balancing and traffic evens out, but the **next monthly bill increases**.
+
+**The Options:**
+
+A. This is expected — NLB charges for **inter-AZ data transfer** when Cross-Zone Load Balancing is enabled.
+
+B. The bill increased because NLB switched to a higher pricing tier.
+
+C. Cross-Zone Load Balancing is not supported on NLB; the charge is a billing error.
+
+D. The charge is for Elastic IPs automatically attached to the NLB.
+
+**The Logic:**
+
+- **Trap B — pricing tier:** NLB has no "tiers" that flip on with this feature. Made-up mechanism.
+- **Trap C — not supported:** False — NLB *does* support Cross-Zone Load Balancing. It's simply **disabled by default** (unlike ALB, where it's always on and free).
+- **Trap D — Elastic IPs:** Enabling cross-zone does not auto-attach EIPs. Unrelated.
+- **The Fix — Option A:** On **ALB**, cross-zone is always on and **free**. On **NLB** (and GWLB) it's **off by default**, and when you enable it, traffic crossing AZ boundaries incurs **inter-AZ data transfer charges**. The behavior the engineers got is correct — the cost is the documented trade-off.
+
+---
+
+### **Scenario 8**
+
+**The Situation:** A team bakes application updates into a new AMI. They need to roll the new AMI out to **all instances** in a production Auto Scaling Group with **no downtime** — keeping a minimum percentage of healthy instances in service throughout the rollout.
+
+**The Options:**
+
+A. Manually terminate instances one by one so the ASG relaunches them with the new AMI.
+
+B. Update the Launch Template to the new AMI and start an ASG Instance Refresh with a minimum healthy percentage.
+
+C. Update the Launch Template and wait for the ASG to naturally cycle instances.
+
+D. Create a brand-new ASG with the new AMI and delete the old one.
+
+**The Logic:**
+
+- **Trap A — manual termination:** Tedious, error-prone, and there's no built-in control over how many stay healthy at once — you risk dropping below capacity. Reinventing a managed feature by hand.
+- **Trap C — wait for natural cycling:** An ASG does **not** replace healthy instances just because the Launch Template changed. Existing instances keep the old AMI indefinitely — the rollout never happens.
+- **Trap D — new ASG, delete old:** This is a blue/green-style swap, heavier than needed and it churns the ALB target registration. Workable but not the purpose-built, low-risk answer.
+- **The Fix — Option B:** **ASG Instance Refresh** rolls instances in batches, honoring a **minimum healthy percentage** so capacity never drops below the set threshold — replacing every instance with the new AMI, no downtime. The native tool for this exact job.
+
+---
+
+### **Scenario 9**
+
+**The Situation:** An Auto Scaling Group launches new instances whose application takes ~5 minutes to fully start. The ASG keeps marking these new instances **unhealthy and terminating them** before the app finishes booting, causing an endless launch-terminate loop.
+
+**The Options:**
+
+A. Switch the ASG health check from ELB type to EC2 type.
+
+B. Increase the Health Check Grace Period to cover the startup time.
+
+C. Increase the ASG cooldown period.
+
+D. Reduce the ALB health check interval so instances are checked sooner.
+
+**The Logic:**
+
+- **Trap A — switch to EC2 health check:** This would "fix" it by no longer checking whether the *app* responds — only whether the VM runs. You'd stop terminating instances, but you'd also stop detecting genuinely broken apps. Masks the problem, weakens HA.
+- **Trap C — cooldown period:** Cooldown delays *scaling actions*. It does nothing about health checks evaluating a still-booting instance as failed.
+- **Trap D — check sooner:** Checking *earlier* makes it worse — the ASG would fail the instance even faster, before the app is up.
+- **The Fix — Option B:** The **Health Check Grace Period** is the warm-up window before health checks start counting against a new instance. Set it longer than the ~5-minute startup so the app has time to come up before being judged. The textbook fix for "new instances fail health checks during boot."
+
+---
+
+### **Scenario 10**
+
+**The Situation:** A worker fleet of EC2 instances in an Auto Scaling Group processes jobs from an **SQS queue**. During busy periods the queue backs up with thousands of messages and processing falls behind. CPU on the workers stays moderate, so CPU-based scaling never triggers. The team needs the fleet to scale with the **actual backlog**.
+
+**The Options:**
+
+A. Use Target Tracking on average CPU utilization with a lower target.
+
+B. Use a Target Tracking policy on a custom metric: SQS `ApproximateNumberOfMessagesVisible` divided by the number of in-service instances (backlog per instance).
+
+C. Use Scheduled Scaling to add workers every hour.
+
+D. Switch the workers to Spot Instances.
+
+**The Logic:**
+
+- **Trap A — CPU-based scaling:** The scenario states CPU stays moderate even when the queue is backed up — CPU simply isn't the signal that reflects load here. Lowering the target won't help because the metric itself is wrong.
+- **Trap C — Scheduled Scaling:** The backlog is driven by *unpredictable* job volume, not the clock. A fixed hourly schedule won't match real demand.
+- **Trap D — Spot Instances:** A cost/purchasing choice. It changes what you pay, not *how many* workers run or *when* they scale. Doesn't address the backlog.
+- **The Fix — Option B:** Scale on the queue itself. Use the SQS metric **`ApproximateNumberOfMessagesVisible`**, and for a clean Target Tracking signal compute **backlog per instance** = messages ÷ in-service instances. This scales the fleet directly to the work waiting — the standard pattern for queue-driven worker scaling.
