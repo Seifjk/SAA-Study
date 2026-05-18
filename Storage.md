@@ -250,7 +250,7 @@
 
 ---
 
-### **Scenario 1: The "Cluster" Problem (EBS Multi-Attach)**
+### **Scenario 1: The "Cluster" Problem**
 
 **The Situation:** A legacy application runs on a cluster of 3 EC2 instances in a **single Availability Zone**. The application requires high-performance **block storage** that can be accessed by all three instances simultaneously to ensure data consistency.
 
@@ -266,11 +266,12 @@ D. Use EFS with General Purpose performance mode.
 
 **The Logic:**
 
-- **Trap:** EFS (Option D) is "shared storage," but the question specified **block storage**, not file storage.
-- **Trap:** gp3 (Option B) cannot be attached to multiple instances.
-- **The Fix:** **Option C**. **EBS Multi-Attach** is only available on **io1/io2** volumes and allows multiple EC2s in the **same AZ** to share a block volume.
+- **Trap A — S3 + S3FS:** S3 is object storage; mounting it via S3FS is a fragile hack with no real block-storage semantics or consistency guarantees. The question demands high-performance block storage.
+- **Trap B — gp3 attached to all three:** gp3 volumes do **not** support Multi-Attach. A gp3 volume can attach to exactly one instance. Doesn't work.
+- **Trap D — EFS:** EFS is genuinely shared and multi-writer, but it's a **file** system (NFS), not **block** storage. The question explicitly says block storage — EFS is the wrong category.
+- **The Fix — Option C:** **EBS Multi-Attach** is supported only on **io1/io2** volumes and lets multiple EC2 instances in the **same AZ** share one block volume — exactly the requirement. (The app must be cluster-aware to handle concurrent writes, which the scenario implies.)
 
-### **Scenario 2: The "Ephemeral" Trap (Instance Store)**
+### **Scenario 2: The "Ephemeral" Trap**
 
 **The Situation:** You are designing a distributed cache using Redis on EC2. The application handles data replication at the software layer. You need the **highest possible disk I/O performance** and low latency. Data persistence on the disk is **not critical** if the instance stops.
 
@@ -286,10 +287,12 @@ D. EFS Max I/O mode.
 
 **The Logic:**
 
-- **Trap:** io2 Block Express (Option A) is fast, but it is network-attached.
-- **The Fix:** **Option C**. **Instance Store** is physically attached to the server. It beats network storage every time on speed. The "data persistence not critical" line is your green light to use ephemeral storage.
+- **Trap A — io2 Block Express:** Very high IOPS, but **network-attached** EBS — there is a network hop on every I/O. Instance Store, being local, beats it on raw latency.
+- **Trap B — gp3:** General-purpose network EBS. Slower than io2 and far slower than local Instance Store. Wrong for "highest possible I/O."
+- **Trap D — EFS Max I/O:** EFS is a shared **file** system over the network — highest latency of all the options. Max I/O mode raises throughput ceilings but *increases* per-operation latency.
+- **The Fix — Option C:** **Instance Store** is physically attached to the host — lowest possible latency, millions of IOPS. The line "data persistence not critical if the instance stops" is the explicit green light to accept ephemeral storage, and the app already replicates data itself.
 
-### **Scenario 3: The "Windows Migration" (FSx)**
+### **Scenario 3: The "Windows Migration"**
 
 **The Situation:** A company is migrating 50 TB of data from an on-premise Windows File Server to AWS. The application uses **SMB protocol** and requires integration with **Active Directory** for permissions management.
 
@@ -305,10 +308,12 @@ D. Amazon EBS Multi-Attach.
 
 **The Logic:**
 
-- **Trap:** EFS (Option B) is Linux only (NFS). It does not speak SMB.
-- **The Fix:** **Option C**. Keywords "Windows", "SMB", and "Active Directory" always point to **FSx for Windows**.
+- **Trap A — S3 + Gateway Endpoint:** S3 is object storage with an API — it does not present an SMB file share and has no native AD-based file permissions. A Windows File Server can't just point at it.
+- **Trap B — EFS with Windows ACLs:** EFS speaks **NFS** (Linux). It does not support the SMB protocol, and "EFS with Windows ACLs" is not a real feature. Wrong protocol.
+- **Trap D — EBS Multi-Attach:** EBS is raw block storage for a few instances in one AZ — not a file server, no SMB, no AD integration. Doesn't fit a file-server migration at all.
+- **The Fix — Option C:** **FSx for Windows File Server** natively provides **SMB** shares and integrates with **Active Directory** for permissions. The keyword triple — Windows + SMB + Active Directory — always points here.
 
-### **Scenario 4: The "Compliance Archive" (S3 Glacier)**
+### **Scenario 4: The "Compliance Archive"**
 
 **The Situation:** A hospital must retain patient records for 7 years for regulatory compliance. These records are almost never accessed, but if an audit occurs, the data must be retrievable within **12 hours**. The solution must be the **lowest possible cost**.
 
@@ -324,10 +329,12 @@ D. S3 Intelligent-Tiering.
 
 **The Logic:**
 
-- **Trap:** Glacier Flexible (Option B) works, but it's not the *lowest* cost.
-- **The Fix:** **Option C**. **Deep Archive** is the cheapest storage class. The "12 hours" retrieval window fits perfectly with Deep Archive's standard retrieval time.
+- **Trap A — Standard-IA:** Built for *infrequent but quick* access. Far more expensive than Glacier tiers — wrong when records are "almost never accessed" and cost must be lowest.
+- **Trap B — Glacier Flexible Retrieval:** Works and is cheap, but **not the cheapest**. Its bulk retrieval is 5–12 hours. Since the requirement only needs data within 12 hours, paying Flexible's premium over Deep Archive is unjustified — it's the classic "close but not the lowest cost" trap.
+- **Trap D — Intelligent-Tiering:** Auto-moves objects between tiers based on access patterns and charges a per-object monitoring fee. For data with a *known* never-accessed pattern, you'd just pay the monitoring overhead for nothing.
+- **The Fix — Option C:** **Glacier Deep Archive** is the **cheapest** S3 class. Its standard retrieval is ~12 hours — which exactly satisfies the "retrievable within 12 hours" audit requirement. Lowest cost + meets the SLA.
 
-### **Scenario 5: The "KMS Bottleneck" (S3 Performance)**
+### **Scenario 5: The "KMS Bottleneck"**
 
 **The Situation:** You are uploading millions of small files to an S3 bucket encrypted with **SSE-KMS**. Your application is receiving HTTP 503 "Slow Down" errors, but S3 metrics show you are well below the bucket throughput limits.
 
@@ -343,5 +350,7 @@ D. Use DynamoDB instead.
 
 **The Logic:**
 
-- **Trap:** Multipart Upload (Option C) helps with *large* files, not *millions of small* files.
-- **The Fix:** **Option B**. Every upload generates a call to KMS to generate a key. You are hitting the **KMS API limit**, not the S3 limit.
+- **Trap A — Transfer Acceleration:** Speeds up uploads over long network distances via edge locations. It does nothing about a 503 "Slow Down" that originates from an API rate limit — wrong layer entirely.
+- **Trap C — Multipart Upload:** Helps with **large** files by parallelizing parts. The problem is *millions of small* files — multipart doesn't apply and wouldn't reduce KMS calls.
+- **Trap D — Use DynamoDB:** Re-architecting the storage layer to a different service is a massive, unwarranted change. It abandons S3 instead of fixing the actual bottleneck.
+- **The Fix — Option B:** With SSE-KMS, **every object upload triggers a KMS `GenerateDataKey` call**. Millions of small files = millions of KMS calls, hitting the **KMS request quota** (the 503 comes from KMS, not S3 — which is why S3 metrics look fine). Request a KMS quota increase. *(Bucket keys, which batch KMS calls, are the other valid fix if offered.)*

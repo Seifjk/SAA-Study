@@ -205,7 +205,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Burst Exhaustion" (T2 Credits)**
+### **Scenario 1: The "Burst Exhaustion"**
 
 **The Situation:** Your development team is running a web application on a `t2.medium` instance. During business hours (9 AM - 5 PM), users report that the application becomes extremely slow. At night and on weekends, the application performs normally. CloudWatch shows CPU at 100% during business hours but low at night.
 
@@ -221,12 +221,14 @@ D. Enable Auto Scaling.
 
 **The Logic:**
 
-- **Trap:** EBS (Option A) is not the bottleneck. The symptom is CPU throttling.
-- **The Fix:** **Option B**. T2/T3 instances earn CPU credits when idle. During business hours, the app exhausts credits and gets throttled. **T2 Unlimited** allows paying for extra CPU beyond credits. Alternative: Switch to M5 for steady performance.
+- **Trap A — EBS:** Storage is not the bottleneck. CloudWatch shows the symptom is **CPU at 100%**, not disk I/O.
+- **Trap C — Security Groups:** SG rules control *connectivity*, not performance. The app is reachable (it works at night) — adding rules changes nothing.
+- **Trap D — Auto Scaling:** Plausible-looking, but it's a single `t2.medium`, and the real cause is **CPU credit exhaustion**, not lack of instances. Scaling out a credit-starved instance type just multiplies a flawed choice and adds cost. Fix the instance type first.
+- **The Fix — Option B:** T2/T3 instances earn CPU credits when idle. During business hours the app burns through its credits and gets **throttled**. **T2 Unlimited** lets it pay for CPU beyond the credit balance. Alternative: move to **M5** for flat, steady performance with no credit system.
 
 ---
 
-### **Scenario 2: The "Batch Job" (Spot Instances)**
+### **Scenario 2: The "Batch Job"**
 
 **The Situation:** A company needs to process large video rendering jobs overnight. The jobs are **fault-tolerant** (can restart from checkpoints) and not time-sensitive. The current On-Demand fleet costs $5,000/month. The CFO wants to reduce costs by at least 70%.
 
@@ -242,13 +244,14 @@ D. Use Dedicated Hosts.
 
 **The Logic:**
 
-- **Trap:** Reserved Instances (Option A) save 40-75%, but don't hit 90% savings.
-- **Trap:** Lambda (Option C) has a 15-minute execution limit. Video rendering takes hours.
-- **The Fix:** **Option B**. **Spot Instances** can save up to 90%. Since the workload is fault-tolerant and can handle interruptions, Spot is perfect. Use **Spot Fleet** to automatically request capacity across multiple instance types.
+- **Trap A — Reserved Instances:** The real disqualifier is **workload fit**, not the savings number. RIs are a 1-3 year commitment for **steady-state, 24/7, predictable** load. This job runs *overnight only* and is *not time-sensitive* — committing to 3 years of capacity for a few hours/night is wasteful and inflexible. (3-year RIs *can* technically reach ~72%, so don't eliminate A on the discount alone — eliminate it because the workload shape is wrong.)
+- **Trap C — Lambda:** 15-minute max execution time. Video rendering takes hours per job — Lambda physically cannot run it.
+- **Trap D — Dedicated Hosts:** The *most expensive* option. Used for per-socket licensing / compliance isolation — the question asks for the *cheapest*, the opposite goal.
+- **The Fix — Option B:** The workload is **fault-tolerant, checkpoint-able, and not time-sensitive** — the textbook Spot profile. Spot saves up to **90%**, clearing the 70% target with huge margin, and has **zero commitment**. **Spot Fleet** spreads requests across instance types/pools to keep capacity available despite interruptions.
 
 ---
 
-### **Scenario 3: The "HPC Cluster" (Placement Groups)**
+### **Scenario 3: The "HPC Cluster"**
 
 **The Situation:** A financial modeling application requires **10 Gbps network bandwidth** between nodes for tightly-coupled parallel processing. The workload cannot tolerate network latency spikes. All instances must be in the **same Availability Zone** for the application to function correctly.
 
@@ -264,12 +267,14 @@ D. Place instances in different AZs with VPC Peering.
 
 **The Logic:**
 
-- **Trap:** Spread (Option A) maximizes isolation but doesn't optimize for network performance.
-- **The Fix:** **Option B**. **Cluster Placement Group** packs instances on the same rack in the same AZ. This provides **low-latency, high-throughput 10 Gbps networking** required for HPC workloads.
+- **Trap A — Spread:** Optimizes for *failure isolation* by putting each instance on different hardware — the opposite of what's needed. Spreading instances apart *increases* network latency between them.
+- **Trap C — Partition:** Designed for large distributed systems (Hadoop, Cassandra) that are *partition-aware*. It isolates groups of instances onto separate racks — again the opposite of packing them tightly for low latency.
+- **Trap D — Different AZs + VPC Peering:** The question explicitly says all instances **must be in the same AZ**. Cross-AZ traffic adds latency and breaks the requirement outright.
+- **The Fix — Option B:** A **Cluster Placement Group** packs instances onto the **same rack in one AZ**, giving the **low-latency, high-throughput 10 Gbps** networking that tightly-coupled HPC needs. Trade-off: if that rack fails, all instances fail — acceptable here because performance is the stated priority.
 
 ---
 
-### **Scenario 4: The "License Server" (Dedicated Hosts)**
+### **Scenario 4: The "License Server"**
 
 **The Situation:** Your company uses Oracle Database with per-socket licensing. Oracle requires you to track exactly how many physical CPU sockets are in use for licensing compliance. The database workload is steady and runs 24/7.
 
@@ -285,12 +290,14 @@ D. Use Spot Instances.
 
 **The Logic:**
 
-- **Trap:** Reserved Instances (Option B) save money but don't give you **physical socket visibility** required for Oracle licensing.
-- **The Fix:** **Option C**. **Dedicated Hosts** give you an entire physical server. You can see socket count, core count, and manage per-socket/per-core licensing. You can also use **License Manager** to track compliance.
+- **Trap A — On-Demand:** Standard multi-tenant hardware — AWS controls placement, you get no socket/core visibility. Fails the Oracle compliance requirement.
+- **Trap B — Reserved Instances:** RIs are a *billing discount*, not a tenancy model. They run on shared hardware just like On-Demand — no physical socket visibility.
+- **Trap D — Spot:** Interruptible spare capacity, also shared hardware. Wrong on both counts: no socket visibility, and you can't run a steady 24/7 production database on instances that get reclaimed.
+- **The Fix — Option C:** **Dedicated Hosts** give you an entire physical server with visible socket and core counts — exactly what per-socket licensing (Oracle, some Windows Server) requires. Pair with **License Manager** to track and enforce compliance.
 
 ---
 
-### **Scenario 5: The "Failover IP" (ENI)**
+### **Scenario 5: The "Failover IP"**
 
 **The Situation:** You have a critical application running on an EC2 instance with a **static private IP** that is hardcoded in many downstream systems. If the primary instance fails, you need to launch a standby instance and have it immediately take over the **same private IP** to avoid reconfiguring downstream systems.
 
@@ -306,6 +313,7 @@ D. Use an Application Load Balancer.
 
 **The Logic:**
 
-- **Trap:** Elastic IP (Option A) is for **public** IPs, not private IPs.
-- **Trap:** Route 53 (Option C) requires DNS propagation time (minutes).
-- **The Fix:** **Option B**. **ENI (Elastic Network Interface)** can be detached from one instance and attached to another. The **private IP, MAC address, and Security Groups** move with the ENI, providing instant failover without reconfiguration.
+- **Trap A — Elastic IP:** An Elastic IP is a *public* IPv4 address. The requirement is to preserve a hardcoded **private** IP — an EIP doesn't apply.
+- **Trap C — Route 53:** DNS-based failover means downstream systems would resolve a *new* IP, and DNS changes take time to propagate (TTL-bound, often minutes). The systems hardcode an **IP, not a hostname**, so DNS doesn't even help here.
+- **Trap D — Application Load Balancer:** An ALB introduces a new endpoint (its own DNS name) and is built for distributing traffic across many targets — it doesn't let a standby instance *inherit a specific private IP*. Wrong tool for an IP-failover requirement.
+- **The Fix — Option B:** An **ENI** can be detached from the failed instance and attached to the standby. The **private IP, MAC address, and Security Groups** all move with the ENI — instant failover, no downstream reconfiguration.

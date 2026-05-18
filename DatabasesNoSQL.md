@@ -163,6 +163,8 @@
 
 ### **1. ElastiCache Overview**
 
+> 🔧 *Like:* managed Redis / Memcached — it *is* those, AWS just runs them for you.
+
 - **The Rule:** Managed in-memory data store, **sub-millisecond latency**. Engines: **Redis** (feature-rich — persistence, replication, backup) and **Memcached** (simple, multi-threaded, no persistence).
 - **Use Cases:** Cache query results, session storage, real-time analytics, leaderboards, rate limiting.
 
@@ -239,6 +241,8 @@
 
 ### **1. Amazon DocumentDB**
 
+> 🔧 *Like:* MongoDB — MongoDB-compatible, AWS-managed.
+
 - **The Rule:** Fully managed **MongoDB-compatible** document database. Scales up to millions of requests/sec.
 - **Architecture:** Storage decoupled from compute, auto-scales up to **64 TB**. Replicates **6 copies across 3 AZs**.
 - **Exam Trigger:** "MongoDB migration" or "MongoDB-compatible" → **DocumentDB**.
@@ -246,6 +250,8 @@
 ---
 
 ### **2. Amazon Neptune**
+
+> 🔧 *Like:* Neo4j — a graph database (nodes & relationships).
 
 - **The Rule:** Fully managed **graph database**. Supports Property Graph (Gremlin) and RDF (SPARQL).
 - **Architecture:** Up to **15 read replicas**, Multi-AZ HA, storage auto-scales up to 64 TB.
@@ -270,6 +276,8 @@
 ---
 
 ### **5. Amazon Keyspaces**
+
+> 🔧 *Like:* Apache Cassandra — Cassandra-compatible, AWS-managed.
 
 - **The Rule:** Fully managed **Apache Cassandra-compatible** database. Serverless, pay-per-use.
 - **Architecture:** Tables replicated **3x across multiple AZs**. On-demand or provisioned capacity (Like DynamoDB).
@@ -326,7 +334,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Microsecond Latency" (DAX)**
+### **Scenario 1: The "Microsecond Latency"**
 
 **The Situation:** A mobile gaming application uses DynamoDB to store player profiles and game state. The read latency is currently 5-10 milliseconds, but the product team wants to improve user experience by reducing latency to **under 1 millisecond**. Read traffic is 10x higher than write traffic.
 
@@ -342,13 +350,14 @@ D. Enable DynamoDB Global Tables.
 
 **The Logic:**
 
-- **Trap:** Higher RCUs (Option A) don't reduce latency below DynamoDB's native millisecond level.
-- **Trap:** ElastiCache (Option C) works but requires significant application code changes for cache management.
-- **The Fix:** **Option B**. **DAX** is a drop-in in-memory cache specifically for DynamoDB. Reduces latency to **microseconds** with minimal code changes (Just change endpoint). Supports both item cache and query cache.
+- **Trap A — More RCUs:** RCUs control *throughput* (how many reads/sec), not *latency*. Even with unlimited RCUs, DynamoDB's native read latency stays at single-digit milliseconds. Can't reach sub-millisecond.
+- **Trap C — ElastiCache Redis:** Would deliver the speed, but it's a *generic* cache — you must write application logic for cache population, invalidation, and miss handling. Significant code change.
+- **Trap D — Global Tables:** Global Tables replicate the table to other **regions** for multi-region access/DR. They don't reduce *read latency* within a region. Wrong feature.
+- **The Fix — Option B:** **DAX** is an in-memory cache **purpose-built for DynamoDB** — sits in front of the table, returns cached reads in **microseconds**, and is nearly drop-in (point the SDK at the DAX endpoint). Read-heavy workload + microsecond target = DAX.
 
 ---
 
-### **Scenario 2: The "Email Query" (GSI)**
+### **Scenario 2: The "Email Query"**
 
 **The Situation:** A DynamoDB table stores user data with `UserID` (Partition Key) and `RegistrationDate` (Sort Key). The application now needs to query users by their **email address**. Currently, scanning the entire table is too slow and expensive.
 
@@ -364,13 +373,14 @@ D. Use DynamoDB Streams to maintain a separate table indexed by email.
 
 **The Logic:**
 
-- **Trap:** LSI (Option A) requires the **same Partition Key** as base table (UserID). Can't query by email alone.
-- **Trap:** RDS (Option C) is over-engineering for this use case.
-- **The Fix:** **Option B**. **GSI** creates an alternate key structure. Create GSI with `Email` as Partition Key. Now can efficiently query by email. GSI has its own RCU/WCU. Can be created after table creation.
+- **Trap A — LSI with Email as Sort Key:** An LSI must reuse the **base table's Partition Key** (`UserID`). To query by email alone you'd need `UserID` too — which you don't have. Also, LSIs can only be created **at table creation**, not added later.
+- **Trap C — Switch to RDS:** Migrating to a relational engine just to gain a query pattern is over-engineering. DynamoDB already solves this with a GSI.
+- **Trap D — Streams to a separate email-indexed table:** This *works* but it's a manual, custom-built secondary index — you'd own the Lambda, the consistency, and the second table. A GSI does exactly this, natively and managed.
+- **The Fix — Option B:** A **GSI** with `Email` as its Partition Key gives an alternate key structure for efficient email queries. A GSI **can be added after table creation** and has its own RCU/WCU. The native, intended solution.
 
 ---
 
-### **Scenario 3: The "Session Store" (Redis)**
+### **Scenario 3: The "Session Store"**
 
 **The Situation:** A web application needs to store user session data for 30 minutes. The application runs on an Auto Scaling Group across multiple AZs. Session data must be shared across all instances. If the cache cluster fails, session data must be recoverable.
 
@@ -386,14 +396,14 @@ D. Store sessions on EC2 instance storage.
 
 **The Logic:**
 
-- **Trap:** Memcached (Option A) has **no persistence**. If cluster fails, all sessions lost.
-- **Trap:** Instance storage (Option D) is not shared across instances.
-- **Trap:** DynamoDB (Option C) works but has higher latency (milliseconds vs. sub-millisecond).
-- **The Fix:** **Option B**. **Redis** supports **persistence** (AOF/RDB), **Multi-AZ replication** (HA), and **sub-millisecond latency**. Perfect for session storage with durability requirements. Set TTL to 30 minutes to auto-expire sessions.
+- **Trap A — ElastiCache Memcached:** Memcached has **no persistence and no replication**. If the cluster fails, every session is lost — directly violating the "must be recoverable" requirement.
+- **Trap C — DynamoDB:** Genuinely works as a session store (shared, durable, TTL support). The reason it's not the best answer here: the scenario points at a *cache cluster* and sub-millisecond access — Redis is the more precise fit. On a real exam, if Redis isn't offered, DynamoDB is a correct alternative.
+- **Trap D — EC2 instance storage:** Local instance store is **not shared** across the ASG and is **ephemeral**. Other instances can't see the session, and it's lost on stop. Fails both requirements.
+- **The Fix — Option B:** **ElastiCache Redis with Multi-AZ + persistence (AOF/RDB)** gives shared, sub-millisecond session access, HA replication, and recoverability if the cluster fails. Set a 30-minute TTL to auto-expire sessions.
 
 ---
 
-### **Scenario 4: The "Real-Time Notifications" (DynamoDB Streams)**
+### **Scenario 4: The "Real-Time Notifications"**
 
 **The Situation:** An e-commerce application stores orders in DynamoDB. When a new order is created, the system must send a confirmation email to the customer and update inventory in a separate table. This must happen **in real-time** without polling.
 
@@ -409,13 +419,14 @@ D. Use CloudWatch Events to monitor the table.
 
 **The Logic:**
 
-- **Trap:** Cron job (Option A) is not real-time (1-minute delay) and inefficient (Scans entire table).
-- **Trap:** CloudWatch Events (Option D) doesn't natively monitor DynamoDB item changes.
-- **The Fix:** **Option B**. **DynamoDB Streams** captures every INSERT, UPDATE, DELETE event. Configure Lambda to trigger on Stream events. Lambda processes new order (Send email, Update inventory). Real-time, event-driven, efficient.
+- **Trap A — Cron job scanning the table:** Polling = not real-time (up to a minute late) and a full table Scan every minute is slow and expensive. The question explicitly says "without polling."
+- **Trap C — SQS polling DynamoDB:** SQS cannot "poll" a database — there's no mechanism for SQS to read DynamoDB. The data flow is backwards; not a real option.
+- **Trap D — CloudWatch Events:** CloudWatch Events/EventBridge does not natively emit an event for an individual DynamoDB *item* change. It can't see row-level INSERTs.
+- **The Fix — Option B:** **DynamoDB Streams** captures every INSERT/UPDATE/DELETE as an event. A **Lambda triggered on the stream** fires the moment an order is inserted — sends the email and updates inventory. Real-time, event-driven, no polling.
 
 ---
 
-### **Scenario 5: The "Throttling Hell" (GSI Capacity)**
+### **Scenario 5: The "Throttling Hell"**
 
 **The Situation:** A DynamoDB table has **1000 WCUs** provisioned. A Global Secondary Index (GSI) on the table has **50 WCUs** provisioned. During peak hours, write operations fail with `ProvisionedThroughputExceededException`, but the base table's write metrics show only 40% utilization.
 
@@ -431,6 +442,7 @@ D. Remove the GSI.
 
 **The Logic:**
 
-- **Trap:** Increasing base table WCU (Option A) doesn't help. The **GSI is the bottleneck**.
-- **Key Fact:** When you write to base table, DynamoDB also writes to all GSIs. If GSI lacks capacity, the **base table write is throttled** too.
-- **The Fix:** **Option B** or **Option C**. Increase GSI's WCU to handle write load, or switch entire table to On-Demand mode (Eliminates capacity planning). GSI capacity must match or exceed write load to avoid throttling the base table.
+- **Key Fact:** Every write to the base table is **also written to each GSI**. If a GSI runs out of WCUs, DynamoDB **throttles the base table write too** — which is why the base table shows only 40% use yet writes still fail. The GSI (50 WCU) is the real bottleneck.
+- **Trap A — Increase base table WCU to 2000:** The base table isn't the constraint (it's at 40%). Doubling its capacity spends money and changes nothing — the GSI still throttles.
+- **Trap D — Remove the GSI:** This stops the throttling but **destroys the query capability** the GSI provides. Solving a capacity problem by deleting a feature is wrong.
+- **The Fix — Option B (or C):** **Raise the GSI's WCUs** to match the write load — a GSI's capacity must meet or exceed the base table's write rate. Alternatively, **switch the table to On-Demand mode** (Option C), which removes capacity planning entirely and is also a correct answer.

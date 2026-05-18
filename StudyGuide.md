@@ -43,11 +43,11 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 | Day | Date | Chapter | File | Load |
 |-----|------|---------|------|------|
 | — | — | Networking | [Networking](./Networking.md) | ✅ done |
-| 1 | Mon May 18 | Storage | [Storage](./Storage.md) | Medium |
-| 2 | Tue May 19 | Compute | [Compute](./Compute.md) | Medium |
-| 3 | Wed May 20 | High Availability | [HighAvailability](./HighAvailability.md) | Medium |
-| 4 | Thu May 21 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) | Heavy |
-| 5 | Fri May 22 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | Heavy |
+| 1 | Mon May 18 | Compute | [Compute](./Compute.md) | ✅ done |
+| 2 | Tue May 19 | High Availability | [HighAvailability](./HighAvailability.md) | Medium |
+| 3 | Wed May 20 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) | Heavy |
+| 4 | Thu May 21 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | Heavy |
+| 5 | Fri May 22 | Storage | [Storage](./Storage.md) | Medium |
 | 6 | Sat May 23 | Decoupling | [Decoupling](./Decoupling.md) | Heavy |
 | — | Sun May 24 | **REST DAY** | — | — |
 | 7 | Mon May 25 | Serverless | [Serverless](./Serverless.md) | Heavy |
@@ -66,28 +66,28 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 
 **Every learning day follows the same shape:** Block 1 = review the previous chapter's cheat sheet (cover the answers, test yourself) + begin the new chapter. Break. Block 2 = finish the new chapter, do all 5 scenarios, write key tables from memory.
 
-### Day 1 — Mon May 18: Storage
-- **Block 1:** Review Networking cheat sheet — quiz every trigger. Then start Storage.md: EBS type triggers (gp3 default, io1/io2 for high IOPS, st1 for throughput), Instance Store = ephemeral.
-- **Block 2:** Finish Storage.md — S3 storage classes waterfall (Standard → IA → One Zone-IA → Glacier IR → Glacier Flexible → Deep Archive), Intelligent-Tiering, Versioning, Lifecycle, Replication (CRR/SRR), Object Lock (Governance vs Compliance), EFS vs FSx, DataSync vs Storage Gateway. Do all 5 scenarios. **Write from memory:** S3 classes in order, EBS type selection triggers.
-
-### Day 2 — Tue May 19: Compute
-- **Block 1:** Review Storage cheat sheet. Then start Compute.md: purchasing options table (On-Demand / RI / Spot / Dedicated Host vs Instance), instance families (T/M/C/R/I/G).
+### Day 1 — Mon May 18: Compute ✅
+- **Block 1:** Review Networking cheat sheet — quiz every trigger. Then start Compute.md: purchasing options table (On-Demand / RI / Spot / Dedicated Host vs Instance), instance families (T/M/C/R/I/G).
 - **Block 2:** Finish Compute.md — Placement Groups (Cluster/Spread/Partition), ENI vs ENA vs EFA, Hibernate, Capacity Reservations, IMDSv2, Launch Templates. Do all 5 scenarios. **Write from memory:** purchasing table, placement group use cases.
 
-### Day 3 — Wed May 20: High Availability
+### Day 2 — Tue May 19: High Availability
 - **Block 1:** Review Compute cheat sheet. Then start HighAvailability.md: ALB vs NLB vs GWLB comparison table, cross-zone defaults.
 - **Block 2:** Finish HighAvailability.md — 5 scaling policies (Target Tracking/Step/Simple/Scheduled/Predictive), SQS-based scaling, Grace Period vs Cooldown, Connection Draining, Warm Pool, Instance Refresh. Do all 5 scenarios. **Write from memory:** ALB vs NLB vs GWLB table, 5 scaling policies.
 
-### Day 4 — Thu May 21: Databases Relational
+### Day 3 — Wed May 20: Databases Relational
 - **Block 1:** Review HA cheat sheet. Then start DatabasesRelational.md: RDS overview, storage, Read Replicas.
 - **Block 2:** Finish DatabasesRelational.md — Multi-AZ vs Read Replicas table (RDS = 5 replicas, Aurora = 15), Aurora Serverless v2, Aurora Global Database, RDS Proxy, Backtrack, Blue/Green. Do all 5 scenarios. **Write from memory:** Multi-AZ vs Read Replicas table.
 
-### Day 5 — Fri May 22: Databases NoSQL
+### Day 4 — Thu May 21: Databases NoSQL
 - **Block 1:** Review DB Relational cheat sheet. Then start DatabasesNoSQL.md: DynamoDB modes, consistency.
 - **Block 2:** Finish DatabasesNoSQL.md — GSI vs LSI, Streams, DAX, Global Tables, TTL, Redis vs Memcached, purpose-built DBs (DocumentDB/Neptune/Timestream/QLDB/Keyspaces/MemoryDB). Do all 5 scenarios. **Write from memory:** GSI vs LSI, Redis vs Memcached, purpose-built DB table.
 
+### Day 5 — Fri May 22: Storage
+- **Block 1:** Review DB NoSQL cheat sheet. Then start Storage.md: EBS type triggers (gp3 default, io1/io2 for high IOPS, st1 for throughput), Instance Store = ephemeral.
+- **Block 2:** Finish Storage.md — S3 storage classes waterfall (Standard → IA → One Zone-IA → Glacier IR → Glacier Flexible → Deep Archive), Intelligent-Tiering, Versioning, Lifecycle, Replication (CRR/SRR), Object Lock (Governance vs Compliance), EFS vs FSx, DataSync vs Storage Gateway. Do all 5 scenarios. **Write from memory:** S3 classes in order, EBS type selection triggers.
+
 ### Day 6 — Sat May 23: Decoupling
-- **Block 1:** Review DB NoSQL cheat sheet. Then start Decoupling.md: SQS Standard vs FIFO, polling, visibility timeout, DLQ.
+- **Block 1:** Review Storage cheat sheet. Then start Decoupling.md: SQS Standard vs FIFO, polling, visibility timeout, DLQ.
 - **Block 2:** Finish Decoupling.md — SNS + SQS fan-out, Kinesis Streams vs Firehose, EventBridge. Do all 5 scenarios. **Write from memory:** SQS Standard vs FIFO, Kinesis Streams vs Firehose.
 
 ### ☁ Sun May 24: REST DAY

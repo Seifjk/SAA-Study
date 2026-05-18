@@ -234,7 +234,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Cheapest DR" (Backup & Restore vs Pilot Light)**
+### **Scenario 1: The "Cheapest DR"**
 
 **The Situation:** A company runs a non-critical internal application on EC2 with an RDS MySQL database. They need a DR strategy for their secondary region. The business accepts up to **24 hours of downtime** and up to **4 hours of data loss**. They want the **lowest cost** DR option.
 
@@ -256,7 +256,7 @@ D. Keep a Pilot Light with the RDS database always running in the DR region.
 
 ---
 
-### **Scenario 2: The "Database Migration" (DMS + SCT)**
+### **Scenario 2: The "Database Migration"**
 
 **The Situation:** A company needs to migrate their on-premises **Oracle** database to **Amazon Aurora PostgreSQL**. They require **near-zero downtime** during migration and the application must continue serving traffic throughout the migration.
 
@@ -279,7 +279,7 @@ D. Use AWS DataSync to transfer the database files to Aurora.
 
 ---
 
-### **Scenario 3: The "Multi-Account Governance" (SCPs)**
+### **Scenario 3: The "Multi-Account Governance"**
 
 **The Situation:** A large enterprise uses AWS Organizations with 50 accounts. The security team requires that **no account can launch resources outside of us-east-1 and eu-west-1**. Some developers have administrator access in their accounts.
 
@@ -302,7 +302,7 @@ D. Use AWS Budgets to alert when spending occurs in non-approved regions.
 
 ---
 
-### **Scenario 4: The "Lift and Shift" (MGN vs DMS)**
+### **Scenario 4: The "Lift and Shift"**
 
 **The Situation:** A company wants to migrate **30 on-premises servers** (mix of Windows and Linux, running custom applications) to AWS EC2 with **minimal changes** to the applications. They want to replicate the servers continuously and perform a cutover during a maintenance window.
 
@@ -325,7 +325,7 @@ D. Use AWS DataSync to transfer the server data to EBS volumes.
 
 ---
 
-### **Scenario 5: The "Cost Visibility" (Cost Explorer vs Budgets vs Compute Optimizer)**
+### **Scenario 5: The "Cost Visibility"**
 
 **The Situation:** A company's AWS bill increased 40% last month. The CTO needs to: (1) understand **which services** drove the increase, (2) set up **automatic alerts** if spending exceeds $50,000 next month, and (3) identify **over-provisioned EC2 instances** to right-size.
 

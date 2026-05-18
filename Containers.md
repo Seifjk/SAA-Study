@@ -6,6 +6,8 @@
 
 ### **1. ECR Overview**
 
+> 🔧 *Like:* Docker Hub / GitHub Container Registry — a private container image registry.
+
 - **The Rule:** Fully managed Docker container registry.
 - **Storage:** Stored in S3 (AWS-managed).
 - **Integration:** Native integration with ECS, EKS, Lambda.
@@ -25,6 +27,8 @@
 *AWS-native container orchestration (Like Kubernetes, but simpler).*
 
 ### **1. ECS Overview**
+
+> 🔧 *Like:* Docker Swarm / Nomad — AWS-proprietary container orchestrator (simpler than K8s).
 
 - **The Rule:** Run Docker containers on AWS.
 - **Cluster:** Logical grouping of tasks/services.
@@ -148,6 +152,8 @@
 
 ### **1. EKS Overview**
 
+> 🔧 *Like:* Managed Kubernetes (GKE / AKS) — it literally *is* Kubernetes, AWS runs the control plane.
+
 - **The Rule:** Fully managed Kubernetes control plane — run Kubernetes (industry-standard, open-source orchestration) without managing master nodes.
 - **Use EKS** for on-prem Kubernetes migration, Kubernetes-specific features (Helm, Operators, custom controllers), or multi-cloud portability. **Use ECS** for AWS-native, simpler, cheaper workloads with no Kubernetes expertise.
 
@@ -195,6 +201,8 @@
 
 ### **1. App Runner Overview**
 
+> 🔧 *Like:* Heroku / Google Cloud Run — push a container, get a running URL, zero infra.
+
 - **The Rule:** Point to an ECR image or source repo → App Runner builds, deploys, scales, and load-balances automatically. No Task Definitions, Services, or Clusters.
 - Built-in auto scaling (up on traffic, down to zero); auto-redeploy on new image/commit; HTTPS endpoint out of the box; private VPC access via VPC Connector. Pay per vCPU/memory while active + small pause fee when scaled to zero.
 - **vs Fargate:** App Runner = zero orchestration config (best for simple web apps/APIs); Fargate still needs Task Definitions, Services, LB setup (more control, more config).
@@ -241,7 +249,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "No Ops Containers" (Fargate)**
+### **Scenario 1: The "No Ops Containers"**
 
 **The Situation:** A startup wants to run microservices in Docker containers. They have a small team with **no DevOps experience** and don't want to manage servers. The workload is **variable** (spikes during business hours, near-zero at night).
 
@@ -263,7 +271,7 @@ D. Run Docker directly on EC2 with Docker Compose.
 
 ---
 
-### **Scenario 2: The "Shared Content" (EFS)**
+### **Scenario 2: The "Shared Content"**
 
 **The Situation:** A media processing application runs 50 ECS tasks (Fargate) that all need **read/write access** to the same set of video files. The files must persist even if tasks restart. Tasks may run concurrently and need **shared access**.
 
@@ -286,7 +294,7 @@ D. Use Fargate ephemeral storage.
 
 ---
 
-### **Scenario 3: The "Cost Optimization" (EC2 Launch Type + Spot)**
+### **Scenario 3: The "Cost Optimization"**
 
 **The Situation:** A batch processing workload runs in ECS 24/7. The workload is **fault-tolerant** (tasks can restart). The company wants to reduce costs by **70%** while maintaining throughput.
 
@@ -308,7 +316,7 @@ D. Use Lambda instead.
 
 ---
 
-### **Scenario 4: The "S3 Access" (Task Role)**
+### **Scenario 4: The "S3 Access"**
 
 **The Situation:** An ECS task (Fargate) needs to read files from an S3 bucket. The developer hardcoded AWS credentials in the container image. Security team flags this as a violation.
 
@@ -331,7 +339,7 @@ D. Use Secrets Manager to store credentials and fetch at runtime.
 
 ---
 
-### **Scenario 5: The "Kubernetes Migration" (EKS)**
+### **Scenario 5: The "Kubernetes Migration"**
 
 **The Situation:** A company runs a large application on **Kubernetes** in their on-premise datacenter using Helm charts, custom operators, and StatefulSets. They want to migrate to AWS with **minimal changes** to their Kubernetes manifests.
 

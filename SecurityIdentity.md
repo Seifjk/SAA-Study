@@ -437,7 +437,7 @@
 
 # **REAL EXAM SCENARIOS**
 
-### **Scenario 1: The "Hardcoded Keys" (IAM Role)**
+### **Scenario 1: The "Hardcoded Keys"**
 
 **The Situation:** A developer hardcoded AWS credentials (Access Key, Secret Key) in a Lambda function to access S3. The security team flags this as a violation during code review.
 
@@ -459,7 +459,7 @@ D. Encrypt credentials with KMS.
 
 ---
 
-### **Scenario 2: The "Cross-Account Access" (IAM Role + Trust Policy)**
+### **Scenario 2: The "Cross-Account Access"**
 
 **The Situation:** Company A (Account 111111111111) wants to allow Company B (Account 222222222222) to access an S3 bucket in Account A. Company B's users should authenticate with their own AWS credentials.
 
@@ -485,7 +485,7 @@ D. Make the S3 bucket public.
 
 ---
 
-### **Scenario 3: The "Auto-Rotate Password" (Secrets Manager)**
+### **Scenario 3: The "Auto-Rotate Password"**
 
 **The Situation:** A web application connects to an RDS PostgreSQL database using a hardcoded password. The security policy requires passwords to be **rotated every 30 days**. The team manually updates the password in the code each month, causing downtime during deployments.
 
@@ -508,7 +508,7 @@ D. Store password in environment variables and rotate manually.
 
 ---
 
-### **Scenario 4: The "API Rate Limiter" (WAF)**
+### **Scenario 4: The "API Rate Limiter"**
 
 **The Situation:** A public REST API (API Gateway) is being abused by a bot making **10,000 requests per minute** from a single IP, causing high costs and degraded performance for legitimate users. The company wants to **block IPs** exceeding 100 requests per 5 minutes.
 
@@ -531,7 +531,7 @@ D. Use CloudWatch Alarms to alert when traffic is high.
 
 ---
 
-### **Scenario 5: The "Sensitive Data Discovery" (Macie)**
+### **Scenario 5: The "Sensitive Data Discovery"**
 
 **The Situation:** A company has **500 S3 buckets** with years of uploaded files. They need to **identify which buckets contain PII** (Social Security Numbers, Credit Cards) to comply with GDPR. Manually reviewing files is impractical.
 
