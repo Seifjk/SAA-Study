@@ -6,12 +6,17 @@
 
 ### **1. Elastic Load Balancer (ELB) - The Foundation**
 
-- **The Rule:** AWS-managed load balancer. Auto-scales, highly available across multiple AZs.
-- **Health Checks:** ELB pings targets on a specified port/path. If unhealthy → Stop sending traffic.
+- **The Rule:** AWS-managed load balancer. Auto-scales, highly available across multiple AZs. "ELB" is **not a type you pick** — it's the **family name** for the load balancing service. The actual types you choose between are **ALB, NLB, and GWLB** (covered below).
+- **Health Checks:** ELB pings targets on a specified port/path. If unhealthy → Stop sending traffic. Unhealthy targets are *isolated, not terminated* — terminating/replacing is the **ASG's** job.
 - **Cross-Zone Load Balancing:**
     - **Enabled:** Distributes traffic evenly across **all** targets in **all** enabled AZs.
     - **Disabled:** Distributes traffic only within each AZ (Can cause imbalance).
     - *Default:* ALB = always enabled, free. NLB = disabled by default, **inter-AZ data transfer is charged** when enabled. GWLB = disabled by default.
+
+**Family-wide Exam Traps** (apply to all LB types, not just one):
+
+- "The load balancer **terminates/replaces** unhealthy instances" → **False.** ELB only stops *routing* to them; the **ASG** replaces them.
+- "Single static endpoint for clients" → use the load balancer's **DNS name** (or a Route 53 alias to it), never instance IPs.
 
 ---
 
@@ -101,7 +106,9 @@
 
 ### **Load Balancer Comparison Table**
 
-| **Feature** | **ALB** | **NLB** | **GLB** |
+*All three below are members of the **ELB** family — these are the actual types you choose between.*
+
+| **Feature** | **ALB** | **NLB** | **GWLB** |
 | --- | --- | --- | --- |
 | **Layer** | Layer 7 (HTTP/HTTPS) | Layer 4 (TCP/UDP/TLS) | Layer 3 (IP) |
 | **Routing** | Content-based (Path, Host, Headers) | IP/Port-based | To security appliances |
@@ -141,14 +148,20 @@
 **Termination Policy (Which Instance to Kill First):**
 
 1. **Default:** Terminate instance in AZ with **most instances** (Balance across AZs).
-2. Then, terminate **oldest Launch Template/Configuration**.
+2. Then, terminate the instance using the **oldest Launch Configuration** (or oldest Launch Template, if configured).
 3. Then, terminate instance **closest to next billing hour**.
+- *Note:* You can override this with a **custom termination policy** (e.g., `OldestInstance`, `NewestInstance`) or instance scale-in protection.
 
 **Lifecycle Hooks:**
 
 - **The Rule:** Pause instance launch/termination to perform custom actions.
+- **Two transition states:**
+    - `EC2_INSTANCE_LAUNCHING` → instance held in **Pending:Wait** before entering service (e.g., install software, warm caches).
+    - `EC2_INSTANCE_TERMINATING` → instance held in **Terminating:Wait** before shutdown (e.g., extract logs, deregister from external systems).
+- **How it works:** Hook fires an event (to EventBridge/SNS/SQS); the instance waits up to the **heartbeat timeout** (default 3600s) until you call `CompleteLifecycleAction` (or the timeout elapses).
 - **Use Cases:** Install software, Extract logs before termination, Register/Deregister from external systems.
-- *Exam Trigger:* "Run script before instance goes into service" → Lifecycle Hook.
+- *Exam Trigger:* "Run script before instance goes into service" → Lifecycle Hook (`EC2_INSTANCE_LAUNCHING`).
+- *Exam Trigger:* "Extract/upload logs before an instance is terminated" → Lifecycle Hook (`EC2_INSTANCE_TERMINATING`).
 
 ---
 
@@ -228,7 +241,31 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — QUIZ (Cover the Answer Key)**
+
+1. Route based on URL path?
+2. Need static IP?
+3. Millions of requests per second?
+4. Inspect traffic with 3rd-party firewall?
+5. Invoke Lambda from HTTP?
+6. Session stickiness for stateful app?
+7. Automatically maintain CPU at 60%?
+8. Scale every Monday at 9 AM?
+9. Proactively scale before predicted spike?
+10. Run script before instance enters service?
+11. Ensure in-flight requests complete before termination?
+12. Scale workers based on queue depth?
+13. App behind ALB needs original client IP?
+14. Update all ASG instances to new AMI without downtime?
+15. NLB cross-zone enabled — is it free?
+16. Authenticate users at ALB?
+17. New instance failing health checks?
+18. GENEVE protocol / encapsulate traffic to firewalls?
+19. App takes 8 min to boot, scales out too slowly?
+
+---
+
+### **Exam Summary Cheat Sheet — ANSWER KEY (Memorize This)**
 
 1. **Route based on URL path?** → ALB.
 2. **Need static IP?** → NLB.
@@ -247,6 +284,8 @@
 15. **NLB cross-zone enabled — is it free?** → No. NLB charges inter-AZ data transfer (ALB is free).
 16. **Authenticate users at ALB?** → ALB + OIDC/Cognito.
 17. **New instance failing health checks?** → Increase Health Check Grace Period.
+18. **GENEVE protocol / encapsulate traffic to firewalls?** → GWLB.
+19. **App takes 8 min to boot, scales out too slowly?** → Warm Pool.
 
 ---
 

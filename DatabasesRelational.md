@@ -1,8 +1,19 @@
 # Databases (Relational)
 
+> **Start here — what is a "relational" database?**
+> It's the classic, traditional kind of database: data lives in **tables** (rows and columns), tables can be **joined** together, and you query it with **SQL**. Think MySQL, PostgreSQL, Oracle. If a question mentions "SQL", "tables", "joins", "transactions", or "ACID" → it's relational, and this chapter is the answer space.
+>
+> **What this chapter is really about:** Running a database yourself means patching the OS, configuring backups, and handling failure at 3 AM. AWS's relational services (**RDS** and **Aurora**) do all of that *for* you — you just use the database. The exam doesn't test SQL itself; it tests **two operational questions**:
+> 1. *How do I make the database survive a failure?* → **Multi-AZ**
+> 2. *How do I handle lots of read traffic?* → **Read Replicas**
+>
+> Almost every relational question is a variation of those two. Keep them straight and most of the chapter falls into place.
+
+---
+
 ### **SECTION 1: RDS (RELATIONAL DATABASE SERVICE)**
 
-*Managed SQL databases.*
+> **What is RDS?** It's AWS taking a standard database engine (MySQL, PostgreSQL, etc.) and running it on a server *for you* — handling the boring, risky operational work. You still design your tables and write your queries; AWS handles patching, backups, and failover. It's the "managed database" — *managed* meaning **AWS does the maintenance**.
 
 ### **1. RDS Overview**
 
@@ -22,6 +33,9 @@
 
 ### **3. Read Replicas (Scaling Reads)**
 
+> **The problem:** Your one database server is getting hammered — too many people *reading* data (reports, searches, dashboards) and it's slowing down. You can't just keep buying a bigger server forever.
+> **The fix:** Make extra **read-only copies** of the database. Send all the read traffic to the copies; the original keeps handling writes. That's a Read Replica. Key word: **scaling** — it's about *handling more load*, not about surviving failure.
+
 **The Rule:** Asynchronous replication to offload **READ** traffic from the primary (eventual consistency, slight lag possible).
 
 **Key Facts:**
@@ -35,6 +49,9 @@
 ---
 
 ### **4. Multi-AZ (High Availability & Disaster Recovery)**
+
+> **The problem:** Your database runs in one data center (Availability Zone). If that AZ has a power/hardware failure, your whole app is down — and any data not yet saved elsewhere is gone.
+> **The fix:** AWS keeps a **standby copy** in a *different* AZ, kept perfectly in sync. If the primary dies, AWS automatically flips to the standby in ~1–2 minutes. Key word: **availability** — it's about *surviving failure*, not handling more load. (Note the contrast with Read Replicas above: Replicas = scale, Multi-AZ = survive. The exam loves to test exactly this difference — see the table below.)
 
 **The Rule:** **Synchronous** replication to a **standby** in a different AZ — zero data loss during failover.
 
@@ -122,7 +139,8 @@
 
 ### **SECTION 2: AURORA (THE CLOUD-NATIVE DB)**
 
-*AWS-built MySQL/PostgreSQL-compatible DB.*
+> **What is Aurora, and why does it exist separately from RDS?** RDS just runs the *standard* MySQL/PostgreSQL software on a server. Aurora is AWS's own **rewritten-from-scratch** version that *speaks the same language* (your MySQL/PostgreSQL app works unchanged) but with a smarter storage engine underneath — faster, and self-healing across 3 AZs automatically.
+> **The mental model:** RDS = AWS *runs* a normal database for you. Aurora = AWS *built a better database* that's compatible with the normal one. It costs ~20% more; you pick it when you need its extra power (speed, the 15 replicas, Global Database, Serverless, Backtrack). Everything below is an Aurora-only superpower — each solves a specific problem.
 
 ### **1. Aurora Overview**
 
