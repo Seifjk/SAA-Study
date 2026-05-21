@@ -40,7 +40,7 @@
 
 **Key Facts:**
 
-- **Count:** Up to **5** per primary (Standard RDS); Aurora up to **15**. All RDS engines + Aurora supported.
+- **Count:** Up to **15** per primary for RDS MySQL/MariaDB/PostgreSQL; **5** for Oracle/SQL Server; Aurora up to **15**. *(Older material says 5 for all RDS — if the exam offers 5, it's accepting the legacy number.)*
 - **Location:** Same AZ, Cross-AZ, or **Cross-Region** (cross-region replication incurs data transfer charges).
 - **Use Case:** Reporting, analytics, read-heavy workloads. Can promote a replica to a **standalone DB** (breaks replication).
 - *Exam Trap:* Replicas do NOT auto-route traffic — the app must connect to the replica endpoint explicitly.
@@ -145,7 +145,7 @@
 ### **1. Aurora Overview**
 
 - **The Rule:** AWS proprietary DB. **5x faster than MySQL**, **3x faster than PostgreSQL** (AWS claims). Cost ~20% more than RDS.
-- **Compatible APIs:** MySQL 5.6/5.7/8.0, PostgreSQL 11/12/13/14/15. Storage auto-scales **10 GB to 128 TB**.
+- **Compatible APIs:** MySQL 5.7/8.0, PostgreSQL 13–17. Storage auto-scales **10 GB to 128 TB**. *(Exact version numbers are not tested — just know "your existing MySQL/PostgreSQL app works unchanged.")*
 - **Why it's different:** Data stored across **3 AZs with 6 copies** (2 per AZ). Self-healing repairs corrupt blocks via peer-to-peer replication. Tolerates loss of 2 copies for writes, 3 for reads.
 
 ---

@@ -122,6 +122,53 @@
 
 ---
 
+### **Load Balancer Decision Tree**
+
+*Exam shortcut: most questions hinge on ONE keyword. Walk down until a keyword matches.*
+
+```
+                      ┌─────────────────────────────┐
+                      │   Which Load Balancer?      │
+                      └──────────────┬──────────────┘
+                                     │
+        ┌────────────────────────────┴────────────────────────────┐
+        │  Need to route traffic THROUGH 3rd-party security/       │
+        │  firewall appliances? (GENEVE, centralized inspection)   │
+        └────────────────────────────┬────────────────────────────┘
+                          YES │              │ NO
+                              ▼              ▼
+                       ┌───────────┐   ┌─────────────────────────────┐
+                       │   GWLB    │   │  Is traffic HTTP / HTTPS?   │
+                       │ (Layer 3) │   └──────────────┬──────────────┘
+                       └───────────┘        NO │             │ YES
+                                                ▼             ▼
+                                  ┌──────────────────┐  ┌──────────────────────┐
+                                  │   NLB (Layer 4)  │  │  Any of these needed? │
+                                  │  TCP / UDP / TLS │  │  • Path / Host route  │
+                                  └──────────────────┘  │  • Invoke Lambda      │
+                                                         │  • OIDC/Cognito auth  │
+                                                         │  • WebSocket / HTTP/2 │
+                                                         └──────────┬───────────┘
+                                                            YES │       │ NO
+                                                                ▼       ▼
+                                                          ┌─────────┐ ┌─────────┐
+                                                          │   ALB   │ │   ALB   │
+                                                          │(Layer 7)│ │(default │
+                                                          └─────────┘ │ for L7) │
+                                                                      └─────────┘
+
+  ── OVERRIDE KEYWORDS (these jump straight to NLB, regardless of above) ──
+   • "Static IP" / "Elastic IP" required ............... NLB
+   • "Millions of requests per second" / ultra-low latency  NLB
+   • "Preserve / see the original source IP" at target .. NLB
+     (ALB hides it — use X-Forwarded-For header with ALB instead)
+   • Whitelist exact IPs with a 3rd party ............... NLB (one EIP per AZ)
+```
+
+**One-line memory hook:** GWLB = *inspect*, NLB = *speed + static IP*, ALB = *smart HTTP routing*.
+
+---
+
 ### **SECTION 2: AUTO SCALING (THE ELASTIC PART)**
 
 *Automatically add/remove EC2 instances based on demand.*

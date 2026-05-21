@@ -94,7 +94,7 @@
 
 **The Rule:** In-memory cache that sits in front of DynamoDB — reduces read latency from **milliseconds to microseconds**. Reads hit DAX first; writes are write-through to DynamoDB.
 
-- Drop-in (minimal code changes); item cache + query cache; TTL default 5 min; multi-node cluster for HA (3+ recommended).
+- Drop-in (minimal code changes); item cache + query cache; TTL is configurable (no default — commonly set to 5 min); multi-node cluster for HA (3+ recommended).
 
 **Exam Trigger:** "Reduce DynamoDB read latency to microseconds" → DAX.
 
