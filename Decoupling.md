@@ -285,6 +285,29 @@ AWS has **4 Kinesis services**:
 
 ---
 
+### **Exam Summary Cheat Sheet (Practice — Fill In Yourself)**
+
+1. **Decouple producers/consumers?** → ________
+2. **Strict ordering, No duplicates?** → ________
+3. **Highest throughput, Duplicates OK?** → ________
+4. **Reduce SQS API calls?** → ________
+5. **Message processed multiple times?** → ________
+6. **Handle repeatedly failing messages?** → ________
+7. **Send same message to multiple services?** → ________
+8. **Subscriber receives only specific message types?** → ________
+9. **Real-time streaming, Replay data?** → ________
+10. **Load streaming data to S3 without code?** → ________
+11. **Migrate RabbitMQ to AWS?** → ________
+12. **New cloud-native app?** → ________
+13. **SQS message larger than 256 KB?** → ________
+14. **Scale Kinesis consumers?** → ________
+15. **React to AWS service events (EC2 state, S3, API calls)?** → ________
+16. **Schedule tasks / cron in AWS?** → ________
+17. **Event-driven with advanced filtering + many targets?** → ________
+18. **Replay past events for debugging?** → ________
+
+---
+
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
 1. **Decouple producers/consumers?** → SQS.
