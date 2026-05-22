@@ -341,18 +341,18 @@ AWS has **4 Kinesis services**:
 
 A. Continue using SQS Standard and add sequence numbers in application logic.
 
-B. Switch to SQS FIFO Queue with Message Group ID = Order ID.
+B. Use Kinesis Data Streams.
 
-C. Use Kinesis Data Streams.
+C. Switch to SQS FIFO Queue with Message Group ID = Order ID.
 
 D. Use SNS Topic with Lambda.
 
 **The Logic:**
 
 - **Trap A — SQS Standard + app-side sequencing:** SQS Standard is **best-effort ordering** by design — no fix on the queue side. Re-sorting in application code means buffering, sequence tracking, and handling duplicates: complex and error-prone. The right move is the right queue type.
-- **Trap C — Kinesis Data Streams:** Kinesis *does* preserve order within a shard, but it's a high-throughput **streaming** service for analytics/telemetry, not a task queue for a 3-step order workflow. Wrong tool category.
+- **Trap B — Kinesis Data Streams:** Kinesis *does* preserve order within a shard, but it's a high-throughput **streaming** service for analytics/telemetry, not a task queue for a 3-step order workflow. Wrong tool category.
 - **Trap D — SNS Topic with Lambda:** SNS is fan-out pub/sub with **no ordering guarantee** (standard topics). It would make the out-of-order problem just as bad.
-- **The Fix — Option B:** **SQS FIFO** guarantees strict in-order delivery. Set **Message Group ID = Order ID** so all messages for one order process sequentially, while *different* orders (different group IDs) still process in parallel — ordering without losing throughput.
+- **The Fix — Option C:** **SQS FIFO** guarantees strict in-order delivery. Set **Message Group ID = Order ID** so all messages for one order process sequentially, while *different* orders (different group IDs) still process in parallel — ordering without losing throughput.
 
 ---
 
@@ -362,20 +362,20 @@ D. Use SNS Topic with Lambda.
 
 **The Options:**
 
-A. Use Lambda to call all systems sequentially.
+A. Use SNS Topic with 4 SQS Queues (One per service) in a Fan-Out pattern.
 
-B. Use SQS Queue and have consumers poll for different message types.
+B. Use Lambda to call all systems sequentially.
 
-C. Use SNS Topic with 4 subscribers: SES (Email), Lambda (Thumbnail), Lambda (DynamoDB), Lambda (S3).
+C. Use SQS Queue and have consumers poll for different message types.
 
-D. Use SNS Topic with 4 SQS Queues (One per service) in a Fan-Out pattern.
+D. Use SNS Topic with 4 subscribers: SES (Email), Lambda (Thumbnail), Lambda (DynamoDB), Lambda (S3).
 
 **The Logic:**
 
-- **Trap A — Lambda calls all systems sequentially:** This is the *current* tight-coupled design with extra steps. If one downstream is down, the chain still fails. No decoupling at all.
-- **Trap B — Single SQS, consumers filter by message type:** One queue forces every consumer to read and discard messages meant for others, plus custom routing logic. Messy and inefficient — fan-out is the clean pattern.
-- **Trap C — SNS direct to 4 subscribers (SES + 3 Lambdas):** Works and is decoupled, but SNS delivery is **fire-and-forget** — if a Lambda is throttled or erroring, that message can be lost (no durable buffer). Less resilient.
-- **The Fix — Option D:** **SNS + SQS Fan-Out** — upload service publishes once to an SNS topic, which pushes to **4 SQS queues** (one per service). Each service polls its own queue, scales independently, and SQS **persists messages** so a down service just catches up later. Fully decoupled and resilient.
+- **Trap B — Lambda calls all systems sequentially:** This is the *current* tight-coupled design with extra steps. If one downstream is down, the chain still fails. No decoupling at all.
+- **Trap C — Single SQS, consumers filter by message type:** One queue forces every consumer to read and discard messages meant for others, plus custom routing logic. Messy and inefficient — fan-out is the clean pattern.
+- **Trap D — SNS direct to 4 subscribers (SES + 3 Lambdas):** Works and is decoupled, but SNS delivery is **fire-and-forget** — if a Lambda is throttled or erroring, that message can be lost (no durable buffer). Less resilient.
+- **The Fix — Option A:** **SNS + SQS Fan-Out** — upload service publishes once to an SNS topic, which pushes to **4 SQS queues** (one per service). Each service polls its own queue, scales independently, and SQS **persists messages** so a down service just catches up later. Fully decoupled and resilient.
 
 ---
 
@@ -387,18 +387,18 @@ D. Use SNS Topic with 4 SQS Queues (One per service) in a Fan-Out pattern.
 
 A. Increase polling frequency to every 5 seconds.
 
-B. Enable SQS Long Polling with WaitTimeSeconds = 20.
+B. Switch to SNS with Lambda subscription.
 
-C. Switch to SNS with Lambda subscription.
+C. Use Kinesis Data Streams.
 
-D. Use Kinesis Data Streams.
+D. Enable SQS Long Polling with WaitTimeSeconds = 20.
 
 **The Logic:**
 
 - **Trap A — Poll every 5 seconds:** Cuts API calls 5× but still mostly returns empty, *and* it adds up to 5 seconds of latency before a message is picked up. Trades one problem for another — and Long Polling beats it on both axes.
-- **Trap C — Switch to SNS + Lambda:** SNS is push-based pub/sub — re-architecting the queue into a topic is a much bigger change, and SNS lacks the durable buffering/retry of SQS. Overkill for what is just an inefficient-polling problem.
-- **Trap D — Kinesis Data Streams:** A streaming service for high-volume real-time data — 500 messages/day is the opposite of that. Wrong tool, and a needless rewrite.
-- **The Fix — Option B:** Enable **SQS Long Polling** (`WaitTimeSeconds = 20`). Each poll waits up to 20s for a message instead of returning empty immediately — ~95% fewer API calls, *lower* cost, and *lower* latency (a message is returned the instant it arrives, not on the next tick).
+- **Trap B — Switch to SNS + Lambda:** SNS is push-based pub/sub — re-architecting the queue into a topic is a much bigger change, and SNS lacks the durable buffering/retry of SQS. Overkill for what is just an inefficient-polling problem.
+- **Trap C — Kinesis Data Streams:** A streaming service for high-volume real-time data — 500 messages/day is the opposite of that. Wrong tool, and a needless rewrite.
+- **The Fix — Option D:** Enable **SQS Long Polling** (`WaitTimeSeconds = 20`). Each poll waits up to 20s for a message instead of returning empty immediately — ~95% fewer API calls, *lower* cost, and *lower* latency (a message is returned the instant it arrives, not on the next tick).
 
 ---
 
@@ -408,18 +408,18 @@ D. Use Kinesis Data Streams.
 
 **The Options:**
 
-A. Use SQS Standard Queue with Lambda consumers.
+A. Use Kinesis Firehose to write to S3, then query with Athena.
 
 B. Use Kinesis Data Streams with 7-day retention and Lambda consumers.
 
-C. Use Kinesis Firehose to write to S3, then query with Athena.
+C. Use SQS Standard Queue with Lambda consumers.
 
 D. Write directly to DynamoDB.
 
 **The Logic:**
 
-- **Trap A — SQS Standard + Lambda:** SQS **deletes a message once it's consumed** — there's no way to replay the last 7 days for model training. It also isn't built for ordered, high-rate stream processing. Fails the replay requirement.
-- **Trap C — Firehose → S3 → Athena:** Firehose buffers before delivery — minimum ~60-second latency. That breaks the "< 1 second" real-time leaderboard requirement. (It's the right answer for *batch* ETL, not live dashboards.)
+- **Trap A — Firehose → S3 → Athena:** Firehose buffers before delivery — minimum ~60-second latency. That breaks the "< 1 second" real-time leaderboard requirement. (It's the right answer for *batch* ETL, not live dashboards.)
+- **Trap C — SQS Standard + Lambda:** SQS **deletes a message once it's consumed** — there's no way to replay the last 7 days for model training. It also isn't built for ordered, high-rate stream processing. Fails the replay requirement.
 - **Trap D — Write directly to DynamoDB:** DynamoDB is a database, not a stream processor — no native real-time fan-out to consumers and no time-window replay. Wrong category.
 - **The Fix — Option B:** **Kinesis Data Streams** handles real-time ingest (< 1s) for the live leaderboard via Lambda consumers, **and** its configurable **retention (set to 7 days)** lets the analytics team **replay** any point in that window for training. One service satisfies both needs.
 
@@ -431,9 +431,9 @@ D. Write directly to DynamoDB.
 
 **The Options:**
 
-A. Use Kinesis Data Streams with Lambda consumer to transform and write to S3.
+A. Use Amazon Data Firehose with Lambda transformation and S3 destination.
 
-B. Use Amazon Data Firehose with Lambda transformation and S3 destination.
+B. Use Kinesis Data Streams with Lambda consumer to transform and write to S3.
 
 C. Use SQS with Lambda to process and write to S3.
 
@@ -441,7 +441,7 @@ D. Use SNS to trigger Lambda to write to S3.
 
 **The Logic:**
 
-- **Trap A — Kinesis Data Streams + Lambda consumer:** Works, but you manage **shards** (capacity planning) and write/operate the consumer code. The requirement explicitly says *fully managed, no servers, no custom consumers* — this fails that bar.
+- **Trap B — Kinesis Data Streams + Lambda consumer:** Works, but you manage **shards** (capacity planning) and write/operate the consumer code. The requirement explicitly says *fully managed, no servers, no custom consumers* — this fails that bar.
 - **Trap C — SQS + Lambda:** SQS is a message queue, not a streaming-ETL pipeline. You'd still hand-build the transform, compression, and S3-batching logic. Wrong tool and not "no custom consumers."
 - **Trap D — SNS → Lambda → S3:** SNS is pub/sub notification, not a buffered delivery pipeline to S3. You'd build the batching/compression/transform yourself. Not the managed ETL solution asked for.
-- **The Fix — Option B:** **Amazon Data Firehose** is fully managed — no shards, auto-scaling. It has **built-in Lambda transformation** (Celsius→Fahrenheit), **built-in compression** (GZIP), and a native **S3 destination** for Athena queries. Zero infrastructure — built for exactly this.
+- **The Fix — Option A:** **Amazon Data Firehose** is fully managed — no shards, auto-scaling. It has **built-in Lambda transformation** (Celsius→Fahrenheit), **built-in compression** (GZIP), and a native **S3 destination** for Athena queries. Zero infrastructure — built for exactly this.

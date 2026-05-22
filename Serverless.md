@@ -349,18 +349,18 @@
 
 A. Use Lambda with 15-minute timeout and process in batches.
 
-B. Use Lambda to trigger an ECS Fargate task to process the video.
+B. Increase Lambda timeout to 30 minutes.
 
-C. Increase Lambda timeout to 30 minutes.
+C. Use Lambda to trigger an ECS Fargate task to process the video.
 
 D. Use Step Functions to chain multiple Lambda functions.
 
 **The Logic:**
 
 - **Trap A — Lambda + process in batches:** A single video transcode is a 25-minute *continuous* job — it can't be sliced into sub-15-minute pieces. Batching changes nothing.
-- **Trap C — Increase Lambda timeout to 30 minutes:** **Impossible.** Lambda's timeout is a hard ceiling of **15 minutes** — it cannot be raised. This option describes something that doesn't exist.
+- **Trap B — Increase Lambda timeout to 30 minutes:** **Impossible.** Lambda's timeout is a hard ceiling of **15 minutes** — it cannot be raised. This option describes something that doesn't exist.
 - **Trap D — Chain Lambdas via Step Functions:** Chaining helps when *separate steps* each fit in 15 min. One video needs 25 minutes of *uninterrupted* processing — no individual Lambda in the chain can do it.
-- **The Fix — Option B:** S3 upload triggers a **Lambda that launches an ECS Fargate task** — Fargate has **no execution time limit** and handles the 25-minute transcode. Classic pattern: **Lambda as the lightweight trigger/orchestrator, Fargate for long-running compute.**
+- **The Fix — Option C:** S3 upload triggers a **Lambda that launches an ECS Fargate task** — Fargate has **no execution time limit** and handles the 25-minute transcode. Classic pattern: **Lambda as the lightweight trigger/orchestrator, Fargate for long-running compute.**
 
 ---
 
@@ -372,18 +372,18 @@ D. Use Step Functions to chain multiple Lambda functions.
 
 A. Increase Lambda memory to 10 GB.
 
-B. Use Reserved Concurrency.
+B. Use Provisioned Concurrency to keep 10 execution environments warm.
 
-C. Use Provisioned Concurrency to keep 10 execution environments warm.
+C. Use Reserved Concurrency.
 
 D. Switch to EC2 instances.
 
 **The Logic:**
 
 - **Trap A — Increase memory to 10 GB:** More memory gives more CPU, so *execution* is faster — but the **cold start** (downloading code, spinning up the runtime, initializing) still happens. The 2-second first-request delay remains.
-- **Trap B — Reserved Concurrency:** A common mix-up. Reserved Concurrency *caps/guarantees* how many concurrent executions a function can have — it does **not** pre-warm anything. Cold starts still occur. (Reserved = a capacity limit; Provisioned = pre-warmed environments.)
+- **Trap C — Reserved Concurrency:** A common mix-up. Reserved Concurrency *caps/guarantees* how many concurrent executions a function can have — it does **not** pre-warm anything. Cold starts still occur. (Reserved = a capacity limit; Provisioned = pre-warmed environments.)
 - **Trap D — Switch to EC2:** Always-on EC2 has no cold starts, but it throws away the entire serverless model — you now manage instances, patching, scaling. Massive over-correction for a latency tweak.
-- **The Fix — Option C:** **Provisioned Concurrency** keeps a set number of execution environments **pre-initialized and warm**, so even the first request after idle is fast (< 200 ms). You pay for the provisioned capacity, but it's the only option that actually eliminates cold starts.
+- **The Fix — Option B:** **Provisioned Concurrency** keeps a set number of execution environments **pre-initialized and warm**, so even the first request after idle is fast (< 200 ms). You pay for the provisioned capacity, but it's the only option that actually eliminates cold starts.
 
 ---
 
@@ -395,18 +395,18 @@ D. Switch to EC2 instances.
 
 A. Use Lambda to count requests in DynamoDB and reject if exceeded.
 
-B. Use API Gateway Usage Plans with API Keys for each tier.
+B. Use WAF to block excessive requests.
 
-C. Use WAF to block excessive requests.
+C. Use CloudWatch alarms to alert on high usage.
 
-D. Use CloudWatch alarms to alert on high usage.
+D. Use API Gateway Usage Plans with API Keys for each tier.
 
 **The Logic:**
 
 - **Trap A — Lambda counts requests in DynamoDB:** This *works* but you're hand-building rate limiting that API Gateway already provides natively — custom counters, atomic increments, race conditions, per-tier logic. Reinventing the wheel.
-- **Trap C — WAF to block excessive requests:** WAF rate-based rules block by **IP** at a single threshold. They can't enforce *per-customer* tiered daily quotas (100 / 10,000 / unlimited) or identify *which customer* made a call. Wrong granularity.
-- **Trap D — CloudWatch alarms on high usage:** CloudWatch only *observes and alerts*. It cannot *enforce* a limit or reject a request. Monitoring ≠ enforcement.
-- **The Fix — Option B:** **API Gateway Usage Plans** define a **throttle** (req/sec) and **quota** (req/day) per tier; **API Keys** identify each customer and bind them to a plan. API Gateway enforces it automatically and returns `429 Too Many Requests` when exceeded — built-in, no custom code.
+- **Trap B — WAF to block excessive requests:** WAF rate-based rules block by **IP** at a single threshold. They can't enforce *per-customer* tiered daily quotas (100 / 10,000 / unlimited) or identify *which customer* made a call. Wrong granularity.
+- **Trap C — CloudWatch alarms on high usage:** CloudWatch only *observes and alerts*. It cannot *enforce* a limit or reject a request. Monitoring ≠ enforcement.
+- **The Fix — Option D:** **API Gateway Usage Plans** define a **throttle** (req/sec) and **quota** (req/day) per tier; **API Keys** identify each customer and bind them to a plan. API Gateway enforces it automatically and returns `429 Too Many Requests` when exceeded — built-in, no custom code.
 
 ---
 
@@ -418,18 +418,18 @@ D. Use CloudWatch alarms to alert on high usage.
 
 A. Embed the library in each function's deployment package.
 
-B. Create a Lambda Layer containing the library and attach it to all functions.
+B. Store the library in S3 and download it in /tmp at runtime.
 
-C. Store the library in S3 and download it in /tmp at runtime.
+C. Create a Lambda Layer containing the library and attach it to all functions.
 
 D. Use EFS to mount shared storage.
 
 **The Logic:**
 
 - **Trap A — Embed the library in each package:** This is the *current* painful state — 200 MB duplicated into 50 deployment packages, re-uploaded on every update. The problem itself, not a fix.
-- **Trap C — Store in S3, download to /tmp at runtime:** Adds **cold-start latency** (downloading 200 MB on init) and custom bootstrap code. Fragile and slow compared to a native mechanism.
+- **Trap B — Store in S3, download to /tmp at runtime:** Adds **cold-start latency** (downloading 200 MB on init) and custom bootstrap code. Fragile and slow compared to a native mechanism.
 - **Trap D — Mount shared storage via EFS:** EFS *can* hold shared code, but it's meant for large/persistent shared *data*, adds VPC + mount configuration, and is overkill for distributing a library. Layers are the purpose-built answer.
-- **The Fix — Option B:** A **Lambda Layer** packages the shared library once and attaches to all 50 functions. Update the layer version once → every function picks it up. Deployment packages shrink, upload time drops — exactly what Layers exist for.
+- **The Fix — Option C:** A **Lambda Layer** packages the shared library once and attaches to all 50 functions. Update the layer version once → every function picks it up. Deployment packages shrink, upload time drops — exactly what Layers exist for.
 
 ---
 
@@ -439,17 +439,17 @@ D. Use EFS to mount shared storage.
 
 **The Options:**
 
-A. Chain Lambda functions with SNS between each step.
+A. Use Step Functions Standard Workflow to coordinate all steps.
 
-B. Use SQS with Lambda polling each queue.
+B. Chain Lambda functions with SNS between each step.
 
-C. Use Step Functions Standard Workflow to coordinate all steps.
+C. Use SQS with Lambda polling each queue.
 
 D. Write custom orchestration logic in a single Lambda function.
 
 **The Logic:**
 
-- **Trap A — Chain Lambdas with SNS between steps:** You'd hand-build the wiring, the retries, and the failure handling — and there's **no visual monitoring** of where an order is in the flow. The requirement explicitly asks for visual monitoring and automatic retries.
-- **Trap B — SQS with Lambda polling each queue:** Possible, but you're manually constructing an orchestration out of queues and poll logic — complex, and still no visual workflow or built-in step-level retry/error semantics.
+- **Trap B — Chain Lambdas with SNS between steps:** You'd hand-build the wiring, the retries, and the failure handling — and there's **no visual monitoring** of where an order is in the flow. The requirement explicitly asks for visual monitoring and automatic retries.
+- **Trap C — SQS with Lambda polling each queue:** Possible, but you're manually constructing an orchestration out of queues and poll logic — complex, and still no visual workflow or built-in step-level retry/error semantics.
 - **Trap D — Single Lambda doing all orchestration:** Step 4 is a **30-minute wait** — a single Lambda invocation caps at **15 minutes**, so it physically cannot hold the workflow open. Impossible.
-- **The Fix — Option C:** **Step Functions (Standard Workflow)** models the whole flow — Task → Task → Task → **Wait (30 min)** → Task — with **built-in retry/catch**, a **visual** execution graph, and the ability to run for up to a year. Purpose-built for multi-step orchestration with waits and error handling.
+- **The Fix — Option A:** **Step Functions (Standard Workflow)** models the whole flow — Task → Task → Task → **Wait (30 min)** → Task — with **built-in retry/catch**, a **visual** execution graph, and the ability to run for up to a year. Purpose-built for multi-step orchestration with waits and error handling.

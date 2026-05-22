@@ -325,27 +325,27 @@
 
 ### **Exam Summary Cheat Sheet (Practice — Fill In Yourself)**
 
-1. **Unpredictable DynamoDB workload?** → ________
-2. **Query DynamoDB by non-PK attribute?** → ________
-3. **Must read latest data from DynamoDB?** → ________
-4. **Reduce DynamoDB latency to microseconds?** → ________
-5. **React to DynamoDB changes?** → ________
-6. **Multi-region DynamoDB with read/write?** → ________
-7. **Auto-delete old DynamoDB items?** → ________
-8. **Atomic operation across multiple items?** → ________
-9. **Analyze DynamoDB data without consuming RCUs?** → ________
-10. **Cache with backups/persistence?** → ________
-11. **Simple multi-threaded cache?** → ________
-12. **Scale Redis horizontally?** → ________
-13. **Session storage for stateless app?** → ________
-14. **MongoDB migration?** → ________
-15. **Social network / Fraud detection / Recommendations?** → ________
-16. **IoT sensor data / Time-series?** → ________
-17. **Immutable ledger / Audit trail?** → ________
-18. **Cassandra migration?** → ________
-19. **Durable in-memory database (not just cache)?** → ________
-20. **SQL-like queries on DynamoDB?** → ________
-21. **Cross-region Redis for DR/global reads?** → ________
+1. **Unpredictable DynamoDB workload?** → On-Demand
+2. **Query DynamoDB by non-PK attribute?** → GSI/LSI
+3. **Must read latest data from DynamoDB?** → Strongly Consistent Reads
+4. **Reduce DynamoDB latency to microseconds?** → DAX
+5. **React to DynamoDB changes?** → DynamoDB Streams activate + Lambda
+6. **Multi-region DynamoDB with read/write?** → Global Tables
+7. **Auto-delete old DynamoDB items?** → TTL activate
+8. **Atomic operation across multiple items?** → Transactions
+9. **Analyze DynamoDB data without consuming RCUs?** → Store to S3
+10. **Cache with backups/persistence?** → Elasticache => Redis
+11. **Simple multi-threaded cache?** → Memcache
+12. **Scale Redis horizontally?** → Redis Cluster mode enable
+13. **Session storage for stateless app?** → Elasticache
+14. **MongoDB migration?** → DocumentDB
+15. **Social network / Fraud detection / Recommendations?** →  Neptune
+16. **IoT sensor data / Time-series?** → Time Series bullshit Timestream
+17. **Immutable ledger / Audit trail?** → Quantum Ledger
+18. **Cassandra migration?** → Keyspace
+19. **Durable in-memory database (not just cache)?** → In-memory DB
+20. **SQL-like queries on DynamoDB?** → PartiQL
+21. **Cross-region Redis for DR/global reads?** → global DS
 
 ---
 

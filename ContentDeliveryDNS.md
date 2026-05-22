@@ -343,18 +343,18 @@
 
 A. Use an A Record pointing to the ALB's IP address.
 
-B. Use an Alias Record pointing to the ALB's DNS name.
+B. Use a CNAME Record pointing to the ALB's DNS name.
 
-C. Use a CNAME Record pointing to the ALB's DNS name.
+C. Use an Alias Record pointing to the ALB's DNS name.
 
 D. Use a TXT Record.
 
 **The Logic:**
 
 - **Trap A — A Record to the ALB's IP:** An A record needs a *fixed* IP. An ALB's IP addresses are managed by AWS and change over time — hardcoding one will break. Not supported.
-- **Trap C — CNAME on the root domain:** The DNS standard **forbids a CNAME at the zone apex** (root domain) — it conflicts with the required SOA/NS records. This is why Route 53 rejected it. CNAME only works on subdomains.
+- **Trap B — CNAME on the root domain:** The DNS standard **forbids a CNAME at the zone apex** (root domain) — it conflicts with the required SOA/NS records. This is why Route 53 rejected it. CNAME only works on subdomains.
 - **Trap D — TXT Record:** TXT records hold arbitrary text (SPF, domain verification). They don't route traffic at all. Irrelevant.
-- **The Fix — Option B:** A Route 53 **Alias record** is AWS-specific and **works at the root domain**. It points to the ALB's DNS name and Route 53 auto-resolves to the ALB's current IPs. It's also free (no query charge). Alias = the answer whenever you need apex-domain → AWS resource.
+- **The Fix — Option C:** A Route 53 **Alias record** is AWS-specific and **works at the root domain**. It points to the ALB's DNS name and Route 53 auto-resolves to the ALB's current IPs. It's also free (no query charge). Alias = the answer whenever you need apex-domain → AWS resource.
 
 ---
 
@@ -366,18 +366,18 @@ D. Use a TXT Record.
 
 A. Use Weighted Routing with equal weights.
 
-B. Use Geolocation Routing to map continents to regions.
+B. Use Latency-Based Routing.
 
-C. Use Latency-Based Routing.
+C. Use Geolocation Routing to map continents to regions.
 
 D. Use CloudFront.
 
 **The Logic:**
 
 - **Trap A — Weighted Routing, equal weights:** Weighted routing splits traffic by *percentage*, ignoring where the user is. A user in Tokyo could be sent to `eu-west-1` — the opposite of "fastest region."
-- **Trap B — Geolocation Routing:** Routes by the user's *geographic location*, which is not the same as *network latency*. Geography ≠ speed — a path can be physically near but network-slow. Close distractor, but Latency-Based is the precise answer.
+- **Trap C — Geolocation Routing:** Routes by the user's *geographic location*, which is not the same as *network latency*. Geography ≠ speed — a path can be physically near but network-slow. Close distractor, but Latency-Based is the precise answer.
 - **Trap D — CloudFront:** CloudFront caches content at edge locations. It doesn't *route users to the fastest application backend region* — and dynamic SaaS traffic isn't cacheable anyway. Wrong tool.
-- **The Fix — Option C:** **Latency-Based Routing** uses AWS's measured network latency from the user to each region and sends them to the **lowest-latency** one. It optimizes for real performance, dynamically.
+- **The Fix — Option B:** **Latency-Based Routing** uses AWS's measured network latency from the user to each region and sends them to the **lowest-latency** one. It optimizes for real performance, dynamically.
 
 ---
 
@@ -389,18 +389,18 @@ D. Use CloudFront.
 
 A. Use S3 bucket policies to allow only authenticated users.
 
-B. Use CloudFront with Signed URLs that expire after 1 hour.
+B. Use CloudFront Geo Restriction.
 
-C. Use CloudFront Geo Restriction.
+C. Use WAF to block unauthorized IPs.
 
-D. Use WAF to block unauthorized IPs.
+D. Use CloudFront with Signed URLs that expire after 1 hour.
 
 **The Logic:**
 
 - **Trap A — S3 bucket policy for authenticated users:** When CloudFront serves the content, the *end user* never talks to S3 — **CloudFront** does. An S3 policy can't see or authenticate the individual viewer. Wrong layer.
-- **Trap C — CloudFront Geo Restriction:** Geo Restriction allows/blocks whole **countries**. It cannot tell a paying subscriber from a free user in the same country. Wrong granularity.
-- **Trap D — WAF blocking unauthorized IPs:** WAF filters by IP/request patterns — it has no concept of "this person paid." It can't distinguish subscriber from free user.
-- **The Fix — Option B:** **CloudFront Signed URLs** carry a cryptographic signature your app generates (with a private key) only *after* the user authenticates as a paying subscriber, and they **expire after 1 hour**. A shared URL stops working when it expires — combating URL sharing. Per-user, time-limited access = Signed URLs.
+- **Trap B — CloudFront Geo Restriction:** Geo Restriction allows/blocks whole **countries**. It cannot tell a paying subscriber from a free user in the same country. Wrong granularity.
+- **Trap C — WAF blocking unauthorized IPs:** WAF filters by IP/request patterns — it has no concept of "this person paid." It can't distinguish subscriber from free user.
+- **The Fix — Option D:** **CloudFront Signed URLs** carry a cryptographic signature your app generates (with a private key) only *after* the user authenticates as a paying subscriber, and they **expire after 1 hour**. A shared URL stops working when it expires — combating URL sharing. Per-user, time-limited access = Signed URLs.
 
 ---
 
@@ -412,18 +412,18 @@ D. Use WAF to block unauthorized IPs.
 
 A. Use CloudFront to cache game data.
 
-B. Use Route 53 Latency-Based Routing with health checks.
+B. Use Global Accelerator with 2 Anycast IPs pointing to NLBs.
 
-C. Use Global Accelerator with 2 Anycast IPs pointing to NLBs.
+C. Use Route 53 Latency-Based Routing with health checks.
 
 D. Use Elastic IPs for each NLB and distribute to clients.
 
 **The Logic:**
 
 - **Trap A — CloudFront:** CloudFront caches **HTTP/HTTPS** content at edge. Real-time multiplayer traffic is TCP/UDP and not cacheable — CloudFront doesn't apply.
-- **Trap B — Route 53 Latency-Based Routing:** Route 53 hands back *DNS answers* (which can be multiple, changing IPs) — it doesn't give the **static IPs** the game client hardcodes, and DNS routing doesn't accelerate the network path.
+- **Trap C — Route 53 Latency-Based Routing:** Route 53 hands back *DNS answers* (which can be multiple, changing IPs) — it doesn't give the **static IPs** the game client hardcodes, and DNS routing doesn't accelerate the network path.
 - **Trap D — Elastic IPs per NLB:** EIPs *are* static, but you'd hand clients a different IP per region, with no global anycast and no fast cross-region failover. Solves "static" but not "latency" or "failover."
-- **The Fix — Option C:** **Global Accelerator** gives **2 static anycast IPs** (perfect for hardcoded clients), routes traffic over the **AWS global backbone** (lower latency than the public internet), supports **TCP/UDP** for gaming, and **fails over to healthy endpoints in under a minute**. Hits every requirement.
+- **The Fix — Option B:** **Global Accelerator** gives **2 static anycast IPs** (perfect for hardcoded clients), routes traffic over the **AWS global backbone** (lower latency than the public internet), supports **TCP/UDP** for gaming, and **fails over to healthy endpoints in under a minute**. Hits every requirement.
 
 ---
 
@@ -433,9 +433,9 @@ D. Use Elastic IPs for each NLB and distribute to clients.
 
 **The Options:**
 
-A. Reduce CloudFront TTL to 1 minute.
+A. Use versioned filenames (e.g., `style_v2.css`) and update HTML references.
 
-B. Use versioned filenames (e.g., `style_v2.css`) and update HTML references.
+B. Reduce CloudFront TTL to 1 minute.
 
 C. Increase CloudFront invalidation budget.
 
@@ -443,7 +443,7 @@ D. Disable caching entirely.
 
 **The Logic:**
 
-- **Trap A — Drop TTL to 1 minute:** Forces near-constant cache misses, hammering the origin and gutting CloudFront's whole performance/cost benefit. Trades a deploy problem for a permanent load problem.
+- **Trap B — Drop TTL to 1 minute:** Forces near-constant cache misses, hammering the origin and gutting CloudFront's whole performance/cost benefit. Trades a deploy problem for a permanent load problem.
 - **Trap C — Increase the invalidation budget:** Paying *more* for invalidations accepts the broken approach instead of fixing it. Cost goes up, the root issue stays.
 - **Trap D — Disable caching:** Defeats the purpose of having a CDN — every request hits S3, latency and origin load spike. Self-defeating.
-- **The Fix — Option B:** Use **versioned filenames** (`style_v1.css` → `style_v2.css`). A changed file ships under a *new* name, the HTML references it, and CloudFront treats it as a fresh object (cache miss → cache). No invalidations needed, **free**, instant updates. Industry best practice for CDN cache busting.
+- **The Fix — Option A:** Use **versioned filenames** (`style_v1.css` → `style_v2.css`). A changed file ships under a *new* name, the HTML references it, and CloudFront treats it as a fresh object (cache miss → cache). No invalidations needed, **free**, instant updates. Industry best practice for CDN cache busting.

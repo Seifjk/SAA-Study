@@ -272,19 +272,19 @@
 
 **The Options:**
 
-A. Enable Multi-AZ deployment.
+A. Migrate to Aurora Serverless.
 
 B. Create a Read Replica and point analytics queries to the replica endpoint.
 
-C. Increase the instance size of the primary DB.
+C. Enable Multi-AZ deployment.
 
-D. Migrate to Aurora Serverless.
+D. Increase the instance size of the primary DB.
 
 **The Logic:**
 
-- **Trap A — Multi-AZ:** The Multi-AZ standby is a *failover* target only — it serves **no read traffic**. You cannot point analytics queries at it, so it does nothing for this problem.
-- **Trap C — Bigger primary instance:** Adds headroom but the analytical queries still run **on the same database**, competing with user traffic. It doesn't *isolate* the two workloads, and it's costly.
-- **Trap D — Migrate to Aurora Serverless:** A full engine migration to solve a read-contention problem is heavy-handed. Aurora Serverless auto-scales capacity but analytics would *still* hit the writer unless you also add replicas — it doesn't address the actual issue.
+- **Trap A — Migrate to Aurora Serverless:** A full engine migration to solve a read-contention problem is heavy-handed. Aurora Serverless auto-scales capacity but analytics would *still* hit the writer unless you also add replicas — it doesn't address the actual issue.
+- **Trap C — Multi-AZ:** The Multi-AZ standby is a *failover* target only — it serves **no read traffic**. You cannot point analytics queries at it, so it does nothing for this problem.
+- **Trap D — Bigger primary instance:** Adds headroom but the analytical queries still run **on the same database**, competing with user traffic. It doesn't *isolate* the two workloads, and it's costly.
 - **The Fix — Option B:** A **Read Replica** gives analytics its own endpoint. Heavy queries run on the replica; the primary is untouched. Async replication keeps the replica current without slowing the writer. Workload isolation = the textbook Read Replica use case.
 
 ---
@@ -295,9 +295,9 @@ D. Migrate to Aurora Serverless.
 
 **The Options:**
 
-A. Use Read Replicas in multiple AZs and manually promote one.
+A. Enable Multi-AZ deployment.
 
-B. Enable Multi-AZ deployment.
+B. Use Read Replicas in multiple AZs and manually promote one.
 
 C. Take hourly snapshots and restore when needed.
 
@@ -305,10 +305,10 @@ D. Use Aurora Serverless.
 
 **The Logic:**
 
-- **Trap A — Read Replicas + manual promotion:** Two failures against the requirements: replication is **asynchronous** (so in-flight writes can be lost — violates "zero data loss"), and promotion is **manual** (violates "automatic failover").
+- **Trap B — Read Replicas + manual promotion:** Two failures against the requirements: replication is **asynchronous** (so in-flight writes can be lost — violates "zero data loss"), and promotion is **manual** (violates "automatic failover").
 - **Trap C — Hourly snapshots + restore:** Restoring a snapshot creates a new instance — minutes to hours. Blows the under-2-minute RTO, and you'd lose up to an hour of data.
 - **Trap D — Aurora Serverless:** Auto-scales capacity, but the question is about *failover behavior and data durability*, not scaling. It doesn't specifically deliver synchronous zero-loss failover the way the Multi-AZ answer does, and switching engines isn't asked for.
-- **The Fix — Option B:** **Multi-AZ** uses **synchronous** replication to the standby (zero data loss) and fails over **automatically** via a DNS change in ~60–120 seconds — satisfying both the zero-data-loss and sub-2-minute RTO requirements.
+- **The Fix — Option A:** **Multi-AZ** uses **synchronous** replication to the standby (zero data loss) and fails over **automatically** via a DNS change in ~60–120 seconds — satisfying both the zero-data-loss and sub-2-minute RTO requirements.
 
 ---
 
@@ -320,18 +320,18 @@ D. Use Aurora Serverless.
 
 A. Increase the DB instance size to support more connections.
 
-B. Use RDS Proxy to pool database connections.
+B. Switch to DynamoDB.
 
-C. Switch to DynamoDB.
+C. Use RDS Proxy to pool database connections.
 
 D. Enable Multi-AZ.
 
 **The Logic:**
 
 - **Trap A — Bigger DB instance:** A larger instance raises `max_connections`, but 2,000 concurrent Lambdas can still outgrow it — you're chasing the symptom. It delays the wall, doesn't remove it, and costs more.
-- **Trap C — Switch to DynamoDB:** DynamoDB has no connection model, so it "solves" the error — but rewriting a relational PostgreSQL app onto a NoSQL data model is an enormous change the question never asked for. Wrong scope.
+- **Trap B — Switch to DynamoDB:** DynamoDB has no connection model, so it "solves" the error — but rewriting a relational PostgreSQL app onto a NoSQL data model is an enormous change the question never asked for. Wrong scope.
 - **Trap D — Enable Multi-AZ:** Multi-AZ is for failover/HA. It does **not** add connection capacity — the standby serves no traffic. Irrelevant to a connection-exhaustion problem.
-- **The Fix — Option B:** **RDS Proxy** sits between Lambda and the DB and **pools/multiplexes** connections — 2,000 Lambdas share a small pool (e.g. 100) to the database. It's the purpose-built fix for the Lambda "connection storm," and it also speeds up failover.
+- **The Fix — Option C:** **RDS Proxy** sits between Lambda and the DB and **pools/multiplexes** connections — 2,000 Lambdas share a small pool (e.g. 100) to the database. It's the purpose-built fix for the Lambda "connection storm," and it also speeds up failover.
 
 ---
 
@@ -343,18 +343,18 @@ D. Enable Multi-AZ.
 
 A. Use RDS Read Replicas in eu-west-1.
 
-B. Use Aurora Global Database with primary in us-east-1 and secondary in eu-west-1.
+B. Run two separate RDS instances and replicate with DMS.
 
-C. Run two separate RDS instances and replicate with DMS.
+C. Use S3 Cross-Region Replication.
 
-D. Use S3 Cross-Region Replication.
+D. Use Aurora Global Database with primary in us-east-1 and secondary in eu-west-1.
 
 **The Logic:**
 
 - **Trap A — RDS cross-region Read Replicas:** Delivers the low-latency local reads, but promoting a cross-region RDS replica to standalone primary takes ~5–10 minutes — it **misses the under-1-minute RTO**.
-- **Trap C — Two RDS instances replicated with DMS:** DMS is a *migration* tool, not a resilient HA replication layer. It adds operational complexity and offers no fast, clean regional-failover promotion. Doesn't meet the RTO.
-- **Trap D — S3 Cross-Region Replication:** S3 replicates **objects**, not a relational database. It cannot serve transactional SQL reads at all — wrong service category.
-- **The Fix — Option B:** **Aurora Global Database** replicates to eu-west-1 with **sub-second** lag (fast local reads) and supports **cross-region failover promotion in under a minute** — satisfying both the latency and RTO requirements.
+- **Trap B — Two RDS instances replicated with DMS:** DMS is a *migration* tool, not a resilient HA replication layer. It adds operational complexity and offers no fast, clean regional-failover promotion. Doesn't meet the RTO.
+- **Trap C — S3 Cross-Region Replication:** S3 replicates **objects**, not a relational database. It cannot serve transactional SQL reads at all — wrong service category.
+- **The Fix — Option D:** **Aurora Global Database** replicates to eu-west-1 with **sub-second** lag (fast local reads) and supports **cross-region failover promotion in under a minute** — satisfying both the latency and RTO requirements.
 
 ---
 
@@ -366,15 +366,15 @@ D. Use S3 Cross-Region Replication.
 
 A. Restore from the latest automated backup (taken 6 hours ago).
 
-B. Restore from a manual snapshot (taken yesterday).
+B. Use Aurora Backtrack to rewind the database to 30 minutes ago.
 
-C. Use Aurora Backtrack to rewind the database to 30 minutes ago.
+C. Restore from a manual snapshot (taken yesterday).
 
 D. Contact AWS Support.
 
 **The Logic:**
 
 - **Trap A — Restore latest automated backup:** Restores to 6 hours ago — loses ~5.5 hours of legitimate orders, and restoring spins up a *new* instance (downtime to repoint the app). Recovers the data, badly.
-- **Trap B — Restore manual snapshot from yesterday:** Even worse — loses ~24 hours of data. Same new-instance downtime.
+- **Trap C — Restore manual snapshot from yesterday:** Even worse — loses ~24 hours of data. Same new-instance downtime.
 - **Trap D — Contact AWS Support:** Support cannot recover data you deleted yourself — AWS has no magic undo. Wastes the time the business doesn't have.
-- **The Fix — Option C:** **Aurora Backtrack** rewinds the *existing* cluster to a chosen point (30 min ago, just before the DELETE) in **seconds** — no new instance, no data loss, app simply reconnects. Caveat: Backtrack must have been enabled on the cluster (retention up to 72h); the scenario assumes it was.
+- **The Fix — Option B:** **Aurora Backtrack** rewinds the *existing* cluster to a chosen point (30 min ago, just before the DELETE) in **seconds** — no new instance, no data loss, app simply reconnects. Caveat: Backtrack must have been enabled on the cluster (retention up to 72h); the scenario assumes it was.

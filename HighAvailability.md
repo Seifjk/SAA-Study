@@ -346,18 +346,18 @@
 
 A. Use a Network Load Balancer instead.
 
-B. Enable Session Stickiness (Session Affinity) on the ALB Target Group.
+B. Store session data in DynamoDB.
 
-C. Store session data in DynamoDB.
+C. Enable Session Stickiness (Session Affinity) on the ALB Target Group.
 
 D. Increase the instance size.
 
 **The Logic:**
 
 - **Trap A — Switch to NLB:** An NLB operates at Layer 4 and has no cookie-based stickiness like ALB's. It can't keep a user pinned to one instance for an HTTP session. Wrong tool.
-- **Trap C — Store sessions in DynamoDB:** This is the *better long-term architecture* (stateless instances), but it requires a code change and the question asks for the **immediate fix** to the current in-memory design. Classic "best practice vs. what's being asked" trap.
+- **Trap B — Store sessions in DynamoDB:** This is the *better long-term architecture* (stateless instances), but it requires a code change and the question asks for the **immediate fix** to the current in-memory design. Classic "best practice vs. what's being asked" trap.
 - **Trap D — Increase instance size:** A bigger instance still has the multi-instance problem — requests still land on different servers. Size is irrelevant to session affinity.
-- **The Fix — Option B:** Enable **Session Stickiness** on the ALB Target Group. A cookie pins each client to the same target for the session's duration, so their in-memory session survives. It's the immediate, no-code fix.
+- **The Fix — Option C:** Enable **Session Stickiness** on the ALB Target Group. A cookie pins each client to the same target for the session's duration, so their in-memory session survives. It's the immediate, no-code fix.
 
 ---
 
@@ -369,18 +369,18 @@ D. Increase the instance size.
 
 A. Use an Application Load Balancer and assign Elastic IPs.
 
-B. Use a Network Load Balancer and assign one Elastic IP per AZ.
+B. Use an Internet Gateway.
 
-C. Use an Internet Gateway.
+C. Use Route 53 with Alias records.
 
-D. Use Route 53 with Alias records.
+D. Use a Network Load Balancer and assign one Elastic IP per AZ.
 
 **The Logic:**
 
 - **Trap A — ALB + Elastic IPs:** An ALB's IP addresses are managed by AWS and change over time — an ALB **cannot** be assigned Elastic IPs. This option describes something that doesn't exist.
-- **Trap C — Internet Gateway:** An IGW is a VPC component that enables internet routing — it is not a load balancer and provides no whitelista­ble static endpoint for the app. Irrelevant to the requirement.
-- **Trap D — Route 53 Alias records:** DNS maps a name to addresses; it doesn't *give* you a stable IP to hand the gateway, and the underlying ALB IPs still rotate. The gateway needs exact IPs, not a hostname.
-- **The Fix — Option B:** An **NLB** lets you assign **one Elastic IP per AZ**. Those IPs are static and permanent — exactly what the payment gateway will whitelist.
+- **Trap B — Internet Gateway:** An IGW is a VPC component that enables internet routing — it is not a load balancer and provides no whitelista­ble static endpoint for the app. Irrelevant to the requirement.
+- **Trap C — Route 53 Alias records:** DNS maps a name to addresses; it doesn't *give* you a stable IP to hand the gateway, and the underlying ALB IPs still rotate. The gateway needs exact IPs, not a hostname.
+- **The Fix — Option D:** An **NLB** lets you assign **one Elastic IP per AZ**. Those IPs are static and permanent — exactly what the payment gateway will whitelist.
 
 ---
 
@@ -390,9 +390,9 @@ D. Use Route 53 with Alias records.
 
 **The Options:**
 
-A. Use Target Tracking Scaling with CPU target of 40%.
+A. Use Scheduled Scaling to add instances at 8:45 AM every weekday.
 
-B. Use Scheduled Scaling to add instances at 8:45 AM every weekday.
+B. Use Target Tracking Scaling with CPU target of 40%.
 
 C. Use Predictive Scaling.
 
@@ -400,10 +400,10 @@ D. Switch to Spot Instances.
 
 **The Logic:**
 
-- **Trap A — Target Tracking at 40%:** Still **reactive** — it only adds instances *after* CPU climbs, and new instances take minutes to boot. The 9:00–9:30 damage window still happens. Lowering the target just makes it scale sooner once the spike has already started, not before.
+- **Trap B — Target Tracking at 40%:** Still **reactive** — it only adds instances *after* CPU climbs, and new instances take minutes to boot. The 9:00–9:30 damage window still happens. Lowering the target just makes it scale sooner once the spike has already started, not before.
 - **Trap C — Predictive Scaling:** Genuinely valid — ML forecasts the recurring 9 AM spike and pre-scales. But it needs ~24 hours/cycles of history to learn, and for a *known, fixed* time the deterministic option is cleaner. Accept it as a correct alternative; Scheduled is the more precise answer.
 - **Trap D — Spot Instances:** A pricing/purchasing choice. It changes cost, not *when* capacity is added. Doesn't address the timing problem and adds interruption risk.
-- **The Fix — Option B:** **Scheduled Scaling** adds instances at a fixed clock time (8:45 AM, before the spike). The traffic pattern is *predictable and time-based* — the textbook trigger for Scheduled Scaling.
+- **The Fix — Option A:** **Scheduled Scaling** adds instances at a fixed clock time (8:45 AM, before the spike). The traffic pattern is *predictable and time-based* — the textbook trigger for Scheduled Scaling.
 
 ---
 
@@ -415,18 +415,18 @@ D. Switch to Spot Instances.
 
 A. Use three separate Network Load Balancers, one per service.
 
-B. Use one Application Load Balancer with path-based routing rules.
+B. Use Route 53 with weighted routing.
 
-C. Use Route 53 with weighted routing.
+C. Use one Application Load Balancer with path-based routing rules.
 
 D. Use CloudFront with multiple origins.
 
 **The Logic:**
 
 - **Trap A — Three separate NLBs:** NLBs are Layer 4 — they can't route on URL **path** at all. You'd also need three endpoints, breaking the "one domain" requirement. Wrong layer and wrong shape.
-- **Trap C — Route 53 weighted routing:** Weighted routing splits traffic by *percentage* across endpoints — it's for canary/A-B, not for routing `/api/orders` to a specific service. It cannot read URL paths.
+- **Trap B — Route 53 weighted routing:** Weighted routing splits traffic by *percentage* across endpoints — it's for canary/A-B, not for routing `/api/orders` to a specific service. It cannot read URL paths.
 - **Trap D — CloudFront multiple origins:** CloudFront can route paths to origins, but it's a CDN for caching/edge delivery — overkill and the wrong primary tool for internal API path routing across three ASGs. ALB is the intended answer.
-- **The Fix — Option B:** One **ALB with path-based routing rules** — `/api/users/*`, `/api/orders/*`, `/api/inventory/*` each to its own Target Group. One domain, one SSL cert, one load balancer. Path-based routing is a core ALB (Layer 7) feature.
+- **The Fix — Option C:** One **ALB with path-based routing rules** — `/api/users/*`, `/api/orders/*`, `/api/inventory/*` each to its own Target Group. One domain, one SSL cert, one load balancer. Path-based routing is a core ALB (Layer 7) feature.
 
 ---
 
@@ -438,18 +438,18 @@ D. Use CloudFront with multiple origins.
 
 A. Use Predictive Scaling.
 
-B. Increase the cooldown period.
+B. Use a Warm Pool with pre-initialized stopped instances.
 
-C. Use a Warm Pool with pre-initialized stopped instances.
+C. Increase the cooldown period.
 
 D. Switch to Lambda.
 
 **The Logic:**
 
 - **Trap A — Predictive Scaling:** Helps launch instances *earlier*, but each instance still needs 8 minutes to initialize. If a spike is unpredictable, you're still exposed — it shifts the timing, doesn't fix the slow startup.
-- **Trap B — Increase cooldown:** Cooldown *delays* further scaling actions to prevent thrashing. It does the opposite of what's needed — it would make the ASG slower to respond, not faster.
+- **Trap C — Increase cooldown:** Cooldown *delays* further scaling actions to prevent thrashing. It does the opposite of what's needed — it would make the ASG slower to respond, not faster.
 - **Trap D — Switch to Lambda:** Lambda has a 15-minute cap and isn't built for a long-lived stateful app that loads large datasets into memory. Re-architecting to Lambda is a massive change, not a fix for ASG startup time.
-- **The Fix — Option C:** A **Warm Pool** keeps pre-initialized instances in a **stopped** state (app already loaded into memory). On a spike the ASG just **starts** one (30–60s) instead of launching cold (8 min). You only pay EBS storage while they sit stopped.
+- **The Fix — Option B:** A **Warm Pool** keeps pre-initialized instances in a **stopped** state (app already loaded into memory). On a spike the ASG just **starts** one (30–60s) instead of launching cold (8 min). You only pay EBS storage while they sit stopped.
 
 ---
 
@@ -459,9 +459,9 @@ D. Switch to Lambda.
 
 **The Options:**
 
-A. Increase the ALB idle timeout to 4000 seconds.
+A. Enable Connection Draining (Deregistration Delay) on the Target Group.
 
-B. Enable Connection Draining (Deregistration Delay) on the Target Group.
+B. Increase the ALB idle timeout to 4000 seconds.
 
 C. Enable Cross-Zone Load Balancing.
 
@@ -469,10 +469,10 @@ D. Increase the ASG cooldown period.
 
 **The Logic:**
 
-- **Trap A — ALB idle timeout:** Idle timeout closes a connection after a period of *no data flowing*. An active upload is never idle, and this setting does nothing when the *instance itself* is being terminated. Wrong knob.
+- **Trap B — ALB idle timeout:** Idle timeout closes a connection after a period of *no data flowing*. An active upload is never idle, and this setting does nothing when the *instance itself* is being terminated. Wrong knob.
 - **Trap C — Cross-Zone Load Balancing:** This evens out traffic *distribution* across AZs. It has zero effect on what happens to in-flight requests when a target is deregistered.
 - **Trap D — ASG cooldown:** Cooldown spaces out *scaling actions*. It doesn't tell the load balancer to wait for active connections to drain before killing a target.
-- **The Fix — Option B:** **Connection Draining** (a.k.a. Deregistration Delay) makes the load balancer **stop sending new requests** to a deregistering target while **letting existing in-flight requests complete** (up to the configured timeout, 1–3600s). Exactly the graceful-termination behavior needed.
+- **The Fix — Option A:** **Connection Draining** (a.k.a. Deregistration Delay) makes the load balancer **stop sending new requests** to a deregistering target while **letting existing in-flight requests complete** (up to the configured timeout, 1–3600s). Exactly the graceful-termination behavior needed.
 
 ---
 
@@ -482,20 +482,20 @@ D. Increase the ASG cooldown period.
 
 **The Options:**
 
-A. This is expected — NLB charges for **inter-AZ data transfer** when Cross-Zone Load Balancing is enabled.
+A. The bill increased because NLB switched to a higher pricing tier.
 
-B. The bill increased because NLB switched to a higher pricing tier.
+B. Cross-Zone Load Balancing is not supported on NLB; the charge is a billing error.
 
-C. Cross-Zone Load Balancing is not supported on NLB; the charge is a billing error.
+C. This is expected — NLB charges for **inter-AZ data transfer** when Cross-Zone Load Balancing is enabled.
 
 D. The charge is for Elastic IPs automatically attached to the NLB.
 
 **The Logic:**
 
-- **Trap B — pricing tier:** NLB has no "tiers" that flip on with this feature. Made-up mechanism.
-- **Trap C — not supported:** False — NLB *does* support Cross-Zone Load Balancing. It's simply **disabled by default** (unlike ALB, where it's always on and free).
+- **Trap A — pricing tier:** NLB has no "tiers" that flip on with this feature. Made-up mechanism.
+- **Trap B — not supported:** False — NLB *does* support Cross-Zone Load Balancing. It's simply **disabled by default** (unlike ALB, where it's always on and free).
 - **Trap D — Elastic IPs:** Enabling cross-zone does not auto-attach EIPs. Unrelated.
-- **The Fix — Option A:** On **ALB**, cross-zone is always on and **free**. On **NLB** (and GWLB) it's **off by default**, and when you enable it, traffic crossing AZ boundaries incurs **inter-AZ data transfer charges**. The behavior the engineers got is correct — the cost is the documented trade-off.
+- **The Fix — Option C:** On **ALB**, cross-zone is always on and **free**. On **NLB** (and GWLB) it's **off by default**, and when you enable it, traffic crossing AZ boundaries incurs **inter-AZ data transfer charges**. The behavior the engineers got is correct — the cost is the documented trade-off.
 
 ---
 
@@ -507,18 +507,18 @@ D. The charge is for Elastic IPs automatically attached to the NLB.
 
 A. Manually terminate instances one by one so the ASG relaunches them with the new AMI.
 
-B. Update the Launch Template to the new AMI and start an ASG Instance Refresh with a minimum healthy percentage.
+B. Update the Launch Template and wait for the ASG to naturally cycle instances.
 
-C. Update the Launch Template and wait for the ASG to naturally cycle instances.
+C. Create a brand-new ASG with the new AMI and delete the old one.
 
-D. Create a brand-new ASG with the new AMI and delete the old one.
+D. Update the Launch Template to the new AMI and start an ASG Instance Refresh with a minimum healthy percentage.
 
 **The Logic:**
 
 - **Trap A — manual termination:** Tedious, error-prone, and there's no built-in control over how many stay healthy at once — you risk dropping below capacity. Reinventing a managed feature by hand.
-- **Trap C — wait for natural cycling:** An ASG does **not** replace healthy instances just because the Launch Template changed. Existing instances keep the old AMI indefinitely — the rollout never happens.
-- **Trap D — new ASG, delete old:** This is a blue/green-style swap, heavier than needed and it churns the ALB target registration. Workable but not the purpose-built, low-risk answer.
-- **The Fix — Option B:** **ASG Instance Refresh** rolls instances in batches, honoring a **minimum healthy percentage** so capacity never drops below the set threshold — replacing every instance with the new AMI, no downtime. The native tool for this exact job.
+- **Trap B — wait for natural cycling:** An ASG does **not** replace healthy instances just because the Launch Template changed. Existing instances keep the old AMI indefinitely — the rollout never happens.
+- **Trap C — new ASG, delete old:** This is a blue/green-style swap, heavier than needed and it churns the ALB target registration. Workable but not the purpose-built, low-risk answer.
+- **The Fix — Option D:** **ASG Instance Refresh** rolls instances in batches, honoring a **minimum healthy percentage** so capacity never drops below the set threshold — replacing every instance with the new AMI, no downtime. The native tool for this exact job.
 
 ---
 
@@ -528,9 +528,9 @@ D. Create a brand-new ASG with the new AMI and delete the old one.
 
 **The Options:**
 
-A. Switch the ASG health check from ELB type to EC2 type.
+A. Increase the Health Check Grace Period to cover the startup time.
 
-B. Increase the Health Check Grace Period to cover the startup time.
+B. Switch the ASG health check from ELB type to EC2 type.
 
 C. Increase the ASG cooldown period.
 
@@ -538,10 +538,10 @@ D. Reduce the ALB health check interval so instances are checked sooner.
 
 **The Logic:**
 
-- **Trap A — switch to EC2 health check:** This would "fix" it by no longer checking whether the *app* responds — only whether the VM runs. You'd stop terminating instances, but you'd also stop detecting genuinely broken apps. Masks the problem, weakens HA.
+- **Trap B — switch to EC2 health check:** This would "fix" it by no longer checking whether the *app* responds — only whether the VM runs. You'd stop terminating instances, but you'd also stop detecting genuinely broken apps. Masks the problem, weakens HA.
 - **Trap C — cooldown period:** Cooldown delays *scaling actions*. It does nothing about health checks evaluating a still-booting instance as failed.
 - **Trap D — check sooner:** Checking *earlier* makes it worse — the ASG would fail the instance even faster, before the app is up.
-- **The Fix — Option B:** The **Health Check Grace Period** is the warm-up window before health checks start counting against a new instance. Set it longer than the ~5-minute startup so the app has time to come up before being judged. The textbook fix for "new instances fail health checks during boot."
+- **The Fix — Option A:** The **Health Check Grace Period** is the warm-up window before health checks start counting against a new instance. Set it longer than the ~5-minute startup so the app has time to come up before being judged. The textbook fix for "new instances fail health checks during boot."
 
 ---
 
@@ -553,15 +553,15 @@ D. Reduce the ALB health check interval so instances are checked sooner.
 
 A. Use Target Tracking on average CPU utilization with a lower target.
 
-B. Use a Target Tracking policy on a custom metric: SQS `ApproximateNumberOfMessagesVisible` divided by the number of in-service instances (backlog per instance).
+B. Use Scheduled Scaling to add workers every hour.
 
-C. Use Scheduled Scaling to add workers every hour.
+C. Use a Target Tracking policy on a custom metric: SQS `ApproximateNumberOfMessagesVisible` divided by the number of in-service instances (backlog per instance).
 
 D. Switch the workers to Spot Instances.
 
 **The Logic:**
 
 - **Trap A — CPU-based scaling:** The scenario states CPU stays moderate even when the queue is backed up — CPU simply isn't the signal that reflects load here. Lowering the target won't help because the metric itself is wrong.
-- **Trap C — Scheduled Scaling:** The backlog is driven by *unpredictable* job volume, not the clock. A fixed hourly schedule won't match real demand.
+- **Trap B — Scheduled Scaling:** The backlog is driven by *unpredictable* job volume, not the clock. A fixed hourly schedule won't match real demand.
 - **Trap D — Spot Instances:** A cost/purchasing choice. It changes what you pay, not *how many* workers run or *when* they scale. Doesn't address the backlog.
-- **The Fix — Option B:** Scale on the queue itself. Use the SQS metric **`ApproximateNumberOfMessagesVisible`**, and for a clean Target Tracking signal compute **backlog per instance** = messages ÷ in-service instances. This scales the fleet directly to the work waiting — the standard pattern for queue-driven worker scaling.
+- **The Fix — Option C:** Scale on the queue itself. Use the SQS metric **`ApproximateNumberOfMessagesVisible`**, and for a clean Target Tracking signal compute **backlog per instance** = messages ÷ in-service instances. This scales the fleet directly to the work waiting — the standard pattern for queue-driven worker scaling.

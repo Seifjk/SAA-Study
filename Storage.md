@@ -320,16 +320,16 @@ A. Use an S3 Bucket and mount it using S3FS.
 
 B. Use an EBS gp3 volume and attach it to all three instances.
 
-C. Use an EBS io2 volume with Multi-Attach enabled.
+C. Use EFS with General Purpose performance mode.
 
-D. Use EFS with General Purpose performance mode.
+D. Use an EBS io2 volume with Multi-Attach enabled.
 
 **The Logic:**
 
 - **Trap A — S3 + S3FS:** S3 is object storage; mounting it via S3FS is a fragile hack with no real block-storage semantics or consistency guarantees. The question demands high-performance block storage.
 - **Trap B — gp3 attached to all three:** gp3 volumes do **not** support Multi-Attach. A gp3 volume can attach to exactly one instance. Doesn't work.
-- **Trap D — EFS:** EFS is genuinely shared and multi-writer, but it's a **file** system (NFS), not **block** storage. The question explicitly says block storage — EFS is the wrong category.
-- **The Fix — Option C:** **EBS Multi-Attach** is supported only on **io1/io2** volumes and lets multiple EC2 instances in the **same AZ** share one block volume — exactly the requirement. (The app must be cluster-aware to handle concurrent writes, which the scenario implies.)
+- **Trap C — EFS:** EFS is genuinely shared and multi-writer, but it's a **file** system (NFS), not **block** storage. The question explicitly says block storage — EFS is the wrong category.
+- **The Fix — Option D:** **EBS Multi-Attach** is supported only on **io1/io2** volumes and lets multiple EC2 instances in the **same AZ** share one block volume — exactly the requirement. (The app must be cluster-aware to handle concurrent writes, which the scenario implies.)
 
 ---
 
@@ -339,20 +339,20 @@ D. Use EFS with General Purpose performance mode.
 
 **The Options:**
 
-A. EBS io2 Block Express.
+A. EC2 Instance Store.
 
-B. EBS gp3.
+B. EBS io2 Block Express.
 
-C. EC2 Instance Store.
+C. EBS gp3.
 
 D. EFS Max I/O mode.
 
 **The Logic:**
 
-- **Trap A — io2 Block Express:** Very high IOPS, but **network-attached** EBS — there is a network hop on every I/O. Instance Store, being local, beats it on raw latency.
-- **Trap B — gp3:** General-purpose network EBS. Slower than io2 and far slower than local Instance Store. Wrong for "highest possible I/O."
+- **Trap B — io2 Block Express:** Very high IOPS, but **network-attached** EBS — there is a network hop on every I/O. Instance Store, being local, beats it on raw latency.
+- **Trap C — gp3:** General-purpose network EBS. Slower than io2 and far slower than local Instance Store. Wrong for "highest possible I/O."
 - **Trap D — EFS Max I/O:** EFS is a shared **file** system over the network — highest latency of all the options. Max I/O mode raises throughput ceilings but *increases* per-operation latency.
-- **The Fix — Option C:** **Instance Store** is physically attached to the host — lowest possible latency, millions of IOPS. The line "data persistence not critical if the instance stops" is the explicit green light to accept ephemeral storage, and the app already replicates data itself.
+- **The Fix — Option A:** **Instance Store** is physically attached to the host — lowest possible latency, millions of IOPS. The line "data persistence not critical if the instance stops" is the explicit green light to accept ephemeral storage, and the app already replicates data itself.
 
 ---
 
@@ -364,18 +364,18 @@ D. EFS Max I/O mode.
 
 A. Amazon S3 with a Gateway Endpoint.
 
-B. Amazon EFS with Windows ACLs.
+B. Amazon FSx for Windows File Server.
 
-C. Amazon FSx for Windows File Server.
+C. Amazon EFS with Windows ACLs.
 
 D. Amazon EBS Multi-Attach.
 
 **The Logic:**
 
 - **Trap A — S3 + Gateway Endpoint:** S3 is object storage with an API — it does not present an SMB file share and has no native AD-based file permissions. A Windows File Server can't just point at it.
-- **Trap B — EFS with Windows ACLs:** EFS speaks **NFS** (Linux). It does not support the SMB protocol, and "EFS with Windows ACLs" is not a real feature. Wrong protocol.
+- **Trap C — EFS with Windows ACLs:** EFS speaks **NFS** (Linux). It does not support the SMB protocol, and "EFS with Windows ACLs" is not a real feature. Wrong protocol.
 - **Trap D — EBS Multi-Attach:** EBS is raw block storage for a few instances in one AZ — not a file server, no SMB, no AD integration. Doesn't fit a file-server migration at all.
-- **The Fix — Option C:** **FSx for Windows File Server** natively provides **SMB** shares and integrates with **Active Directory** for permissions. The keyword triple — Windows + SMB + Active Directory — always points here.
+- **The Fix — Option B:** **FSx for Windows File Server** natively provides **SMB** shares and integrates with **Active Directory** for permissions. The keyword triple — Windows + SMB + Active Directory — always points here.
 
 ---
 
@@ -389,16 +389,16 @@ A. S3 Standard-IA.
 
 B. S3 Glacier Flexible Retrieval.
 
-C. S3 Glacier Deep Archive.
+C. S3 Intelligent-Tiering.
 
-D. S3 Intelligent-Tiering.
+D. S3 Glacier Deep Archive.
 
 **The Logic:**
 
 - **Trap A — Standard-IA:** Built for *infrequent but quick* access. Far more expensive than Glacier tiers — wrong when records are "almost never accessed" and cost must be lowest.
 - **Trap B — Glacier Flexible Retrieval:** Works and is cheap, but **not the cheapest**. Its bulk retrieval is 5–12 hours. Since the requirement only needs data within 12 hours, paying Flexible's premium over Deep Archive is unjustified — it's the classic "close but not the lowest cost" trap.
-- **Trap D — Intelligent-Tiering:** Auto-moves objects between tiers based on access patterns and charges a per-object monitoring fee. For data with a *known* never-accessed pattern, you'd just pay the monitoring overhead for nothing.
-- **The Fix — Option C:** **Glacier Deep Archive** is the **cheapest** S3 class. Its standard retrieval is ~12 hours — which exactly satisfies the "retrievable within 12 hours" audit requirement. Lowest cost + meets the SLA.
+- **Trap C — Intelligent-Tiering:** Auto-moves objects between tiers based on access patterns and charges a per-object monitoring fee. For data with a *known* never-accessed pattern, you'd just pay the monitoring overhead for nothing.
+- **The Fix — Option D:** **Glacier Deep Archive** is the **cheapest** S3 class. Its standard retrieval is ~12 hours — which exactly satisfies the "retrievable within 12 hours" audit requirement. Lowest cost + meets the SLA.
 
 ---
 
@@ -408,9 +408,9 @@ D. S3 Intelligent-Tiering.
 
 **The Options:**
 
-A. Enable S3 Transfer Acceleration.
+A. Increase the request quota for the KMS key.
 
-B. Increase the request quota for the KMS key.
+B. Enable S3 Transfer Acceleration.
 
 C. Switch to S3 Multipart Upload.
 
@@ -418,7 +418,7 @@ D. Use DynamoDB instead.
 
 **The Logic:**
 
-- **Trap A — Transfer Acceleration:** Speeds up uploads over long network distances via edge locations. It does nothing about a 503 "Slow Down" that originates from an API rate limit — wrong layer entirely.
+- **Trap B — Transfer Acceleration:** Speeds up uploads over long network distances via edge locations. It does nothing about a 503 "Slow Down" that originates from an API rate limit — wrong layer entirely.
 - **Trap C — Multipart Upload:** Helps with **large** files by parallelizing parts. The problem is *millions of small* files — multipart doesn't apply and wouldn't reduce KMS calls.
 - **Trap D — Use DynamoDB:** Re-architecting the storage layer to a different service is a massive, unwarranted change. It abandons S3 instead of fixing the actual bottleneck.
-- **The Fix — Option B:** With SSE-KMS, **every object upload triggers a KMS `GenerateDataKey` call**. Millions of small files = millions of KMS calls, hitting the **KMS request quota** (the 503 comes from KMS, not S3 — which is why S3 metrics look fine). Request a KMS quota increase. *(Bucket keys, which batch KMS calls, are the other valid fix if offered.)*
+- **The Fix — Option A:** With SSE-KMS, **every object upload triggers a KMS `GenerateDataKey` call**. Millions of small files = millions of KMS calls, hitting the **KMS request quota** (the 503 comes from KMS, not S3 — which is why S3 metrics look fine). Request a KMS quota increase. *(Bucket keys, which batch KMS calls, are the other valid fix if offered.)*

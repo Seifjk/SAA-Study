@@ -247,18 +247,18 @@ This covers the network logic. If you can draw the packet flow from a private in
 
 A. Add a Deny rule to the Security Group attached to the web servers.
 
-B. Add a Deny rule to the Network ACL (NACL) associated with the public subnet.
+B. Remove the Internet Gateway from the VPC.
 
-C. Remove the Internet Gateway from the VPC.
+C. Use AWS WAF to inspect the traffic.
 
-D. Use AWS WAF to inspect the traffic.
+D. Add a Deny rule to the Network ACL (NACL) associated with the public subnet.
 
 **The Logic:**
 
 - **Trap A — Security Group:** SGs are **allow-only** — there is no such thing as a Deny rule in an SG. You literally cannot do this.
-- **Trap C — Remove the IGW:** This blocks the *entire* VPC from the internet, taking down every instance for every user. Catastrophic overreach to stop one IP.
-- **Trap D — WAF:** WAF *can* block an IP, but it only protects Layer 7 resources (CloudFront, ALB, API Gateway). For a raw L3/L4 DoS hitting the subnet, and for an *immediate* block, NACL is the direct tool. WAF is also the slower thing to stand up if not already deployed.
-- **The Fix — Option B:** A **NACL** operates at the subnet level and supports explicit **Deny** rules. Add a Deny for `203.0.113.5` — it's the only option that surgically blocks one IP immediately.
+- **Trap B — Remove the IGW:** This blocks the *entire* VPC from the internet, taking down every instance for every user. Catastrophic overreach to stop one IP.
+- **Trap C — WAF:** WAF *can* block an IP, but it only protects Layer 7 resources (CloudFront, ALB, API Gateway). For a raw L3/L4 DoS hitting the subnet, and for an *immediate* block, NACL is the direct tool. WAF is also the slower thing to stand up if not already deployed.
+- **The Fix — Option D:** A **NACL** operates at the subnet level and supports explicit **Deny** rules. Add a Deny for `203.0.113.5` — it's the only option that surgically blocks one IP immediately.
 
 ### **Scenario 2**
 
@@ -268,18 +268,18 @@ D. Use AWS WAF to inspect the traffic.
 
 A. Attach an Internet Gateway to the Private Subnet.
 
-B. Create a NAT Gateway in the Private Subnet and update the route table.
+B. Create a NAT Gateway in the Public Subnet and update the Private Subnet's route table.
 
-C. Create a NAT Gateway in the Public Subnet and update the Private Subnet's route table.
+C. Create a NAT Gateway in the Private Subnet and update the route table.
 
 D. Use a VPC Endpoint for S3.
 
 **The Logic:**
 
 - **Trap A — IGW on the private subnet:** Attaching an IGW route makes the subnet *public* — instances would become reachable from the internet, violating the explicit "must not be accessible" requirement.
-- **Trap B — NAT Gateway in the private subnet:** A NAT GW needs its *own* route to an IGW to function. Placed in a private subnet it has no internet path — it doesn't work.
+- **Trap C — NAT Gateway in the private subnet:** A NAT GW needs its *own* route to an IGW to function. Placed in a private subnet it has no internet path — it doesn't work.
 - **Trap D — VPC Endpoint for S3:** A Gateway Endpoint only reaches **S3** (and DynamoDB). Security patches come from OS/vendor repos across the general internet — an S3 endpoint can't fetch them.
-- **The Fix — Option C:** Put the **NAT Gateway in a public subnet**, then point the private subnet's route table at it. Flow: Private instance → NAT GW (public subnet) → IGW → Internet. Outbound works; inbound stays blocked.
+- **The Fix — Option B:** Put the **NAT Gateway in a public subnet**, then point the private subnet's route table at it. Flow: Private instance → NAT GW (public subnet) → IGW → Internet. Outbound works; inbound stays blocked.
 
 ### **Scenario 3**
 
@@ -287,9 +287,9 @@ D. Use a VPC Endpoint for S3.
 
 **The Options:**
 
-A. Use a NAT Gateway.
+A. Use a VPC Gateway Endpoint for S3.
 
-B. Use a VPC Gateway Endpoint for S3.
+B. Use a NAT Gateway.
 
 C. Use a VPC Peering connection to S3.
 
@@ -297,10 +297,10 @@ D. Enable S3 Transfer Acceleration.
 
 **The Logic:**
 
-- **Trap A — NAT Gateway:** A NAT GW routes traffic out through the **IGW to the public internet**. The destination is the public S3 endpoint — the data traverses the internet (masked, but still public). Violates the policy.
+- **Trap B — NAT Gateway:** A NAT GW routes traffic out through the **IGW to the public internet**. The destination is the public S3 endpoint — the data traverses the internet (masked, but still public). Violates the policy.
 - **Trap C — VPC Peering to S3:** You cannot peer with S3. VPC Peering connects two **VPCs**; S3 is not a VPC. Not a real option.
 - **Trap D — Transfer Acceleration:** This *speeds up* uploads by routing through edge locations over the **public internet** — it's a performance feature and makes the policy violation worse, not better.
-- **The Fix — Option B:** A **Gateway Endpoint for S3** adds a route so traffic to S3 stays entirely on the **AWS private network** — it never touches the public internet. It's also free.
+- **The Fix — Option A:** A **Gateway Endpoint for S3** adds a route so traffic to S3 stays entirely on the **AWS private network** — it never touches the public internet. It's also free.
 
 ### **Scenario 4**
 
@@ -312,16 +312,16 @@ A. Create a full mesh of VPC Peering connections (A-B, A-C, B-C, etc.).
 
 B. Use AWS Direct Connect Gateway.
 
-C. Implement an AWS Transit Gateway.
+C. Use a Shared VPC.
 
-D. Use a Shared VPC.
+D. Implement an AWS Transit Gateway.
 
 **The Logic:**
 
 - **Trap A — Full mesh of VPC Peering:** 50 VPCs would need N×(N−1)/2 = **1,225 peering connections**, and peering is non-transitive so it can't simplify. Exactly the "impossible to manage" problem stated.
 - **Trap B — Direct Connect Gateway:** DX Gateway connects **on-premises to VPCs** over a dedicated line. It doesn't solve VPC-to-VPC connectivity between the 50 VPCs — only part of the requirement.
-- **Trap D — Shared VPC:** RAM-shared VPCs let multiple accounts deploy *into one VPC*. It doesn't interconnect 50 *existing separate* VPCs — you'd have to re-architect everything.
-- **The Fix — Option C:** A **Transit Gateway** is a central hub-and-spoke router. Attach all 50 VPCs (across accounts) and the on-prem VPN to one TGW — it's transitive, so everything can reach everything with a single managed component.
+- **Trap C — Shared VPC:** RAM-shared VPCs let multiple accounts deploy *into one VPC*. It doesn't interconnect 50 *existing separate* VPCs — you'd have to re-architect everything.
+- **The Fix — Option D:** A **Transit Gateway** is a central hub-and-spoke router. Attach all 50 VPCs (across accounts) and the on-prem VPN to one TGW — it's transitive, so everything can reach everything with a single managed component.
 
 ### **Scenario 5: The "Broken Internet"**
 
@@ -331,18 +331,18 @@ D. Use a Shared VPC.
 
 A. The Network ACL is blocking outbound traffic on ephemeral ports.
 
-B. The Instance does not have an IAM Role attached.
+B. The Subnet's Route Table is missing a route to `0.0.0.0/0` targeting the Internet Gateway.
 
 C. The Internet Gateway is missing from the VPC.
 
-D. The Subnet's Route Table is missing a route to `0.0.0.0/0` targeting the Internet Gateway.
+D. The Instance does not have an IAM Role attached.
 
 **The Logic:**
 
 - **Trap A — NACL blocking outbound ephemeral ports:** This *would* break the SSH reply (NACLs are stateless). But it's the less common misconfiguration, and the question asks for the **most likely** cause — the route table is the classic culprit. Plausible distractor, not the best answer.
-- **Trap B — No IAM Role:** IAM Roles grant the instance permissions to call **AWS APIs**. They have nothing to do with inbound SSH connectivity. Irrelevant.
 - **Trap C — Missing IGW:** Possible, but if the subnet is already set up as "Public" an IGW usually exists. The route entry is the far more common error.
-- **The Fix — Option D:** A public IP + an IGW are not enough — the **subnet's route table** must have a `0.0.0.0/0 → igw-xxxx` entry. Without that route, packets have no path out. This is the textbook "public IP but no connectivity" cause.
+- **Trap D — No IAM Role:** IAM Roles grant the instance permissions to call **AWS APIs**. They have nothing to do with inbound SSH connectivity. Irrelevant.
+- **The Fix — Option B:** A public IP + an IGW are not enough — the **subnet's route table** must have a `0.0.0.0/0 → igw-xxxx` entry. Without that route, packets have no path out. This is the textbook "public IP but no connectivity" cause.
 
 ---
 
