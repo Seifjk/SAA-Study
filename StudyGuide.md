@@ -45,8 +45,8 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 | — | — | Networking | [Networking](./Networking.md) | ✅ done |
 | 1 | Mon May 18 | Compute | [Compute](./Compute.md) | ✅ done |
 | 2 | Tue May 19 | High Availability **+ Storage** | [HighAvailability](./HighAvailability.md) · [Storage](./Storage.md) | ✅ done |
-| 3 | Wed May 20 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) | Heavy |
-| 4 | Thu May 21 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | Heavy |
+| 3 | Wed May 20 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) |  ✅ done  |
+| 4 | Thu May 21 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | ✅ done  |
 | 5 | Fri May 22 | Decoupling | [Decoupling](./Decoupling.md) | Heavy |
 | — | Sat May 23 | **BUFFER / catch-up** (or pull Serverless forward) | — | — |
 | — | Sun May 24 | **REST DAY** | — | — |

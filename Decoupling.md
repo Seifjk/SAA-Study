@@ -1,5 +1,7 @@
 # Decoupling (Queues & Messaging)
 
+> 📊 **Visual reference:** [DecouplingDiagrams.md](./DecouplingDiagrams.md) — 7 Mermaid diagrams: SQS flow + visibility timeout, SNS fan-out (direct vs +SQS), Kinesis shards/KCL, Standard vs Enhanced Fan-Out, Kinesis vs Firehose, EventBridge architecture, DLQ pattern.
+
 ### **SECTION 1: SQS (SIMPLE QUEUE SERVICE)**
 
 *Managed message queue for decoupling applications.*

@@ -1,5 +1,7 @@
 # Networking
 
+> 📊 **Visual reference:** [VPCDiagrams.md](./VPCDiagrams.md) — 14 Mermaid diagrams covering VPC anatomy, NAT flow, SG vs NACL, endpoints, PrivateLink, peering, TGW, hybrid connectivity, and a full 3-tier reference architecture.
+
 ### **SECTION 1: THE ANATOMY (CIDR, SUBNETS, ROUTES)**
 
 *The Skeleton of your network.*
