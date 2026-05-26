@@ -4,8 +4,8 @@
 **Pace:** 2 hours/day (two 50-min blocks with a 10-min break)
 **Rest Days:** 2 (mid-learning + pre-mocks consolidation)
 **Target Exam Date:** Thursday, June 11, 2026
-**Total Duration:** 25 calendar days — 13 learning days + 1 review day + 8 mock days + 2 rest days
-**Already done:** Networking ✅ · Compute ✅ · High Availability ✅ · Storage ✅
+**Total Duration:** 25 calendar days — 13 learning days + 1 recall day + 1 review day + 8 mock days + 1 off day + 1 post-diagnostic rest
+**Already done:** Networking ✅ · Compute ✅ · High Availability ✅ · Storage ✅ · DB Relational ✅ · DB NoSQL ✅ · Recall sweep ✅ · Decoupling ✅
 
 ---
 
@@ -34,7 +34,7 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 1. **Spaced review** — every learning day opens by reviewing an older chapter's cheat sheet
 2. **10-min rest break** — brain consolidates before new input
 3. **Scenarios** — each chapter ends with 5 exam-style scenarios that anchor the concepts
-4. **Mock exams** — 1 early diagnostic (May 24, after ~60% of content) + 8 Phase 2 mocks force full recall of all 15 chapters
+4. **Mock exams** — 1 early diagnostic (May 25, after ~60% of content) + 8 Phase 2 mocks force full recall of all 15 chapters
 
 ---
 
@@ -45,19 +45,19 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 | — | — | Networking | [Networking](./Networking.md) | ✅ done |
 | 1 | Mon May 18 | Compute | [Compute](./Compute.md) | ✅ done |
 | 2 | Tue May 19 | High Availability **+ Storage** | [HighAvailability](./HighAvailability.md) · [Storage](./Storage.md) | ✅ done |
-| 3 | Wed May 20 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) |  ✅ done  |
-| 4 | Thu May 21 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | ✅ done  |
-| 5 | Fri May 22 | Decoupling | [Decoupling](./Decoupling.md) | Heavy |
-| — | Sat May 23 | **BUFFER / catch-up** (or pull Serverless forward) | — | — |
-| — | Sun May 24 | **REST DAY** | — | — |
-| 7 | Mon May 25 | Serverless | [Serverless](./Serverless.md) | Heavy |
-| 8 | Tue May 26 | Containers | [Containers](./Containers.md) | Medium |
-| 9 | Wed May 27 | Cost / Migration / DR | [CostOptimization](./CostOptimization.md) | Heavy |
-| 10 | Thu May 28 | CDN / DNS | [ContentDeliveryDNS](./ContentDeliveryDNS.md) | Medium |
-| 11 | Fri May 29 | Security & Identity | [SecurityIdentity](./SecurityIdentity.md) | Heavy |
-| 12 | Sat May 30 | Monitoring & Audit | [MonitoringAudit](./MonitoringAudit.md) | Medium |
-| 13 | Sun May 31 | Additional Services + buffer | [AdditionalServices](./AdditionalServices.md) | Light |
-| — | Mon Jun 1 | **REST DAY** | — | — |
+| — | Wed May 20 | **OFF DAY** (no study) | — | — |
+| 3 | Thu May 21 | Databases Relational | [DatabasesRelational](./DatabasesRelational.md) | ✅ done |
+| 4 | Fri May 22 | Databases NoSQL | [DatabasesNoSQL](./DatabasesNoSQL.md) | ✅ done |
+| 5 | Sat May 23 | **RECALL DAY** — full quiz across Networking → NoSQL ([Recall.md](./Recall.md)) | [Recall](./Recall.md) | ✅ done |
+| 6 | Sun May 24 | Decoupling | [Decoupling](./Decoupling.md) | ✅ done |
+| 6.5 | Mon May 25 | **DIAGNOSTIC MOCK** (Maarek #1) | — | Mock — **tomorrow** |
+| 7 | Tue May 26 | Serverless | [Serverless](./Serverless.md) | Heavy |
+| 8 | Wed May 27 | Containers | [Containers](./Containers.md) | Medium |
+| 9 | Thu May 28 | Cost / Migration / DR | [CostOptimization](./CostOptimization.md) | Heavy |
+| 10 | Fri May 29 | CDN / DNS | [ContentDeliveryDNS](./ContentDeliveryDNS.md) | Medium |
+| 11 | Sat May 30 | Security & Identity | [SecurityIdentity](./SecurityIdentity.md) | Heavy |
+| 12 | Sun May 31 | Monitoring & Audit | [MonitoringAudit](./MonitoringAudit.md) | Medium |
+| 13 | Mon Jun 1 | Additional Services + buffer | [AdditionalServices](./AdditionalServices.md) | Light |
 | 14 | Tue Jun 2 | Full review — all cheat sheets | All | Review |
 
 ---
@@ -75,32 +75,35 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 - **Block 2:** Storage.md — EBS type triggers (gp3 default, io1/io2 high IOPS, st1 throughput), S3 storage classes waterfall, Intelligent-Tiering vs Lifecycle, Versioning, Replication (CRR/SRR), Object Lock, EFS vs FSx, Storage Gateway (File/Volume/Tape). Both chapters' scenarios.
 - *Note: Storage was pulled forward from Day 5 — you're a day ahead. Sat May 23 is now a buffer.*
 
-### Day 3 — Wed May 20: Databases Relational
+### ☁ Wed May 20: OFF DAY
+No study. Plan resumes Thursday.
+
+### Day 3 — Thu May 21: Databases Relational ✅
 *The problem this chapter solves:* you need a **traditional SQL database** (tables, joins, transactions) but don't want to patch servers, handle failover, or babysit backups. RDS/Aurora are AWS running the database engine *for* you. The exam tests **how you make it survive failure (Multi-AZ) and scale reads (Read Replicas)** — that distinction is the heart of the chapter.
 - **Block 1:** Review HA cheat sheet (quiz the triggers — cover the answer key). Then start DatabasesRelational.md: what RDS is, the 6 engines, storage/auto-scaling, then **Read Replicas** (scale reads, async, up to 5 RDS / 15 Aurora).
 - **Block 2:** Finish DatabasesRelational.md — **Multi-AZ vs Read Replicas** (the key table: Multi-AZ = *survive failure*, Read Replica = *scale reads*), Aurora architecture, Aurora Serverless v2, Aurora Global Database, RDS Proxy, Backtrack, Blue/Green deployments. Do all 5 scenarios.
 - **Write from memory:** Multi-AZ vs Read Replicas table; the 6 RDS engines.
-- *Heavy day — if you run long, push Aurora Global Database + Blue/Green into Day 5's buffer.*
 
-### Day 4 — Thu May 21: Databases NoSQL
+### Day 4 — Fri May 22: Databases NoSQL ✅
 *The problem this chapter solves:* sometimes a SQL database is the wrong tool — you need **massive scale, flexible schema, single-digit-ms latency**, or a *specific shape* of data (graph, time-series, ledger). This chapter is **DynamoDB** (the star — learn it deepest) plus a tour of **purpose-built databases** — for those, just learn *which one fits which data shape*.
 - **Block 1:** Review DB Relational cheat sheet (quiz it). Then start DatabasesNoSQL.md: what NoSQL is and when to pick it over RDS; DynamoDB **capacity modes** (On-Demand vs Provisioned), **consistency** (eventual vs strong).
 - **Block 2:** Finish DatabasesNoSQL.md — **GSI vs LSI** (key table), DynamoDB Streams, **DAX** (microsecond cache), Global Tables, TTL; then ElastiCache **Redis vs Memcached**; then the purpose-built tour — DocumentDB (Mongo), Neptune (graph), Timestream (time-series), QLDB (ledger), Keyspaces (Cassandra), MemoryDB (Redis-durable). Do all 5 scenarios.
 - **Write from memory:** GSI vs LSI; Redis vs Memcached; purpose-built DB → data-shape table.
 - *Heavy day — the purpose-built DBs are ~1 question each; learn the trigger word for each, don't go deep.*
 
-### Day 5 — Fri May 22: Decoupling
-- **Block 1:** Review DB NoSQL cheat sheet. Then start Decoupling.md: SQS Standard vs FIFO, polling, visibility timeout, DLQ.
-- **Block 2:** Finish Decoupling.md — SNS + SQS fan-out, Kinesis Streams vs Firehose, EventBridge. Do all 5 scenarios. **Write from memory:** SQS Standard vs FIFO, Kinesis Streams vs Firehose.
+### Day 5 — Sat May 23: RECALL DAY ✅
+- Full recall sweep across everything covered so far (Networking → Compute → HA → Storage → DB Relational → DB NoSQL) using [Recall.md](./Recall.md). Cover the answers, quiz yourself, mark what didn't come back instantly.
+- This replaces what was originally a buffer day — and it earns the right to skip the diagnostic mock today.
 
-### Day 5.5 — Sat May 23: BUFFER / Catch-up
-- You ran a day ahead by doing Storage early. Use this day to: catch up if any heavy day (DBR/NoSQL/Decoupling) overran, **re-quiz the DBR + NoSQL cheat sheets**, or pull Serverless forward to lighten the back half. Do **not** add brand-new heavy content if you're on track — rest beats cramming.
+### Day 6 — Sun May 24: Decoupling ✅
+- Covered: SQS Standard vs FIFO, Long Polling, Visibility Timeout, DLQ, SNS + SQS Fan-Out, SNS Filtering, Kinesis Data Streams vs Firehose, KCL/shards, Amazon MQ, EventBridge (Rules / Scheduler / Archive & Replay).
+- Cheat-sheet score: **15/18**. Reds to re-drill: **SQS Extended Client Library** (>256 KB) and **EventBridge Archive & Replay** (replay past events). Both tagged 🔴 in [Recall.md](./Recall.md) §7.
 
-### Day 6.5 — Sun May 24: DIAGNOSTIC MOCK (single 65-min block, then rest)
+### Day 6.5 — Mon May 25: DIAGNOSTIC MOCK ← **TOMORROW** (single 65-min block, then rest)
 
-**Why this exists:** You've now covered Networking, Compute, HA, both Databases, Storage, and Decoupling — roughly **60% of exam content** and the heaviest-tested domains. This is the earliest point a mock score actually *means* something. It calibrates whether the plan is on track *before* you've sunk two more weeks in.
+**Why this exists:** You've now covered Networking, Compute, HA, Storage, both Databases, and Decoupling — roughly **60% of exam content** and the heaviest-tested domains. This is the earliest point a mock score actually *means* something. It calibrates whether the plan is on track *before* you've sunk two more weeks in.
 
-- **Single Block (65 min):** Take **one mock exam** (Maarek #1 — save Bonso/Davis for the real Phase 2). Take it under exam conditions. Don't study after — let the rest day do its job.
+- **Single Block (65 min):** Take **one mock exam** (Maarek #1 — save Bonso/Davis for the real Phase 2). Take it under exam conditions. Don't study after — let the rest of the day do its job.
 - **Do NOT review answers today.** Just record the raw score and which chapters the wrong answers clustered in.
 
 **Calibration — read your score honestly:**
@@ -114,39 +117,36 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 
 **Important:** This is a *diagnostic*, not a verdict. A low score here with 40% of content unlearned is expected — the table accounts for that. The point is the *trend*: this score is your true baseline to measure the Phase 2 mocks against.
 
-### ☁ Sun May 24 (rest of day): REST
-After the diagnostic, no more studying. Your brain consolidates 6 days of material. This is when long-term memories form.
+### ☁ Mon May 25 (rest of day): REST
+After the diagnostic, no more studying. Your brain consolidates the material. This is when long-term memories form.
 
-### Day 7 — Mon May 25: Serverless
+### Day 7 — Tue May 26: Serverless
 - **Block 1:** Review Decoupling cheat sheet. Then start Serverless.md: Lambda limits (MEMORIZE: 15 min timeout, 10GB mem, 10GB /tmp), invocation types.
 - **Block 2:** Finish Serverless.md — Execution Role, Provisioned Concurrency, Layers, Versions/Aliases, API Gateway (REST vs HTTP API), Step Functions (Standard vs Express). Do all 5 scenarios. **Write from memory:** Lambda limits, Step Functions Standard vs Express.
 
-### Day 8 — Tue May 26: Containers
+### Day 8 — Wed May 27: Containers
 - **Block 1:** Review Serverless cheat sheet. Then start Containers.md: ECR, ECS overview, launch types.
 - **Block 2:** Finish Containers.md — ECS EC2 vs Fargate, Task Role vs Execution Role, awsvpc mode, Capacity Providers (Fargate Spot), EKS, App Runner. Do all 5 scenarios. **Write from memory:** ECS EC2 vs Fargate, Task Role vs Execution Role.
 
-### Day 9 — Wed May 27: Cost / Migration / DR
+### Day 9 — Thu May 28: Cost / Migration / DR
 - **Block 1:** Review Networking + Storage cheat sheets (oldest material — critical reinforcement). Then start CostOptimization.md: Cost Explorer vs Budgets vs Compute Optimizer, Savings Plans, RI types.
 - **Block 2:** Finish CostOptimization.md — data transfer cost rules, 6 R's of migration, DMS, Snow Family, DataSync, DR patterns table (RPO/RTO — WILL be on exam), Organizations SCPs, Control Tower, AWS Backup. Do all 5 scenarios. **Write from memory:** DR patterns table, 6 R's, data transfer rules.
 
-### Day 10 — Thu May 28: CDN / DNS
+### Day 10 — Fri May 29: CDN / DNS
 - **Block 1:** Review Cost cheat sheet. Then start ContentDeliveryDNS.md: 7 Route 53 routing policies table, Resolver, Alias vs CNAME.
 - **Block 2:** Finish ContentDeliveryDNS.md — CloudFront OAC, Signed URLs vs Cookies, CloudFront Functions vs Lambda@Edge, Origin Groups, CloudFront vs Global Accelerator. Do all 5 scenarios. **Write from memory:** 7 routing policies, CloudFront Functions vs Lambda@Edge.
 
-### Day 11 — Fri May 29: Security & Identity
+### Day 11 — Sat May 30: Security & Identity
 - **Block 1:** Review Networking + Storage + HA cheat sheets. Then start SecurityIdentity.md: IAM evaluation logic (Deny > Allow > Default Deny), Permission Boundaries, STS, IAM Identity Center.
 - **Block 2:** Finish SecurityIdentity.md — KMS key types + Envelope Encryption, KMS vs CloudHSM, ACM, Secrets Manager vs Parameter Store, Cognito User Pools vs Identity Pools, WAF, GuardDuty/Inspector/Macie. Do all 5 scenarios. **Write from memory:** IAM eval logic, KMS vs CloudHSM, Cognito pools.
 
-### Day 12 — Sat May 30: Monitoring & Audit
+### Day 12 — Sun May 31: Monitoring & Audit
 - **Block 1:** Review Security cheat sheet. Then start MonitoringAudit.md: CloudWatch vs CloudTrail vs Config table, CloudWatch Agent.
 - **Block 2:** Finish MonitoringAudit.md — Contributor Insights, Synthetics, X-Ray, SSM Session Manager, Patch Manager, Trusted Advisor. Do all 5 scenarios. **Write from memory:** CloudWatch vs CloudTrail vs Config table.
 
-### Day 13 — Sun May 31: Additional Services + Buffer
+### Day 13 — Mon Jun 1: Additional Services + Buffer
 - **Block 1:** Review Monitoring cheat sheet. Then read AdditionalServices.md — Athena, Redshift, Glue, CloudFormation, Elastic Beanstalk, OpenSearch, Batch, EMR, ML/AI services, Outposts/Local Zones/Wavelength. These are 1-2 questions each — skim, don't memorize deeply.
 - **Block 2:** Do all 5 Additional scenarios. **Buffer:** if you fell behind by a day during Phase 1, use this block to catch up instead.
-
-### ☁ Mon Jun 1: REST DAY
-No studying. You've finished all 15 chapters. Let your brain consolidate before the mock gauntlet.
 
 ### Day 14 — Tue Jun 2: Full Review Day
 - **Block 1:** ALL 15 chapter cheat sheets — rapid fire. Cover the answer, test yourself. Mark anything you can't recall instantly.
@@ -169,7 +169,7 @@ Block 2 (50 min): Review EVERY wrong answer — go back to the chapter for each 
 
 | Day | Date | Mock | Notes |
 |-----|------|------|-------|
-| 15 | Wed Jun 3 | Maarek #2 | First *full-content* mock. Compare against the May 24 diagnostic — expect a clear jump. |
+| 15 | Wed Jun 3 | Maarek #2 | First *full-content* mock. Compare against the May 25 diagnostic — expect a clear jump. |
 | 16 | Thu Jun 4 | Davis #1 | Davis runs ~8% lower — normal. |
 | 17 | Fri Jun 5 | Bonso #1 | Closest to real exam — most reliable signal. |
 | 18 | Sat Jun 6 | Davis #2 | **CHECKPOINT** — see decision table below. |
@@ -179,7 +179,7 @@ Block 2 (50 min): Review EVERY wrong answer — go back to the chapter for each 
 | 22 | Wed Jun 10 | Bonso #3 | Final tune-up. Target 75-85%. |
 | — | Thu Jun 11 | **EXAM DAY** | Light skim of weak list only. No new study. |
 
-*(Maarek #1 was used for the May 24 diagnostic, so Phase 2 starts from Maarek #2. Total mocks taken: 1 diagnostic + 8 Phase 2 = 9.)*
+*(Maarek #1 was used for the May 25 diagnostic, so Phase 2 starts from Maarek #2. Total mocks taken: 1 diagnostic + 8 Phase 2 = 9.)*
 
 ### Day 18 Checkpoint (after Davis #2)
 
@@ -213,7 +213,7 @@ Block 2 (50 min): Review EVERY wrong answer — go back to the chapter for each 
 ## Mock Exam Score Tracker
 
 ```
-DIAGNOSTIC (May 24) Maarek #1:  ___% | Weak: _______________ ← BASELINE (~60% content)
+DIAGNOSTIC (May 25) Maarek #1:  ___% | Weak: _______________ ← BASELINE (~60% content)
 Mock #1 (Day 15) Maarek #2:  ___% | Weak: _______________
 Mock #2 (Day 16) Davis  #1:  ___% | Weak: _______________
 Mock #3 (Day 17) Bonso  #1:  ___% | Weak: _______________
@@ -231,7 +231,7 @@ Mock #8 (Day 22) Bonso  #3:  ___% | Weak: _______________
 
 ## If You Miss a Day
 
-- **Missed 1 day in Phase 1:** Use the Day 13 buffer block, or the rest days (May 24 / Jun 1), to catch up.
+- **Missed 1 day in Phase 1:** Use the Day 13 buffer block, or the post-diagnostic rest (May 25), to catch up.
 - **Missed 1 day in Phase 2:** Drop to 7 mocks — skip Maarek #2 (Day 19), keep both go/no-go signals.
 - **Missed 2+ days:** Shift everything forward and reschedule the exam.
 - **Golden rule:** never skip the Block 1 review to cram new content. Fading old material is worse than being a day behind.
@@ -241,7 +241,7 @@ Mock #8 (Day 22) Bonso  #3:  ___% | Weak: _______________
 ## What You Need
 
 - [x] All 15 chapter files (in this folder — see [Chapters.md](./Chapters.md))
-- [ ] Stephane Maarek SAA-C03 practice exams (Udemy) — **buy before Sat May 24** (needed for the diagnostic mock)
+- [ ] Stephane Maarek SAA-C03 practice exams (Udemy) — **buy before Mon May 25** (needed for the diagnostic mock)
 - [ ] Neal Davis / Tutorials Dojo SAA-C03 practice exams (Udemy) — buy by Day 12
 - [ ] A notebook for writing from memory (paper > app for retention)
 - [ ] A timer for the 50-min blocks

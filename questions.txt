@@ -1,0 +1,657 @@
+Question 1
+Incorrect
+A wildlife research organization uses IoT-based motion sensors attached to thousands of migrating animals to monitor their movement across regions. Every few minutes, a sensor checks for significant movement and sends updated location data to a backend application running on Amazon EC2 instances spread across multiple Availability Zones in a single AWS Region. Recently, an unexpected surge in motion data overwhelmed the application, leading to lost location records with no mechanism to replay missed data. A solutions architect must redesign the ingestion mechanism to prevent future data loss and to minimize operational overhead.
+
+What should the solutions architect do to meet these requirements?
+
+Set up a containerized service using Amazon ECS with an internal queue built into the application layer. Configure the motion sensors to send location updates directly to the container endpoints
+
+Right Answer
+Create an Amazon Simple Queue Service (Amazon SQS) queue to buffer the incoming location data. Configure the backend application to poll the queue and process messages
+
+Wrong Answer
+Implement an AWS IoT Core rule to route location updates directly from each sensor to Amazon SNS. Configure the application to poll the SNS topic for new messages
+
+Deploy an Amazon Data Firehose delivery stream to collect the motion data. Configure it to deliver data to an S3 bucket where the application scans and processes the files periodically
+
+Question 2
+Incorrect
+An engineering team wants to examine the feasibility of the user data feature of Amazon EC2 for an upcoming project.
+
+Which of the following are true about the Amazon EC2 user data configuration? (Select two)
+
+Sélection correcte
+By default, scripts entered as user data are executed with root user privileges
+
+Your Selection is incorrect
+By default, scripts entered as user data do not have root user privileges for executing
+
+When an instance is running, you can update user data by using root user credentials
+
+By default, user data is executed every time an Amazon EC2 instance is re-started
+
+Your Selection is correct
+By default, user data runs only during the boot cycle when you first launch an instance
+
+
+Question 6
+Incorrect
+Amazon EC2 Auto Scaling needs to terminate an instance from Availability Zone (AZ) us-east-1a as it has the most number of instances amongst the Availability Zone (AZs) being used currently. There are 4 instances in the Availability Zone (AZ) us-east-1a like so: Instance A has the oldest launch template, Instance B has the oldest launch configuration, Instance C has the newest launch configuration and Instance D is closest to the next billing hour.
+
+Which of the following instances would be terminated per the default termination policy?
+
+Instance D
+
+Right Answer
+Instance B
+
+Wrong Answer
+Instance A
+
+Instance C
+
+
+Question 7
+Incorrect
+An analytics company wants to improve the performance of its big data processing workflows running on Amazon Elastic File System (Amazon EFS). Which of the following performance modes should be used for Amazon EFS to address this requirement?
+
+General Purpose
+
+Wrong Answer
+Bursting Throughput
+
+Provisioned Throughput
+
+Right Answer
+Max I/O
+
+
+Question 8
+Incorrect
+An e-commerce company operates multiple AWS accounts and has interconnected these accounts in a hub-and-spoke style using the AWS Transit Gateway. Amazon Virtual Private Cloud (Amazon VPCs) have been provisioned across these AWS accounts to facilitate network isolation.
+
+Which of the following solutions would reduce both the administrative overhead and the costs while providing shared access to services required by workloads in each of the VPCs?
+
+Use Fully meshed VPC Peering connection
+
+Right Answer
+Build a shared services Amazon Virtual Private Cloud (Amazon VPC)
+
+Use VPCs connected with AWS Direct Connect
+
+Wrong Answer
+Use Transit VPC to reduce cost and share the resources across Amazon Virtual Private Cloud (Amazon VPCs)
+
+
+Question 9
+Incorrect
+Which of the following IAM policies provides read-only access to the Amazon S3 bucket mybucket and its content?
+
+Right Answer
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:ListBucket"
+         ],
+         "Resource":"arn:aws:s3:::mybucket"
+      },
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:GetObject"
+         ],
+         "Resource":"arn:aws:s3:::mybucket/*"
+      }
+   ]
+}
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:ListBucket",
+            "s3:GetObject"
+         ],
+         "Resource":"arn:aws:s3:::mybucket"
+      }
+   ]
+}
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:ListBucket",
+            "s3:GetObject"
+         ],
+         "Resource":"arn:aws:s3:::mybucket/*"
+      }
+   ]
+}
+Wrong Answer
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:ListBucket"
+         ],
+         "Resource":"arn:aws:s3:::mybucket/*"
+      },
+      {
+         "Effect":"Allow",
+         "Action":[
+            "s3:GetObject"
+         ],
+         "Resource":"arn:aws:s3:::mybucket"
+      }
+   ]
+}
+
+
+Question 10
+Incorrect
+Your company has an on-premises Distributed File System Replication (DFSR) service to keep files synchronized on multiple Windows servers, and would like to migrate to AWS cloud.
+
+What do you recommend as a replacement for the DFSR?
+
+Amazon Elastic File System (Amazon EFS)
+
+Amazon Simple Storage Service (Amazon S3)
+
+Right Answer
+Amazon FSx for Windows File Server
+
+Wrong Answer
+Amazon FSx for Lustre
+
+
+Question 11
+Incorrect
+A social media application is hosted on an Amazon EC2 fleet running behind an Application Load Balancer. The application traffic is fronted by an Amazon CloudFront distribution. The engineering team wants to decouple the user authentication process for the application, so that the application servers can just focus on the business logic.
+
+As a Solutions Architect, which of the following solutions would you recommend to the development team so that it requires minimal development effort?
+
+Use Amazon Cognito Authentication via Cognito Identity Pools for your Application Load Balancer
+
+Right Answer
+Use Amazon Cognito Authentication via Cognito User Pools for your Application Load Balancer
+
+Use Amazon Cognito Authentication via Cognito User Pools for your Amazon CloudFront distribution
+
+Wrong Answer
+Use Amazon Cognito Authentication via Cognito Identity Pools for your Amazon CloudFront distribution
+
+
+Question 16
+Incorrect
+The engineering team at a logistics company has noticed that the Auto Scaling group (ASG) is not terminating an unhealthy Amazon EC2 instance.
+
+As a Solutions Architect, which of the following options would you suggest to troubleshoot the issue? (Select three)
+
+Your Selection is incorrect
+A custom health check might have failed. The Auto Scaling group (ASG) does not terminate instances that are set unhealthy by custom checks
+
+Your Selection is incorrect
+A user might have updated the configuration of the Auto Scaling group (ASG) and increased the minimum number of instances forcing ASG to keep all instances alive
+
+Sélection correcte
+The instance has failed the Elastic Load Balancing (ELB) health check status
+
+Your Selection is correct
+The health check grace period for the instance has not expired
+
+Sélection correcte
+The instance maybe in Impaired status
+
+The Amazon EC2 instance could be a spot instance type, which cannot be terminated by the Auto Scaling group (ASG)
+
+
+Question 20
+Incorrect
+A SaaS company is modernizing one of its legacy web applications by migrating it to AWS. The company aims to improve the availability of the application during both normal and peak traffic periods. Additionally, the company wants to implement protection against common web exploits and malicious traffic. The architecture must be scalable and integrate AWS WAF to secure incoming traffic.
+
+Which solution will best meet these requirements with high availability and minimal configuration complexity?
+
+Wrong Answer
+Create an Auto Scaling group with EC2 instances in multiple Availability Zones. Attach a Network Load Balancer (NLB) to distribute incoming traffic. Integrate AWS WAF directly with the Auto Scaling group for traffic filtering
+
+Launch EC2 instances in a single Availability Zone and configure AWS Global Accelerator to route traffic to the instances. Attach AWS WAF to Global Accelerator for application protection
+
+Right Answer
+Deploy the application on multiple Amazon EC2 instances in an Auto Scaling group that spans two Availability Zones. Place an Application Load Balancer (ALB) in front of the group. Associate AWS WAF with the ALB
+
+Launch two EC2 instances in separate Availability Zones and register them as targets of an Application Load Balancer. Associate the ALB with AWS WAF to filter incoming traffic
+
+
+Question 21
+Incorrect
+A financial services company has deployed its flagship application on Amazon EC2 instances. Since the application handles sensitive customer data, the security team at the company wants to ensure that any third-party Secure Sockets Layer certificate (SSL certificate) SSL/Transport Layer Security (TLS) certificates configured on Amazon EC2 instances via the AWS Certificate Manager (ACM) are renewed before their expiry date. The company has hired you as an AWS Certified Solutions Architect Associate to build a solution that notifies the security team 30 days before the certificate expiration. The solution should require the least amount of scripting and maintenance effort.
+
+What will you recommend?
+
+Wrong Answer
+Leverage AWS Config managed rule to check if any SSL/TLS certificates created via ACM are marked for expiration within 30 days. Configure the rule to trigger an Amazon SNS notification to the security team if any certificate expires within 30 days
+
+Right Answer
+Leverage AWS Config managed rule to check if any third-party SSL/TLS certificates imported into ACM are marked for expiration within 30 days. Configure the rule to trigger an Amazon SNS notification to the security team if any certificate expires within 30 days
+
+Monitor the days to expiry Amazon CloudWatch metric for certificates imported into ACM. Create a CloudWatch alarm to monitor such certificates based on the days to expiry metric and then trigger a custom action of notifying the security team
+
+Monitor the days to expiry Amazon CloudWatch metric for certificates created via ACM. Create a CloudWatch alarm to monitor such certificates based on the days to expiry metric and then trigger a custom action of notifying the security team
+
+
+Question 23
+Incorrect
+A media company has created an AWS Direct Connect connection for migrating its flagship application to the AWS Cloud. The on-premises application writes hundreds of video files into a mounted NFS file system daily. Post-migration, the company will host the application on an Amazon EC2 instance with a mounted Amazon Elastic File System (Amazon EFS) file system. Before the migration cutover, the company must build a process that will replicate the newly created on-premises video files to the Amazon EFS file system.
+
+Which of the following represents the MOST operationally efficient way to meet this requirement?
+
+Configure an AWS DataSync agent on the on-premises server that has access to the NFS file system. Transfer data over the AWS Direct Connect connection to an AWS VPC peering endpoint for Amazon EFS by using a private VIF. Set up an AWS DataSync scheduled task to send the video files to the Amazon EFS file system every 24 hours
+
+Wrong Answer
+Configure an AWS DataSync agent on the on-premises server that has access to the NFS file system. Transfer data over the AWS Direct Connect connection to an Amazon S3 bucket by using a VPC gateway endpoint for Amazon S3. Set up an AWS Lambda function to process event notifications from Amazon S3 and copy the video files from Amazon S3 to the Amazon EFS file system
+
+Right Answer
+Configure an AWS DataSync agent on the on-premises server that has access to the NFS file system. Transfer data over the AWS Direct Connect connection to an AWS PrivateLink interface VPC endpoint for Amazon EFS by using a private VIF. Set up an AWS DataSync scheduled task to send the video files to the Amazon EFS file system every 24 hours
+
+Configure an AWS DataSync agent on the on-premises server that has access to the NFS file system. Transfer data over the AWS Direct Connect connection to an Amazon S3 bucket by using public VIF. Set up an AWS Lambda function to process event notifications from Amazon S3 and copy the video files from Amazon S3 to the Amazon EFS file system
+
+
+Question 25
+Incorrect
+A health-care solutions company wants to run their applications on single-tenant hardware to meet regulatory guidelines.
+
+Which of the following is the MOST cost-effective way of isolating their Amazon Elastic Compute Cloud (Amazon EC2)instances to a single tenant?
+
+Right Answer
+Dedicated Instances
+
+Spot Instances
+
+Wrong Answer
+Dedicated Hosts
+
+On-Demand Instances
+
+
+Question 26
+Incorrect
+An enterprise uses a centralized Amazon S3 bucket to store logs and reports generated by multiple analytics services. Each service writes to and reads from a dedicated prefix (folder path) in the bucket. The company wants to enforce fine-grained access control so that each service can access only its own prefix, without being able to see or modify other services' data. The solution must support scalable and maintainable permissions management with minimal operational overhead.
+
+Which approach will best meet these requirements?
+
+Right Answer
+Configure individual S3 access points for each analytics service. Attach access point policies that restrict access to only the relevant prefix in the S3 bucket
+
+Create a single S3 bucket policy that lists all object ARNs under each prefix and grants permissions accordingly. Use resource-level permissions to restrict access to individual services
+
+Create separate IAM users for each service. Manually assign inline IAM policies to grant read/write permissions to the S3 bucket. Reference specific object names in the policy for each user
+
+Wrong Answer
+Deploy Amazon Macie to classify the objects in the bucket by prefix and apply automated object-level access policies to each object based on service tags
+
+
+Question 27
+Incorrect
+A company is looking at storing their less frequently accessed files on AWS that can be concurrently accessed by hundreds of Amazon EC2 instances. The company needs the most cost-effective file storage service that provides immediate access to data whenever needed.
+
+Which of the following options represents the best solution for the given requirements?
+
+Amazon Elastic File System (EFS) Standard storage class
+
+Amazon Elastic Block Store (EBS)
+
+Wrong Answer
+Amazon S3 Standard-Infrequent Access (S3 Standard-IA) storage class
+
+Right Answer
+Amazon Elastic File System (EFS) Standard–IA storage class
+
+
+Question 28
+Incorrect
+The DevOps team at a major financial services company uses Multi-Availability Zone (Multi-AZ) deployment for its MySQL Amazon RDS database in order to automate its database replication and augment data durability. The DevOps team has scheduled a maintenance window for a database engine level upgrade for the coming weekend.
+
+Which of the following is the correct outcome during the maintenance window?
+
+Wrong Answer
+Any database engine level upgrade for an Amazon RDS database instance with Multi-AZ deployment triggers the standby database instance to be upgraded which is then followed by the upgrade of the primary database instance. This does not cause any downtime for the duration of the upgrade
+
+Any database engine level upgrade for an Amazon RDS database instance with Multi-AZ deployment triggers the primary database instance to be upgraded which is then followed by the upgrade of the standby database instance. This does not cause any downtime for the duration of the upgrade
+
+Any database engine level upgrade for an Amazon RDS database instance with Multi-AZ deployment triggers both the primary and standby database instances to be upgraded at the same time. However, this does not cause any downtime until the upgrade is complete
+
+Right Answer
+Any database engine level upgrade for an Amazon RDS database instance with Multi-AZ deployment triggers both the primary and standby database instances to be upgraded at the same time. This causes downtime until the upgrade is complete
+
+
+Question 29
+Incorrect
+Consider the following policy associated with an IAM group containing several users:
+
+{
+    "Version":"2012-10-17",
+    "Id":"EC2TerminationPolicy",
+    "Statement":[
+        {
+            "Effect":"Deny",
+            "Action":"ec2:*",
+            "Resource":"*",
+            "Condition":{
+                "StringNotEquals":{
+                    "ec2:Region":"us-west-1"
+                }
+            }
+        },
+        {
+            "Effect":"Allow",
+            "Action":"ec2:TerminateInstances",
+            "Resource":"*",
+            "Condition":{
+                "IpAddress":{
+                    "aws:SourceIp":"10.200.200.0/24"
+                }
+            }
+        }
+    ]
+}
+Which of the following options is correct?
+
+Users belonging to the IAM user group cannot terminate an Amazon EC2 instance in the us-west-1 region when the user's source IP is 10.200.200.200
+
+Wrong Answer
+Users belonging to the IAM user group can terminate an Amazon EC2 instance in the us-west-1 region when the EC2 instance's IP address is 10.200.200.200
+
+Users belonging to the IAM user group can terminate an Amazon EC2 instance belonging to any region except the us-west-1 region when the user's source IP is 10.200.200.200
+
+Right Answer
+Users belonging to the IAM user group can terminate an Amazon EC2 instance in the us-west-1 region when the user's source IP is 10.200.200.200
+
+
+Question 30
+Incorrect
+A media company is migrating its flagship application from its on-premises data center to AWS for improving the application's read-scaling capability as well as its availability. The existing architecture leverages a Microsoft SQL Server database that sees a heavy read load. The engineering team does a full copy of the production database at the start of the business day to populate a dev database. During this period, application users face high latency leading to a bad user experience.
+
+The company is looking at alternate database options and migrating database engines if required. What would you suggest?
+
+Right Answer
+Leverage Amazon Aurora MySQL with Multi-AZ Aurora Replicas and create the dev database by restoring from the automated backups of Amazon Aurora
+
+Wrong Answer
+Leverage Amazon RDS for SQL server with a Multi-AZ deployment and read replicas. Use the read replica as the dev database
+
+Leverage Amazon RDS for MySQL with a Multi-AZ deployment and use the standby instance as the dev database
+
+Leverage Amazon Aurora MySQL with Multi-AZ Aurora Replicas and restore the dev database via mysqldump
+
+
+
+Question 37
+Incorrect
+A media publishing company is migrating its legacy content management application to AWS. Currently, the application and its MySQL database run on a single on-premises virtual machine, which creates a single point of failure and limits scalability. As traffic has increased due to growing reader engagement and video uploads, the company needs to redesign the solution to ensure automatic scaling, high availability, and separation of application and database layers. The company wants to continue using a MySQL-compatible engine and needs a cost-effective, managed solution that minimizes operational overhead.
+
+Which AWS architecture will best fulfill these requirements?
+
+Wrong Answer
+Host the application on EC2 instances that are part of a target group for an Application Load Balancer. Create an Amazon RDS for MySQL Multi-AZ DB instance to provide high availability and automatic failover for the database
+
+Right Answer
+Migrate the application to Amazon EC2 instances in an Auto Scaling group behind an Application Load Balancer. Use Amazon Aurora Serverless v2 for MySQL to manage the database layer with auto-scaling and built-in high availability
+
+Deploy the application to EC2 instances registered in a Network Load Balancer target group. Use Amazon ElastiCache for Redis as the database and configure it with Redis Streams for persistent storage
+
+Containerize the application and deploy it to Amazon ECS with EC2 launch type behind an Application Load Balancer. Use Amazon Neptune to store structured relational data with SQL-like queries
+
+
+
+Question 38
+Incorrect
+A silicon valley based startup has a content management application with the web-tier running on Amazon EC2 instances and the database tier running on Amazon Aurora. Currently, the entire infrastructure is located in us-east-1 region. The startup has 90% of its customers in the US and Europe. The engineering team is getting reports of deteriorated application performance from customers in Europe with high application load time.
+
+As a solutions architect, which of the following would you recommend addressing these performance issues? (Select two)
+
+Sélection correcte
+Setup another fleet of Amazon EC2 instances for the web tier in the eu-west-1 region. Enable latency routing policy in Amazon Route 53
+
+Your Selection is correct
+Create Amazon Aurora read replicas in the eu-west-1 region
+
+Setup another fleet of Amazon EC2 instances for the web tier in the eu-west-1 region. Enable failover routing policy in Amazon Route 53
+
+Your Selection is incorrect
+Setup another fleet of Amazon EC2 instances for the web tier in the eu-west-1 region. Enable geolocation routing policy in Amazon Route 53
+
+Create Amazon Aurora Multi-AZ standby instance in the eu-west-1 region
+
+
+Question 43
+Incorrect
+You would like to use AWS Snowball to move on-premises backups into a long term archival tier on AWS. Which solution provides the MOST cost savings?
+
+Create an AWS Snowball job and target a Amazon S3 Glacier Vault
+
+Wrong Answer
+Create a AWS Snowball job and target an Amazon S3 Glacier Deep Archive Vault
+
+Create an AWS Snowball job and target an Amazon S3 bucket. Create a lifecycle policy to transition this data to Amazon S3 Glacier on the same day
+
+Right Answer
+Create an AWS Snowball job and target an Amazon S3 bucket. Create a lifecycle policy to transition this data to Amazon S3 Glacier Deep Archive on the same day
+
+
+
+Question 45
+Incorrect
+An application is currently hosted on four Amazon EC2 instances (behind Application Load Balancer) deployed in a single Availability Zone (AZ). To maintain an acceptable level of end-user experience, the application needs at least 4 instances to be always available.
+
+As a solutions architect, which of the following would you recommend so that the application achieves high availability with MINIMUM cost?
+
+Right Answer
+Deploy the instances in three Availability Zones (AZs). Launch two instances in each Availability Zone (AZ)
+
+Deploy the instances in two Availability Zones (AZs). Launch four instances in each Availability Zone (AZ)
+
+Wrong Answer
+Deploy the instances in two Availability Zones (AZs). Launch two instances in each Availability Zone (AZ)
+
+Deploy the instances in one Availability Zones. Launch two instances in the Availability Zone (AZ)
+
+
+Question 46
+Incorrect
+A manufacturing company receives unreliable service from its data center provider because the company is located in an area prone to natural disasters. The company is not ready to fully migrate to the AWS Cloud, but it wants a failover environment on AWS in case the on-premises data center fails. The company runs web servers that connect to external vendors. The data available on AWS and on-premises must be uniform.
+
+Which of the following solutions would have the LEAST amount of downtime?
+
+Set up a Amazon Route 53 failover record. Run an AWS Lambda function to execute an AWS CloudFormation template to launch two Amazon EC2 instances. Set up AWS Storage Gateway with stored volumes to back up data to Amazon S3. Set up an AWS Direct Connect connection between a VPC and the data center
+
+Wrong Answer
+Set up a Amazon Route 53 failover record. Set up an AWS Direct Connect connection between a VPC and the data center. Run application servers on Amazon EC2 in an Auto Scaling group. Run an AWS Lambda function to execute an AWS CloudFormation template to create an Application Load Balancer
+
+Right Answer
+Set up a Amazon Route 53 failover record. Run application servers on Amazon EC2 instances behind an Application Load Balancer in an Auto Scaling group. Set up AWS Storage Gateway with stored volumes to back up data to Amazon S3
+
+Set up a Amazon Route 53 failover record. Execute an AWS CloudFormation template from a script to provision Amazon EC2 instances behind an Application Load Balancer. Set up AWS Storage Gateway with stored volumes to back up data to Amazon S3
+
+
+
+Question 49
+Incorrect
+Upon a security review of your AWS account, an AWS consultant has found that a few Amazon RDS databases are unencrypted. As a Solutions Architect, what steps must be taken to encrypt the Amazon RDS databases?
+
+Right Answer
+Take a snapshot of the database, copy it as an encrypted snapshot, and restore a database from the encrypted snapshot. Terminate the previous database
+
+Enable encryption on the Amazon RDS database using the AWS Console
+
+Wrong Answer
+Create a Read Replica of the database, and encrypt the read replica. Promote the read replica as a standalone database, and terminate the previous database
+
+Enable Multi-AZ for the database, and make sure the standby instance is encrypted. Stop the main database to that the standby database kicks in, then disable Multi-AZ
+
+
+
+Question 50
+Incorrect
+A mobile app allows users to submit photos, which are stored in an Amazon S3 bucket. Currently, a batch of Amazon EC2 Spot Instances is launched nightly to process all the day’s uploads. Each photo requires approximately 3 minutes and 512 MB of memory to process. To improve responsiveness and minimize costs, the company wants to shift to near real-time image processing that begins as soon as an image is uploaded.
+
+Which solution will provide the MOST cost-effective and scalable architecture to meet these new requirements?
+
+Set up Amazon S3 to push events to an Amazon SQS queue. Launch a single EC2 Reserved Instance that continuously polls the queue and processes each image upon receipt
+
+Right Answer
+Configure Amazon S3 to send event notifications to an Amazon SQS queue each time a photo is uploaded. Set up an AWS Lambda function to poll the queue and process images asynchronously
+
+Wrong Answer
+Configure S3 to trigger an AWS App Runner service directly. Deploy a containerized image-processing application to App Runner to automatically process each upload
+
+Enable S3 event notifications to invoke an Amazon EventBridge rule. Configure an AWS Step Functions workflow to initiate an Fargate task in Amazon ECS to process the image
+
+
+
+Your Selection is incorrect
+The security group of Amazon RDS should have an inbound rule from the security group of the Amazon EC2 instances in the Auto Scaling group on port 80
+
+Your Selection is correct
+The security group of the Amazon EC2 instances should have an inbound rule from the security group of the Application Load Balancer on port 80
+
+Your Selection is correct
+The security group of the Application Load Balancer should have an inbound rule from anywhere on port 443
+
+The security group of the Application Load Balancer should have an inbound rule from anywhere on port 80
+
+The security group of the Amazon EC2 instances should have an inbound rule from the security group of the Amazon RDS database on port 5432
+
+Sélection correcte
+The security group of Amazon RDS should have an inbound rule from the security group of the Amazon EC2 instances in the Auto Scaling group on port 5432
+
+
+Question 52
+Incorrect
+What does this IAM policy do?
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Mystery Policy",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Effect": "Allow",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-1"
+        }
+      }
+    }
+  ]
+}
+Right Answer
+It allows running Amazon EC2 instances only in the eu-west-1 region, and the API call can be made from anywhere in the world
+
+It allows running Amazon EC2 instances in the eu-west-1 region, when the API call is made from the eu-west-1 region
+
+It allows running Amazon EC2 instances anywhere but in the eu-west-1 region
+
+Wrong Answer
+It allows running Amazon EC2 instances in any region when the API call is originating from the eu-west-1 region
+
+
+Question 57
+Incorrect
+An application runs big data workloads on Amazon Elastic Compute Cloud (Amazon EC2) instances. The application runs 24x7 all round the year and needs at least 20 instances to maintain a minimum acceptable performance threshold and the application needs 300 instances to handle spikes in the workload. Based on historical workloads processed by the application, it needs 80 instances 80% of the time.
+
+As a solutions architect, which of the following would you recommend as the MOST cost-optimal solution so that it can meet the workload demand in a steady state?
+
+Wrong Answer
+Purchase 20 on-demand instances. Use Auto Scaling Group to provision the remaining instances as spot instances per the workload demand
+
+Right Answer
+Purchase 80 reserved instances (RIs). Provision additional on-demand and spot instances per the workload demand (Use Auto Scaling Group with launch template to provision the mix of on-demand and spot instances)
+
+Purchase 80 on-demand instances. Provision additional on-demand and spot instances per the workload demand (Use Auto Scaling Group with launch template to provision the mix of on-demand and spot instances)
+
+Purchase 80 spot instances. Use Auto Scaling Group to provision the remaining instances as on-demand instances per the workload demand
+
+
+Question 59
+Incorrect
+You have a team of developers in your company, and you would like to ensure they can quickly experiment with AWS Managed Policies by attaching them to their accounts, but you would like to prevent them from doing an escalation of privileges, by granting themselves the AdministratorAccess managed policy. How should you proceed?
+
+Put the developers into an IAM group, and then define an IAM permission boundary on the group that will restrict the managed policies they can attach to themselves
+
+Attach an IAM policy to your developers, that prevents them from attaching the AdministratorAccess policy
+
+Right Answer
+For each developer, define an IAM permission boundary that will restrict the managed policies they can attach to themselves
+
+Wrong Answer
+Create a Service Control Policy (SCP) on your AWS account that restricts developers from attaching themselves the AdministratorAccess policy
+
+
+Question 61
+Incorrect
+A silicon valley based startup has a two-tier architecture using Amazon EC2 instances for its flagship application. The web servers (listening on port 443), which have been assigned security group A, are in public subnets across two Availability Zones (AZs) and the MSSQL based database instances (listening on port 1433), which have been assigned security group B, are in two private subnets across two Availability Zones (AZs). The DevOps team wants to review the security configurations of the application architecture.
+
+As a solutions architect, which of the following options would you select as the MOST secure configuration? (Select two)
+
+For security group B: Add an inbound rule that allows traffic only from all sources on port 1433
+
+Your Selection is incorrect
+For security group B: Add an inbound rule that allows traffic only from security group A on port 443
+
+Sélection correcte
+For security group A: Add an inbound rule that allows traffic from all sources on port 443. Add an outbound rule with the destination as security group B on port 1433
+
+Sélection correcte
+For security group B: Add an inbound rule that allows traffic only from security group A on port 1433
+
+Your Selection is incorrect
+For security group A: Add an inbound rule that allows traffic from all sources on port 443. Add an outbound rule with the destination as security group B on port 443
+
+
+
+Question 63
+Incorrect
+A retail company wants to rollout and test a blue-green deployment for its global application in the next 48 hours. Most of the customers use mobile phones which are prone to Domain Name System (DNS) caching. The company has only two days left for the annual Thanksgiving sale to commence.
+
+As a Solutions Architect, which of the following options would you recommend to test the deployment on as many users as possible in the given time frame?
+
+Wrong Answer
+Use Amazon Route 53 weighted routing to spread traffic across different deployments
+
+Use AWS CodeDeploy deployment options to choose the right deployment
+
+Right Answer
+Use AWS Global Accelerator to distribute a portion of traffic to a particular deployment
+
+Use Elastic Load Balancing (ELB) to distribute traffic across deployments
+
+
+
+Question 64
+Incorrect
+A video conferencing platform serves users worldwide through a globally distributed deployment of Amazon EC2 instances behind Network Load Balancers (NLBs) in several AWS Regions. The platform's architecture currently allows clients to connect to any Region via public endpoints, depending on how DNS resolves. However, users in regions far from the load balancers frequently experience high latency and slow connection times, especially during session initiation. The company wants to optimize the experience for global users by reducing end-to-end latency and load time while keeping the existing NLBs and EC2-based application infrastructure in place.
+
+Which solution will best meet these requirements?
+
+Wrong Answer
+Deploy Amazon CloudFront with HTTP caching enabled in front of the NLBs. Use CloudFront edge locations to serve user requests faster and reduce the load on the backend EC2 instances
+
+Right Answer
+Deploy a standard accelerator in AWS Global Accelerator and register the existing regional NLBs as endpoints. Use the accelerator to route user requests through AWS’s global edge network to the closest healthy Regional NLB
+
+Configure Amazon Route 53 with latency-based routing policies to direct users to the Region with the lowest response time. Use health checks to fail over to another Region if a specific NLB becomes unhealthy
+
+Replace all Network Load Balancers (NLBs) with Application Load Balancers (ALBs) in each Region. Register the EC2 instances as targets behind the ALBs and use cross-zone load balancing for latency distribution
+
+
