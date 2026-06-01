@@ -39,11 +39,12 @@
 - **Output:** Over-provisioned, Under-provisioned, or Optimized.
 - *Exam Trigger:* "Identify over-provisioned EC2 instances" → Compute Optimizer.
 
-### **5. S3 Storage Lens**
+### **5. Cost Allocation Tags**
 
-- **The Rule:** Organization-wide visibility into S3 storage usage and activity metrics.
-- **Use Case:** Identify buckets with no lifecycle policies, find unused storage.
-- *Exam Trigger:* "Analyze S3 storage usage across organization" → S3 Storage Lens.
+- **The Rule:** Tag resources (e.g., `CostCenter`, `Project`, `Environment`) and **activate** them in the Billing console so spend is broken down **by tag** in Cost Explorer and the CUR.
+- **AWS-generated** (`aws:` prefix) vs **user-defined** (`user:` prefix) tags. Must be activated before they show up in cost reports — **not retroactive**.
+- **Use Case:** Chargeback/showback — attribute cost to a team, project, or environment across accounts.
+- *Exam Trigger:* "Break down / attribute AWS costs by department / project / team" → **Cost Allocation Tags**.
 
 ### **6. AWS Trusted Advisor (Cost Optimization)**
 
@@ -247,6 +248,7 @@
 27. **Centralized backup?** → AWS Backup.
 28. **>10 TB + slow internet?** → Snowball. **Exabyte / whole-datacenter?** → Snowmobile. **Edge computing in remote location?** → Snowcone or Snowball Edge Compute.
 29. **Track migration progress across DMS, MGN, etc.?** → Migration Hub.
+30. **Attribute / break down costs by team, project, or department?** → Cost Allocation Tags.
 
 ---
 

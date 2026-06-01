@@ -166,7 +166,29 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet - Practice (Fill In the Blank)**
+
+1. **Timeout > 15 minutes?** → Fargate ECS batch
+2. **Persistent storage in Lambda?** → not /tmp, EFS or S3
+3. **Persistent *shared* storage across invocations?** → EFS
+4. **Share libraries across many functions?** → Layers
+5. **Eliminate cold starts?** → Provisioned Concurrency
+6. **Stop one function from eating all concurrency?** → Reserved
+7. **Lambda → RDS in private subnet?** → VPC and Interface Endpoint
+8. **Lambda can't access S3/DynamoDB?** → IAM Role needed
+9. **Route async Lambda results (success + failure)?** → Destinations
+10. **Process same event with multiple functions?** → SNS+Lambda Fanout
+11. **Lambda with huge deps / existing container?** → Lamda with ECR?
+12. **Cheapest/simplest API proxy?** → HTTP API
+13. **API needs caching / validation / WAF?** → RESTful API
+14. **Limit/meter API requests per customer?** Usage Plans + API key
+15. **Reduce Lambda calls for repeated requests?** → API Gateway Cachine
+16. **Browser blocks cross-origin API call?** → enable CORS
+17. **User sign-in at the API?** → Cognito/IAM or custom bullshit or Lambda Authorizer.
+18. **Coordinate a multi-step workflow (retries + visual)?** → Step Functions
+19. **Long-running workflow (hours)?** → Standard.
+
+### **Exam Summary Cheat Sheet - Answer Key**
 
 1. **Timeout > 15 minutes?** → NOT Lambda (ECS, Batch, Fargate).
 2. **Persistent storage in Lambda?** → NOT /tmp (EFS or S3).

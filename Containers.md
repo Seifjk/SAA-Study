@@ -202,7 +202,23 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet - Practice (Fill In the Blank)**
+
+1. **Store Docker images privately?** → ECR private.
+2. **Run containers without managing servers?** → Fargate
+3. **Run containers on EC2 with Reserved Instances?** → ECS EC2 Launch Type
+4. **Persistent shared storage for containers?** → EFS/EBS
+5. **Task-level Security Groups?** → awsvpc network mode
+6. **Ensure 10 containers always running?** → ECS
+7. **Scale EC2 instances when tasks pending?** → Capacity Provider + ASG
+8. **Migrate Kubernetes to AWS?** → EKS
+9. **Simple container orchestration (AWS-native)?** → ECS/Fargate
+10. **Scan images for vulnerabilities?** → Basic Scan or Enhanced Scan
+11. **Container needs S3 access?** → Task Role
+12. **ECS agent needs to pull image from ECR?** →  Execution Role
+13. **Deploy container with zero infrastructure management?** → AppRunner
+
+### **Exam Summary Cheat Sheet - Answer Key**
 
 1. **Store Docker images privately?** → ECR.
 2. **Run containers without managing servers?** → Fargate.

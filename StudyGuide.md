@@ -51,8 +51,8 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 | 5 | Sat May 23 | **RECALL DAY** — full quiz across Networking → NoSQL ([Recall.md](./Recall.md)) | [Recall](./Recall.md) | ✅ done |
 | 6 | Sun May 24 | Decoupling | [Decoupling](./Decoupling.md) | ✅ done |
 | 6.5 | Mon May 25 | **DIAGNOSTIC MOCK** (Maarek #1) | — | Mock — **tomorrow** |
-| 7 | Tue May 26 | Serverless | [Serverless](./Serverless.md) | Heavy |
-| 8 | Wed May 27 | Containers | [Containers](./Containers.md) | Medium |
+| 7 | Tue May 26 | Serverless | [Serverless](./Serverless.md) | ✅ done |
+| 8 | Wed May 27 | Containers | [Containers](./Containers.md) | ✅ done |
 | 9 | Thu May 28 | Cost / Migration / DR | [CostOptimization](./CostOptimization.md) | Heavy |
 | 10 | Fri May 29 | CDN / DNS | [ContentDeliveryDNS](./ContentDeliveryDNS.md) | Medium |
 | 11 | Sat May 30 | Security & Identity | [SecurityIdentity](./SecurityIdentity.md) | Heavy |
@@ -213,7 +213,7 @@ Block 2 (50 min): Review EVERY wrong answer — go back to the chapter for each 
 ## Mock Exam Score Tracker
 
 ```
-DIAGNOSTIC (May 25) Maarek #1:  ___% | Weak: _______________ ← BASELINE (~60% content)
+DIAGNOSTIC (May 25) Maarek #1:  _50__% | Weak: _______________ ← BASELINE (~60% content)
 Mock #1 (Day 15) Maarek #2:  ___% | Weak: _______________
 Mock #2 (Day 16) Davis  #1:  ___% | Weak: _______________
 Mock #3 (Day 17) Bonso  #1:  ___% | Weak: _______________
