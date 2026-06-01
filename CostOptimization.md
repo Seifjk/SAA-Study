@@ -2,6 +2,8 @@
 
 *Domain 4 of SAA-C03 = 20% of exam. This is critical.*
 
+> **📌 Scope note:** AWS tests these with *"determine WHEN to use"* — you pick the right cost tool / savings model / migration service / DR pattern, you don't configure them. If it's not here, the exam doesn't ask it.
+
 ### **SECTION 1: COST MANAGEMENT TOOLS**
 
 ### **1. AWS Cost Explorer**
@@ -24,19 +26,26 @@
 - **Actions:** Trigger SNS, apply IAM policy, or stop instances when budget exceeded.
 - *Exam Trigger:* "Alert when monthly spend exceeds $10,000" → AWS Budgets.
 
-### **3. AWS Compute Optimizer**
+### **3. AWS Cost and Usage Report (CUR)**
+
+- **The Rule:** The **most granular** cost data AWS produces — every line item, broken down by hour/day, with resource IDs and cost-allocation tags. Delivered as files to an **S3 bucket**.
+- **Use Case:** Deep, custom billing analysis — query it with **Athena**, load into **Redshift**, or visualize in **QuickSight**. This is the source of truth for chargeback/showback and detailed audits.
+- **vs the others:** **Cost Explorer** = visualize & forecast trends (dashboard). **Budgets** = alert on a threshold. **CUR** = raw, exhaustive line-item export for your own analysis.
+- *Exam Trigger:* "Most detailed/granular billing data", "Export all cost line items to S3 for analysis with Athena/QuickSight", "Hourly cost breakdown by resource and tag" → **Cost and Usage Report (CUR)**.
+
+### **4. AWS Compute Optimizer**
 
 - **The Rule:** ML-based recommendations to **right-size** EC2, Lambda, EBS, and ECS on Fargate.
 - **Output:** Over-provisioned, Under-provisioned, or Optimized.
 - *Exam Trigger:* "Identify over-provisioned EC2 instances" → Compute Optimizer.
 
-### **4. S3 Storage Lens**
+### **5. S3 Storage Lens**
 
 - **The Rule:** Organization-wide visibility into S3 storage usage and activity metrics.
 - **Use Case:** Identify buckets with no lifecycle policies, find unused storage.
 - *Exam Trigger:* "Analyze S3 storage usage across organization" → S3 Storage Lens.
 
-### **5. AWS Trusted Advisor (Cost Optimization)**
+### **6. AWS Trusted Advisor (Cost Optimization)**
 
 - **The Rule:** Scans your account for cost waste and recommends fixes.
 - **Cost Checks:**
@@ -74,6 +83,14 @@
 - **Convertible RI:** Up to **66%** discount; **can change** instance family/OS/tenancy/scope; **cannot sell** on the Marketplace.
 - **Payment (discount order):** All Upfront > Partial Upfront > No Upfront.
 - *Exam Trap:* "Change instance family mid-term" → **Convertible RI**. "Sell unused reservation" → **Standard RI**.
+
+### **The Mix Strategy (Baseline vs Peak) — Common Exam Pattern**
+
+- For a workload with a **steady baseline + variable peaks**, the cost-optimal design is a **blend**, not one purchasing model:
+    - **Reserved Instances / Savings Plans** → cover the always-on **baseline** (deep discount on capacity you'll definitely use).
+    - **On-Demand** → cover normal variable demand above baseline (no commitment).
+    - **Spot Instances** → cover **fault-tolerant** peak/burst capacity (up to 90% off, fine to lose).
+- *Exam Trigger:* "Minimize cost for an app with predictable baseline load and unpredictable spikes" → **RIs/Savings Plans for the baseline + Spot/On-Demand for the peak** (not 100% On-Demand, not 100% Reserved).
 
 ### **Data Transfer Costs — Must Know**
 
@@ -121,12 +138,11 @@
 
 ### **3. Snow Family (Offline Migration)**
 
-- **Snowcone:** 8 TB (HDD) or 14 TB (SSD). Smallest/lightest. Edge computing + data transfer.
-- **Snowball Edge Storage Optimized:** 80 TB. For large-scale data transfer.
-- **Snowball Edge Compute Optimized:** 42 TB + powerful compute (52 vCPUs). For edge processing workloads.
-- **Snowmobile:** 100 PB. Literal shipping-container truck. For exabyte-scale migration.
-- *Rule:* Use when network transfer would take > 1 week.
-- *Exam Trigger:* ">10 TB and slow internet" → **Snowball**. ">100 PB" → **Snowmobile**. "Edge computing in remote location" → **Snowcone** or **Snowball Edge Compute**.
+- **Snowcone:** smallest/lightest (~8–14 TB). Edge computing + small data transfer.
+- **Snowball Edge:** the workhorse (~80 TB-class). **Storage Optimized** = large-scale transfer; **Compute Optimized** = edge processing with onboard compute.
+- **Snowmobile:** exabyte-scale (PB in a shipping-container truck). For massive datacenter evacuations.
+- *Rule:* Use when network transfer would take **> 1 week**. (Pick by **magnitude**, not exact capacity.)
+- *Exam Trigger:* ">10 TB and slow internet" → **Snowball**. "Exabyte / whole-datacenter" → **Snowmobile**. "Edge computing in a remote location" → **Snowcone** or **Snowball Edge Compute**.
 
 ### **4. AWS DataSync**
 
@@ -202,33 +218,35 @@
 
 ### **Exam Summary Cheat Sheet (Memorize This)**
 
-1. **Analyze spending patterns?** → Cost Explorer.
+1. **Analyze spending patterns / forecast?** → Cost Explorer.
 2. **Alert when budget exceeded?** → AWS Budgets.
-3. **Right-size EC2 instances?** → Compute Optimizer.
-4. **Idle resources wasting money?** → Trusted Advisor (needs Business/Enterprise Support for full checks).
-5. **Flexible savings across regions/compute types?** → Compute Savings Plans.
-6. **Highest discount, locked to instance family?** → EC2 Instance Savings Plans.
-7. **Change instance family mid-term RI?** → Convertible RI (Standard cannot).
-8. **Sell unused RI on Marketplace?** → Standard RI only (Convertible cannot).
-9. **RI payment: max discount?** → All Upfront > Partial Upfront > No Upfront.
-10. **Inbound data to AWS?** → FREE.
-11. **Reduce S3/DynamoDB access cost from VPC?** → Gateway VPC Endpoint (free).
-12. **Cross-AZ transfer cost?** → Charged per GB (use same AZ + private IP to avoid).
-13. **Move to AWS with minimal changes?** → Rehost (lift-and-shift, MGN).
-14. **Move DB to managed service, minor changes?** → Replatform (e.g., → RDS).
-15. **Replace with SaaS product?** → Repurchase (drop-and-shop).
-16. **Redesign for cloud-native/serverless?** → Refactor (re-architect).
-17. **Migrate database with minimal downtime?** → DMS (+ SCT if heterogeneous).
-18. **Lift-and-shift servers to EC2?** → Application Migration Service (MGN).
-19. **Transfer files via SFTP to S3?** → Transfer Family.
-20. **Online data transfer (NFS to S3)?** → DataSync.
-21. **Offline data transfer (100 TB)?** → Snow Family.
-22. **Cheapest DR strategy?** → Backup & Restore.
-23. **Near-zero RTO DR?** → Multi-Site Active-Active.
-24. **Restrict services across accounts?** → SCPs (Organizations).
-25. **Centralized backup?** → AWS Backup.
-26. **>10 TB + slow internet?** → Snowball. **>100 PB?** → Snowmobile. **Edge computing in remote location?** → Snowcone or Snowball Edge Compute.
-27. **Track migration progress across DMS, MGN, etc.?** → Migration Hub.
+3. **Most granular line-item billing data exported to S3 (for Athena/QuickSight)?** → Cost and Usage Report (CUR).
+4. **Right-size EC2 instances?** → Compute Optimizer.
+5. **Idle resources wasting money?** → Trusted Advisor (needs Business/Enterprise Support for full checks).
+6. **Flexible savings across regions/compute types?** → Compute Savings Plans.
+7. **Highest discount, locked to instance family?** → EC2 Instance Savings Plans.
+8. **Change instance family mid-term RI?** → Convertible RI (Standard cannot).
+9. **Sell unused RI on Marketplace?** → Standard RI only (Convertible cannot).
+10. **RI payment: max discount?** → All Upfront > Partial Upfront > No Upfront.
+11. **Predictable baseline + unpredictable spikes, lowest cost?** → RIs/Savings Plans for baseline + Spot/On-Demand for peak.
+12. **Inbound data to AWS?** → FREE.
+13. **Reduce S3/DynamoDB access cost from VPC?** → Gateway VPC Endpoint (free).
+14. **Cross-AZ transfer cost?** → Charged per GB (use same AZ + private IP to avoid).
+15. **Move to AWS with minimal changes?** → Rehost (lift-and-shift, MGN).
+16. **Move DB to managed service, minor changes?** → Replatform (e.g., → RDS).
+17. **Replace with SaaS product?** → Repurchase (drop-and-shop).
+18. **Redesign for cloud-native/serverless?** → Refactor (re-architect).
+19. **Migrate database with minimal downtime?** → DMS (+ SCT if heterogeneous).
+20. **Lift-and-shift servers to EC2?** → Application Migration Service (MGN).
+21. **Transfer files via SFTP to S3?** → Transfer Family.
+22. **Online data transfer (NFS to S3)?** → DataSync.
+23. **Offline data transfer (100 TB)?** → Snow Family.
+24. **Cheapest DR strategy?** → Backup & Restore.
+25. **Near-zero RTO DR?** → Multi-Site Active-Active.
+26. **Restrict services across accounts?** → SCPs (Organizations).
+27. **Centralized backup?** → AWS Backup.
+28. **>10 TB + slow internet?** → Snowball. **Exabyte / whole-datacenter?** → Snowmobile. **Edge computing in remote location?** → Snowcone or Snowball Edge Compute.
+29. **Track migration progress across DMS, MGN, etc.?** → Migration Hub.
 
 ---
 

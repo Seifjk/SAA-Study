@@ -1,12 +1,12 @@
 # Containers
 
+> **📌 Scope note:** AWS tests these with *"determine WHEN to use"* — you pick the service/launch type, you don't author task definitions or configure scaling policies. If it's not here, the exam doesn't ask it.
+
 ### **SECTION 1: ECR (ELASTIC CONTAINER REGISTRY)**
 
 *Docker Hub but AWS-managed.*
 
 ### **1. ECR Overview**
-
-> 🔧 *Like:* Docker Hub / GitHub Container Registry — a private container image registry.
 
 - **The Rule:** Fully managed Docker container registry.
 - **Storage:** Stored in S3 (AWS-managed).
@@ -27,8 +27,6 @@
 *AWS-native container orchestration (Like Kubernetes, but simpler).*
 
 ### **1. ECS Overview**
-
-> 🔧 *Like:* Docker Swarm / Nomad — AWS-proprietary container orchestrator (simpler than K8s).
 
 - **The Rule:** Run Docker containers on AWS.
 - **Cluster:** Logical grouping of tasks/services.
@@ -73,24 +71,12 @@
 
 ---
 
-### **3. ECS Components Deep Dive**
+### **3. ECS IAM Roles (The One Distinction That's Tested)**
 
-### **A. Task Definition (The Blueprint)**
+**Task Role vs. Execution Role** — the classic trap:
 
-**Key Parameters:**
-
-- **Image:** ECR or Docker Hub URL.
-- **CPU/Memory:** Task-level or container-level.
-- **Port Mappings:** Host port → Container port.
-- **Environment Variables:** Pass config (Can use Secrets Manager/Parameter Store).
-- **IAM Role:** **Task Role** (Permissions for application) vs. **Execution Role** (Permissions for ECS agent to pull image, write logs).
-- **Logging:** Send logs to CloudWatch Logs.
-- **Volumes:** Attach EFS or bind mounts.
-
-**Task Role vs. Execution Role:**
-
-- **Task Role:** Assigned to the **application** (e.g., Lambda accesses S3 → Task Role allows S3).
-- **Execution Role:** Used by **ECS agent** (Pull image from ECR, Write logs to CloudWatch).
+- **Task Role:** Permissions for the **application** running in the container (e.g., container needs to read S3 → Task Role allows S3).
+- **Execution Role:** Permissions for the **ECS agent** (pull image from ECR, write logs to CloudWatch).
 
 ---
 
@@ -98,8 +84,7 @@
 
 **The Rule:** Ensures a desired number of tasks always run.
 
-- **Desired Count:** number of tasks. **Load Balancer:** ALB/NLB distributes traffic. **Auto Scaling:** scale tasks on CloudWatch metrics (CPU, Memory, ALB Request Count).
-- **Deployment Types:** Rolling Update (gradual, default) or Blue/Green (deploy, test, switch — requires CodeDeploy). **Service Discovery** via AWS Cloud Map.
+- **Desired Count:** number of tasks. **Load Balancer:** ALB/NLB distributes traffic. **Auto Scaling:** scale tasks on CloudWatch metrics (CPU, Memory, ALB Request Count). **Service Discovery** via AWS Cloud Map.
 
 **Exam Trigger:** "Ensure 10 containers always running" → ECS Service.
 
@@ -109,15 +94,7 @@
 
 ### **A. Service Auto Scaling (Task-Level)**
 
-- **Target Tracking:** Maintain target metric (e.g., CPU = 70%).
-- **Step Scaling:** Add/remove tasks based on CloudWatch alarms.
-- **Scheduled Scaling:** Scale at specific times.
-
-**Metrics:**
-
-- ECS Service CPU/Memory
-- ALB Request Count Per Target
-- Custom CloudWatch metrics
+- Scale the **number of tasks** up/down on a CloudWatch metric (ECS CPU/Memory or ALB Request Count Per Target). This is the task-count knob.
 
 ### **B. Cluster Auto Scaling (EC2 Launch Type Only)**
 
@@ -152,9 +129,7 @@
 
 ### **1. EKS Overview**
 
-> 🔧 *Like:* Managed Kubernetes (GKE / AKS) — it literally *is* Kubernetes, AWS runs the control plane.
-
-- **The Rule:** Fully managed Kubernetes control plane — run Kubernetes (industry-standard, open-source orchestration) without managing master nodes.
+- **The Rule:** Fully managed Kubernetes control plane — it literally **is** Kubernetes (AWS runs the master nodes). Pick it when "Kubernetes" is in the question.
 - **Use EKS** for on-prem Kubernetes migration, Kubernetes-specific features (Helm, Operators, custom controllers), or multi-cloud portability. **Use ECS** for AWS-native, simpler, cheaper workloads with no Kubernetes expertise.
 
 ---
@@ -200,8 +175,6 @@
 *The simplest way to run a containerized web app on AWS.*
 
 ### **1. App Runner Overview**
-
-> 🔧 *Like:* Heroku / Google Cloud Run — push a container, get a running URL, zero infra.
 
 - **The Rule:** Point to an ECR image or source repo → App Runner builds, deploys, scales, and load-balances automatically. No Task Definitions, Services, or Clusters.
 - Built-in auto scaling (up on traffic, down to zero); auto-redeploy on new image/commit; HTTPS endpoint out of the box; private VPC access via VPC Connector. Pay per vCPU/memory while active + small pause fee when scaled to zero.

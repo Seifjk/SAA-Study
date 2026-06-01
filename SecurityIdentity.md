@@ -1,5 +1,7 @@
 # Security & Identity
 
+> **📌 Scope note:** AWS tests these with *"determine WHEN to use"* — you pick the right service / policy type / federation method, you don't author policy JSON or call crypto APIs. Domain 1 (Security) is the **heaviest exam domain at 30%**, so this chapter stays broad. If it's not here, the exam doesn't ask it.
+
 ### **SECTION 1: IAM (IDENTITY AND ACCESS MANAGEMENT)**
 
 *The Foundation of AWS Security.*
@@ -13,28 +15,7 @@
 
 ### **2. IAM Policies (The Permissions)**
 
-**Structure:**
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::my-bucket/*",
-      "Condition": {"IpAddress": {"aws:SourceIp": "203.0.113.0/24"}}
-    }
-  ]
-}
-```
-
-**Key Elements:**
-
-- **Effect:** `Allow` or `Deny`.
-- **Action:** What can be done (e.g., `s3:GetObject`, `ec2:*`).
-- **Resource:** Which resources (ARN format).
-- **Condition:** Optional (IP range, MFA, Time, etc.).
+- A policy is a JSON document with **Effect** (Allow/Deny), **Action** (e.g. `s3:GetObject`), **Resource** (ARN), and an optional **Condition** (IP range, MFA, time). You won't write JSON on the exam — you pick *which type* of policy and reason about *what wins* (see §7).
 
 ---
 
@@ -66,7 +47,7 @@
 
 **The Rule:** Temporary credentials (no password), **assumed** by users/services. When assumed, STS returns temporary credentials (Access Key, Secret Key, Session Token) that expire in 15 min – 12 hours.
 
-- **Common Roles:** EC2 Instance Role (via Instance Profile), Lambda Execution Role, Cross-Account Role, Service Role (for AWS services like CodeDeploy).
+- **Common Roles:** EC2 Instance Role (via Instance Profile), Lambda Execution Role, Cross-Account Role, Service Role (a role an AWS service assumes on your behalf).
 
 **Exam Trigger:** "EC2 needs S3 access without hardcoded keys" → IAM Role (Instance Profile).
 
@@ -128,6 +109,18 @@
 
 ---
 
+### **SECTION 3B: AWS DIRECTORY SERVICE (FEDERATING AD)**
+
+*The guide explicitly tests "when to federate a directory service with IAM roles."*
+
+- **AWS Managed Microsoft AD:** A real, AWS-run Active Directory in your VPC. Pick it when you need actual AD features in AWS (LDAP, GPOs, trust with on-prem AD) — e.g. Windows workloads, SQL Server, .NET apps.
+- **AD Connector:** A *proxy* (no directory of its own) that redirects auth to your **existing on-prem AD**. Pick it to let AWS use on-prem AD without copying/syncing users to the cloud.
+- **Simple AD:** Small, standalone, Samba-based directory. Pick it for basic/low-cost needs with no on-prem AD and no advanced AD features.
+
+**Exam Trigger:** "Use existing on-prem Active Directory for AWS" → **AD Connector** (proxy) or set up a **trust** with Managed Microsoft AD. "Need a full managed AD in AWS for Windows/SQL workloads" → AWS Managed Microsoft AD. Then federate to AWS access via **IAM Identity Center** (or SAML → IAM roles).
+
+---
+
 ### **SECTION 4: KMS (KEY MANAGEMENT SERVICE)**
 
 *Managed encryption keys.*
@@ -157,36 +150,23 @@
 
 ---
 
-### **4. Encryption Context**
+### **4. Envelope Encryption**
 
-**The Rule:** Additional authentication data (Key-value pairs) used during encryption.
+**The Rule:** Encrypt your data with a **Data Key**, then encrypt that Data Key with a KMS **Master Key**. The bulk data is encrypted locally; only the small key goes to KMS.
 
-**Use Case:** Ensure data is decrypted only in correct context (e.g., `user-id: 12345`).
+- **Why:** Reduces network overhead — KMS itself can only directly encrypt small payloads (≤4 KB), so large data uses envelope encryption.
 
-**Audit:** Logged in CloudTrail (Helps identify who decrypted what).
-
----
-
-### **5. Envelope Encryption**
-
-**The Rule:** Encrypt data with a **Data Key**, encrypt the Data Key with a **Master Key** (KMS). `GenerateDataKey` returns plaintext + encrypted Data Key — encrypt data locally with the plaintext key, store the encrypted data + encrypted key, discard the plaintext. To decrypt, call KMS `Decrypt` on the encrypted Data Key.
-
-- **Why:** Reduces network overhead — large data encrypted locally, only keys sent to KMS.
-
-**Exam Trigger:** "Encrypt large files efficiently" → Envelope Encryption.
+**Exam Trigger:** "Encrypt large files efficiently with KMS" → Envelope Encryption.
 
 ---
 
-### **6. KMS Limits**
+### **5. KMS Throttling (The One Limit That's Tested)**
 
-- **API Calls:** 5,500/sec (shared across encrypt/decrypt/generate operations) - Soft limit, can request increase.
-- **Throttling:** If exceeded → `ThrottlingException`.
-
-**Exam Trap:** "S3 uploads failing with throttling error, Using SSE-KMS" → KMS API limit exceeded. Solution: Request limit increase or use SSE-S3.
+**Exam Trap:** "S3 uploads failing with throttling errors, using SSE-KMS" → you've hit the **KMS request rate limit** (KMS is called on every object). Solution: request a limit increase, or switch to **SSE-S3** (no per-request KMS call).
 
 ---
 
-### **7. KMS vs. CloudHSM**
+### **6. KMS vs. CloudHSM**
 
 | **Feature** | **KMS** | **CloudHSM** |
 | --- | --- | --- |
@@ -432,6 +412,8 @@
 22. **Deep packet inspection / IDS/IPS in VPC?** → AWS Network Firewall.
 23. **AssumeRoleWithWebIdentity?** → Cognito Identity Pools / social login federation.
 24. **AssumeRoleWithSAML?** → Corporate IdP (Active Directory) federation to AWS.
+25. **Use existing on-prem Active Directory with AWS?** → AD Connector (proxy) or trust with AWS Managed Microsoft AD.
+26. **Full managed AD in AWS (Windows/SQL workloads)?** → AWS Managed Microsoft AD.
 
 ---
 

@@ -1,12 +1,12 @@
 # Content Delivery & DNS
 
+> **📌 Scope note:** AWS tests these with *"determine WHEN to use"* — you pick the routing policy / edge service, you don't configure TTLs, health-check intervals, or write edge functions. If it's not here, the exam doesn't ask it.
+
 ### **SECTION 1: ROUTE 53 (THE DNS SERVICE)**
 
 *Managed DNS and Domain Registration.*
 
 ### **1. Route 53 Overview**
-
-> 🔧 *Like:* Cloudflare DNS / any managed DNS provider — domain registration + DNS routing.
 
 - **The Rule:** Highly available, scalable **DNS service**. Functions: domain registration, DNS routing (domain → IP), and health checks.
 
@@ -104,9 +104,8 @@
 **The Rule:** Monitor endpoint health (HTTP/HTTPS/TCP); Route 53 routes only to healthy endpoints.
 
 - **Types:** Endpoint (monitor an IP/domain), Calculated (combine checks with AND/OR), CloudWatch Alarm (monitor alarm state).
-- **Config:** Interval 30 sec (standard) or 10 sec (fast); failure threshold default 3; optional response-body string matching.
 
-**Exam Trigger:** "Route only to healthy resources" → Health Checks.
+**Exam Trigger:** "Route only to healthy resources" → Health Checks. "Combine multiple health checks into one" → Calculated.
 
 ---
 
@@ -195,9 +194,7 @@
 
 ### **C. Field-Level Encryption**
 
-- Encrypts specific sensitive POST fields (credit card, SSN) at the edge using a public key **before** sending to origin — only the origin's private key can decrypt.
-
-**Exam Trigger:** "Encrypt sensitive form data at edge" → Field-Level Encryption.
+- Encrypts specific sensitive POST fields (credit card, SSN) at the edge so only the origin can decrypt them. **Exam Trigger:** "Encrypt specific sensitive form fields at the edge" → Field-Level Encryption. (Niche — recognize the name, don't memorize internals.)
 
 ---
 
@@ -207,35 +204,13 @@
 
 ### **A. CloudFront Functions**
 
-- **Runtime:** Lightweight **JavaScript** only.
-- **Event Types:** **Viewer request** and **Viewer response** ONLY.
-- **Execution:** Sub-millisecond startup, very fast.
-- **Scale:** Millions of requests per second.
-- **Cost:** Very cheap (~1/6th the cost of Lambda@Edge).
-- **Limitations:** No network access, No file system access, No request body access.
-
-**Use Cases:**
-- Header manipulation (Add/Modify/Delete headers).
-- URL rewrites and redirects.
-- Cache key normalization (Lowercase, strip query strings).
-- Simple auth (JWT validation, token checking).
+- Lightweight **JavaScript**, **viewer request/response only**, sub-ms, cheapest. **No network access, no request-body access.** For simple transforms: header manipulation, URL rewrites/redirects, cache-key normalization, simple token checks.
 
 ---
 
 ### **B. Lambda@Edge**
 
-- **Runtime:** **Node.js** and **Python**.
-- **Event Types:** **All 4 event types** (Viewer request, Viewer response, Origin request, Origin response).
-- **Execution:** Up to **5 seconds** (Viewer triggers) or **30 seconds** (Origin triggers).
-- **Scale:** Thousands of requests per second (per region).
-- **Capabilities:** Network access, Read/Write request body, Access to external services.
-
-**Use Cases:**
-- Complex authentication and authorization (OIDC, SAML).
-- A/B testing with full logic.
-- Dynamic origin selection (Route to different origins based on request).
-- Content generation at the edge (HTML rendering, image manipulation).
-- Bot detection and advanced security.
+- **Node.js/Python**, runs on **all 4 event types** (incl. origin request/response), **can make network calls and read/write the request body**. For complex logic: full auth (OIDC/SAML), dynamic origin selection, content generation at the edge.
 
 ---
 

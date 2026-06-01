@@ -1,46 +1,32 @@
 # Monitoring & Audit
 
+> **📌 Scope note:** AWS tests these with *"determine WHEN to use"* — the whole skill here is **which tool answers which question** (audit vs config-state vs metrics vs network vs tracing). You don't operate the agent or write patch baselines. If it's not here, the exam doesn't ask it.
+
 ### **SECTION 1: CLOUDWATCH (THE MONITORING SERVICE)**
 
 *Metrics, Logs, Alarms, and Events.*
 
 ### **1. CloudWatch Overview**
 
-> 🔧 *Like:* Prometheus + Grafana — metrics, logs, dashboards, and alerting.
-
-- **The Rule:** Monitor AWS resources and applications via **metrics, logs, alarms, and dashboards**.
-- **Scope:** Regional service.
+- **The Rule:** Monitor AWS resources and applications via **metrics, logs, alarms, and dashboards**. Regional service.
 
 ---
 
 ### **2. CloudWatch Metrics**
 
-**The Rule:** Time-series data points (CPU, Network, Disk, etc.).
+**The Rule:** Time-series data points (CPU, Network, etc.). AWS services publish built-in metrics automatically; you can push **Custom Metrics** for app/business data.
 
-**Built-In Metrics (AWS Services):**
+- **The one tested gotcha:** EC2 default metrics are hypervisor-level (CPU, network, disk-ops) and **do NOT include memory or in-guest disk usage** — install the **CloudWatch Agent** to get those.
 
-- **EC2:** CPUUtilization, NetworkIn/Out, StatusCheckFailed (Every 5 minutes by default, 1 minute with Detailed Monitoring).
-- **EBS:** VolumeReadOps, VolumeWriteOps, BurstBalance.
-- **ELB:** RequestCount, TargetResponseTime, UnHealthyHostCount.
-- **RDS:** DatabaseConnections, ReadLatency, FreeStorageSpace.
-
-**Custom Metrics:**
-
-- Application-level metrics via the PutMetricData API (queue depth, user logins, business metrics). Resolution: Standard 1 min, High Resolution 1 sec (higher cost). Dimensions are key-value filters (e.g., `InstanceId=i-1234`).
-- **EC2 Memory/Disk:** NOT in default metrics (only hypervisor-level like CPU) — install the **CloudWatch Agent** to send memory/disk metrics.
-
-**Exam Trigger:** "Monitor EC2 memory usage" → CloudWatch Agent (Custom Metrics).
+**Exam Trigger:** "Monitor EC2 memory/disk usage" → CloudWatch Agent (Custom Metrics).
 
 ---
 
 ### **3. CloudWatch Logs**
 
-**The Rule:** Store, monitor, and analyze log files.
+**The Rule:** Store, monitor, and analyze log files (from EC2 via the Agent, Lambda automatically, VPC Flow Logs, CloudTrail, etc.). Retention is configurable (default never expire).
 
-- **Sources:** EC2 (via CloudWatch Agent), Lambda (automatic), ECS/EKS, VPC Flow Logs, CloudTrail, Route 53 Query Logs.
-- **Structure:** Log Group = container for log streams (e.g., `/aws/lambda/my-function`); Log Stream = log events from a single source.
-- **Retention:** Default never expire; configurable 1 day – 10 years.
-- **Log Insights:** Query logs with SQL-like syntax (e.g., "find all 5xx errors in last hour").
+- **Logs Insights:** Query logs with a SQL-like syntax (e.g., "find all 5xx errors in the last hour").
 
 **Exam Trigger:** "Query application logs for errors" → CloudWatch Logs Insights.
 
@@ -61,13 +47,11 @@
 
 ### **5. CloudWatch Events / EventBridge**
 
-**The Rule:** Event-driven automation — react to AWS events or schedule tasks. **EventBridge = CloudWatch Events 2.0** (more features, 3rd-party SaaS integrations).
+**The Rule:** Event-driven automation — react to AWS events (e.g. EC2 state change, S3 object created) or run tasks on a schedule. **EventBridge = CloudWatch Events 2.0** (adds 3rd-party SaaS sources + a schema registry). Targets include Lambda, SNS/SQS, Step Functions, ECS tasks.
 
-- **Sources:** AWS services (EC2 state change, S3 object created), custom apps (PutEvents API), SaaS partners (Datadog, Zendesk, PagerDuty).
-- **Targets:** Lambda, SNS/SQS, Step Functions, ECS Task, CodePipeline, Kinesis.
-- **Scheduled Events (cron/rate):** Run tasks on a schedule for backup automation, periodic Lambda, start/stop EC2.
+- **Scheduled Events (cron/rate):** run tasks on a schedule — periodic Lambda, scheduled start/stop of EC2, backup automation.
 
-**Exam Trigger:** "Run Lambda every hour" → EventBridge Scheduled Rule.
+**Exam Trigger:** "Run Lambda every hour" → EventBridge Scheduled Rule. "React to an AWS service event" → EventBridge Rule.
 
 ---
 
@@ -77,57 +61,14 @@
 
 ---
 
-### **7. CloudWatch Agent (Deep Dive)**
+### **7. CloudWatch Log Features (Recognize the Names → Pick the Tool)**
 
-**The Rule:** Collects **custom metrics** (memory, disk, swap) and **logs** (app/system logs) from EC2/on-prem servers. Install the agent, configure `config.json` for which metrics/logs to collect, and attach an IAM Role with send permissions.
+These appear on the exam as one-line "which feature" triggers. You don't configure them — you recognize the name:
 
-- **Unified Agent** (metrics + logs, recommended) vs **Logs Agent** (logs only, legacy).
-
-**Exam Trigger:** "Monitor EC2 disk usage" → CloudWatch Agent.
-
----
-
-### **8. CloudWatch Logs Subscription Filters**
-
-**The Rule:** Stream log data in **real-time** from CloudWatch Logs to a destination. Define a **filter pattern** on a Log Group; matching events stream to the destination.
-
-- **Destinations:** Lambda (process/transform), Kinesis Data Streams (custom pipeline), Kinesis Data Firehose (to S3/Redshift/OpenSearch), OpenSearch (log analytics).
-- Up to **2 subscription filters per Log Group** (use Kinesis Data Streams to fan out beyond that).
-
-**Exam Trigger:** "Real-time log processing" or "Stream logs to OpenSearch" --> CloudWatch Logs Subscription Filter.
-
----
-
-### **9. CloudWatch Metric Filters**
-
-**The Rule:** Extract metric data from log events using **filter patterns** — turn log patterns into custom metrics, then alarm on them. Define a filter pattern on a Log Group (e.g., `"404"`, `"ERROR"`); CloudWatch creates a custom metric incremented on each match; create an alarm on it.
-
-- **Use Cases:** Count 404s / failed logins / app error patterns → alarm above a threshold.
-
-**Exam Trigger:** "Create alarm based on log pattern" or "Alert when error count in logs exceeds threshold" --> CloudWatch Metric Filter + Alarm.
-
----
-
-### **10. CloudWatch Contributor Insights**
-
-**The Rule:** Identify the **top-N contributors** to a metric using log data (e.g., top 10 IP addresses hitting your API, top accounts generating errors).
-
-- **Real-time analysis** of log data using rules you define.
-- Works with CloudWatch Logs and VPC Flow Logs.
-
-**Exam Trigger:** "Find top contributors to high API traffic" or "Identify top IPs causing errors" --> CloudWatch Contributor Insights.
-
----
-
-### **11. CloudWatch Synthetics**
-
-**The Rule:** Create **Canary scripts** that monitor your APIs and websites on a schedule.
-
-- Test endpoint **availability and latency** before real users notice issues.
-- Scripts written in Node.js or Python (runs on Lambda under the hood).
-- Can monitor URLs, REST APIs, and multi-step workflows.
-
-**Exam Trigger:** "Proactively monitor API availability" or "Test website latency on a schedule" --> CloudWatch Synthetics Canaries.
+- **Subscription Filter:** stream matching log events in **real-time** to Lambda / Kinesis / Firehose / OpenSearch. **Trigger:** "real-time log processing" / "stream logs to OpenSearch."
+- **Metric Filter:** turn a log pattern (e.g. `"ERROR"`, `"404"`) into a custom metric, then **alarm on it**. **Trigger:** "create an alarm based on a log pattern."
+- **Contributor Insights:** find the **top-N contributors** to a metric (e.g. top IPs hitting your API). **Trigger:** "identify top IPs causing errors."
+- **Synthetics (Canaries):** scheduled scripts that **proactively** test endpoint availability/latency before users notice. **Trigger:** "proactively monitor API availability."
 
 ---
 
@@ -137,9 +78,7 @@
 
 ### **1. X-Ray Overview**
 
-- **The Rule:** Analyze and debug distributed apps — trace requests across **microservices** (Lambda, API Gateway, ECS, EC2, Elastic Beanstalk). The **Service Map** visualizes architecture, connections, latency, errors, and fault rates.
-- **Capabilities:** End-to-end request tracing; segments per service + subsegments for external calls (DB, HTTP); annotations (indexed key-value pairs for filtering); groups (filter by annotation/error type).
-- **Integration:** Lambda and API Gateway have built-in integration; install the **X-Ray Daemon** on EC2/ECS.
+- **The Rule:** Analyze and debug distributed apps — trace requests end-to-end across **microservices** (Lambda, API Gateway, ECS, EC2). The **Service Map** visualizes architecture, connections, latency, errors, and fault rates. This is the SAA answer whenever a question is about *finding latency/bottlenecks across services*.
 
 **Exam Triggers:**
 
@@ -237,9 +176,7 @@
 
 ### **2. SSM Parameter Store**
 
-**The Rule:** Centralized store for configuration data and secrets. Organize parameters in paths (e.g., `/app/prod/db-password`). Integrates with Lambda, ECS, CloudFormation, CodeBuild.
-
-- **Standard:** Free, max 10,000 parameters, 4 KB each. **Advanced:** Paid, max 100,000 parameters, 8 KB each, parameter policies (TTL, expiration notifications).
+**The Rule:** Centralized store for configuration data and secrets, organized in paths (e.g. `/app/prod/db-password`). Free Standard tier; the decision that's tested is Parameter Store **vs Secrets Manager** (below).
 
 **Parameter Store vs. Secrets Manager:**
 
@@ -263,19 +200,10 @@
 
 ---
 
-### **4. SSM Run Command**
+### **4. SSM Run Command & Patch Manager**
 
-**The Rule:** Execute commands on EC2/on-prem servers **remotely** (no SSH) — install software on many instances at once, restart services, collect inventory.
-
-**Exam Trigger:** "Run script on 50 EC2 instances" → SSM Run Command.
-
----
-
-### **5. SSM Patch Manager**
-
-**The Rule:** Automate OS patching for EC2/on-prem servers — define a **Patch Baseline** (which patches), set a **Maintenance Window** (when), and Patch Manager applies them.
-
-**Exam Trigger:** "Automate OS patching" → SSM Patch Manager.
+- **Run Command:** execute a command/script across many EC2/on-prem servers at once, no SSH. **Trigger:** "run a script on 50 EC2 instances" → Run Command.
+- **Patch Manager:** automate OS patching across your fleet on a schedule. **Trigger:** "automate OS patching" → Patch Manager.
 
 ---
 
