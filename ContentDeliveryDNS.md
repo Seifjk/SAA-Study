@@ -286,7 +286,29 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Map root domain to ALB?** →
+2. **Route 20% traffic to new version?** →
+3. **Route to fastest region?** →
+4. **Automatic failover to DR site?** →
+5. **Show different content by country?** →
+6. **Serve S3 content via CloudFront, Block direct access?** →
+7. **Restrict access to premium content?** →
+8. **Block access from specific countries?** →
+9. **Cache static content globally?** →
+10. **Static IP, UDP, Gaming, Fast failover?** →
+11. **Replicate S3 to specific region?** →
+12. **Manually clear CloudFront cache?** →
+13. **Simple URL rewrite or header manipulation at edge?** →
+14. **Complex edge logic with network access or body manipulation?** →
+15. **CloudFront high availability / origin failover?** →
+16. **Internal DNS within a VPC?** →
+17. **Internet-facing DNS resolution?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Map root domain to ALB?** → Alias Record (NOT CNAME).
 2. **Route 20% traffic to new version?** → Weighted Routing.

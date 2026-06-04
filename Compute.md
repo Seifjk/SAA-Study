@@ -183,7 +183,27 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Lowest latency between instances?** →
+2. **Maximize fault isolation?** →
+3. **Cheapest option for fault-tolerant batch jobs?** →
+4. **T2 instance slow during business hours?** →
+5. **Per-socket software licensing?** →
+6. **HPC with sub-millisecond latency?** →
+7. **Preserve private IP during failover?** →
+8. **Resume app with RAM intact?** →
+9. **Auto-install software at launch?** →
+10. **EC2 needs S3 access without hardcoded keys?** →
+11. **Guarantee capacity in a specific AZ?** →
+12. **Static public IP that survives stop/start?** →
+13. **Secure instance metadata / prevent SSRF?** →
+14. **SSH to EC2 without key pairs?** →
+15. **ASG launch config?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Lowest latency between instances?** → Cluster Placement Group.
 2. **Maximize fault isolation?** → Spread Placement Group.

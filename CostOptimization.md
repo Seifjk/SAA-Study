@@ -85,6 +85,30 @@
 - **Payment (discount order):** All Upfront > Partial Upfront > No Upfront.
 - *Exam Trap:* "Change instance family mid-term" → **Convertible RI**. "Sell unused reservation" → **Standard RI**.
 
+### **Savings Plans vs Reserved Instances — Clearing Up the Confusion**
+
+The one-line difference: **an RI is a commitment to a *type of instance*; a Savings Plan is a commitment to an *amount of money per hour* (\$/hr).** Both give ~the same discount (up to ~72%) for a 1- or 3-year commitment — they just commit to *different things*.
+
+- **Reserved Instance =** "I promise to run **this kind of instance** (e.g. an `m5.large` in us-east-1) for 1–3 years." The discount only applies to matching instances. **A Standard RI can also reserve *capacity*** in an AZ (guarantees the instance is available). RIs are an *EC2/RDS/ElastiCache/Redshift* thing.
+- **Savings Plan =** "I promise to spend **at least \$X per hour** on compute for 1–3 years." AWS auto-applies the discount to whatever compute you run up to that \$/hr. **No instance to pick, no capacity reservation** — just a dollar commitment.
+
+| | **Reserved Instance** | **Savings Plan** |
+| --- | --- | --- |
+| **You commit to** | A specific instance type/family | A \$/hr spend amount |
+| **Discount** | Up to ~72% | About the same |
+| **Flexibility** | Low (Standard) / Medium (Convertible) | **High** — auto-applies across usage |
+| **Covers Fargate / Lambda?** | **No** | **Yes** (Compute SP) |
+| **Reserves AZ capacity?** | **Yes** (Standard RI) | **No** |
+| **Can sell on Marketplace?** | Yes (Standard only) | **No** |
+
+**How to choose on the exam:**
+- "Need to **guarantee capacity** in an AZ" → **Standard RI** (Savings Plans never reserve capacity).
+- "Want **flexibility** across instance families/regions, or covers **Fargate/Lambda**" → **Compute Savings Plan**.
+- "Steady-state, one fixed instance type, **highest discount**, might **sell** it later" → **Standard RI**.
+- "Simplest way to discount **all** compute without managing reservations" → **Savings Plan**.
+
+> **Mental model:** RI = you reserve *the seat*. Savings Plan = you prepay *the bill*. Default to a **Savings Plan** for flexibility; reach for an **RI** only when you specifically need capacity reservation or want to resell.
+
 ### **The Mix Strategy (Baseline vs Peak) — Common Exam Pattern**
 
 - For a workload with a **steady baseline + variable peaks**, the cost-optimal design is a **blend**, not one purchasing model:
@@ -217,7 +241,42 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Analyze spending patterns / forecast?** → Cost Explorer
+2. **Alert when budget exceeded?** → Budgets
+3. **Most granular line-item billing data exported to S3 (for Athena/QuickSight)?** → CUR
+4. **Right-size EC2 instances?** → Compute Save 
+5. **Idle resources wasting money?** → Savings Plan
+6. **Flexible savings across regions/compute types?** → RI Convertible
+7. **Highest discount, locked to instance family?** → Spot instances
+8. **Change instance family mid-term RI?** → RI Flexible
+9. **Sell unused RI on Marketplace?** → Standard RI
+10. **RI payment: max discount?** → Upfront
+11. **Predictable baseline + unpredictable spikes, lowest cost?** → RI + Spot instances
+12. **Inbound data to AWS?** → Free
+13. **Reduce S3/DynamoDB access cost from VPC?** → VPC Endpoint
+14. **Cross-AZ transfer cost?** → per hour and per gb
+15. **Move to AWS with minimal changes?** → Rehost, lift and shift.
+16. **Move DB to managed service, minor changes?** → Rehost
+17. **Replace with SaaS product?** → Replatform
+18. **Redesign for cloud-native/serverless?** → Redesign
+19. **Migrate database with minimal downtime?** → DMS
+20. **Lift-and-shift servers to EC2?** → Rehost , use MGN
+21. **Transfer files via SFTP to S3?** → Transfer Family
+22. **Online data transfer (NFS to S3)?** → Data Sync
+23. **Offline data transfer (100 TB)?** → Snof Family
+24. **Cheapest DR strategy?** → snapshots and bs
+25. **Near-zero RTO DR?** → multi AZ Active-Active
+26. **Restrict services across accounts?** → SCP on AWS organizations
+27. **Centralized backup?** → AWS Backup 
+28. **>10 TB + slow internet? / Exabyte / whole-datacenter? / Edge computing in remote location?** → Snowmobile
+29. **Track migration progress across DMS, MGN, etc.?** → Hub
+30. **Attribute / break down costs by team, project, or department?** → use tags
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Analyze spending patterns / forecast?** → Cost Explorer.
 2. **Alert when budget exceeded?** → AWS Budgets.

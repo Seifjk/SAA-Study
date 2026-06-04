@@ -386,7 +386,38 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **EC2 needs S3 access without keys?** →
+2. **Explicit Deny vs. Allow?** →
+3. **Auto-rotate RDS password?** →
+4. **Free secret storage?** →
+5. **User sign-up/sign-in?** →
+6. **Mobile app uploads to S3 without backend?** →
+7. **Block SQL injection?** →
+8. **Rate limit API?** →
+9. **Free DDoS protection?** →
+10. **Detect compromised instances?** →
+11. **Scan EC2 for vulnerabilities?** →
+12. **Discover PII in S3?** →
+13. **Cross-account S3 access?** →
+14. **Encrypt large files efficiently?** →
+15. **Free SSL/TLS for ALB or CloudFront?** →
+16. **CloudFront HTTPS with custom domain?** →
+17. **SSL certificate on EC2?** →
+18. **FIPS 140-2 Level 3 / dedicated HSM?** →
+19. **SSO across multiple AWS accounts?** →
+20. **Centralized security findings dashboard?** →
+21. **Manage WAF rules across all accounts?** →
+22. **Deep packet inspection / IDS/IPS in VPC?** →
+23. **AssumeRoleWithWebIdentity?** →
+24. **AssumeRoleWithSAML?** →
+25. **Use existing on-prem Active Directory with AWS?** →
+26. **Full managed AD in AWS (Windows/SQL workloads)?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **EC2 needs S3 access without keys?** → IAM Role (Instance Profile).
 2. **Explicit Deny vs. Allow?** → Deny wins.

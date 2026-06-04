@@ -242,7 +242,29 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Scale read workload?** →
+2. **High availability for production?** →
+3. **Standby is not accessible** →
+4. **Standby is accessible** →
+5. **Encrypt existing unencrypted DB?** →
+6. **Eliminate DB password?** →
+7. **Auto-scale storage?** →
+8. **5x faster MySQL?** →
+9. **Variable/unpredictable load?** →
+10. **Global reads, DR with RTO < 1 min?** →
+11. **Lambda exhausting DB connections?** →
+12. **Quickly undo bad data change?** →
+13. **Create test copy of production DB fast?** →
+14. **Need OS-level access on managed DB?** →
+15. **Zero-downtime DB upgrade?** →
+16. **DB performance bottleneck analysis?** →
+17. **Alert on DB failover/maintenance?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Scale read workload?** → Read Replicas (Async).
 2. **High availability for production?** → Multi-AZ (Sync, auto-failover).

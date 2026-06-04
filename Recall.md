@@ -2,7 +2,7 @@
 
 > Cover the right column with your hand. Read the trigger, say the answer, slide your hand down. Whole sheet in 20-30 min. Mark anything you missed and re-read that chapter's section tomorrow.
 >
-> Covers: **Networking · Compute · HA · Storage · DB Relational · DB NoSQL**. Update as new chapters land.
+> Covers all 14 chapters: **Networking · Compute · HA · Storage · DB Relational · DB NoSQL · Decoupling · Serverless · Containers · CDN/DNS · Security & Identity · Monitoring & Audit · Cost/Migration/DR · Additional Services**.
 
 ---
 
@@ -241,3 +241,185 @@
 **The "queue is never the destination" model:** Producer → SQS → Consumer fleet (Lambda / EC2 ASG / ECS-Fargate / on-prem) → final data store (DB / S3 / API). The queue is a **shock absorber** between spiky producers and steady consumers — scale consumers on `ApproximateNumberOfMessagesVisible`.
 
 **🔴 = the 2 you missed on Day 6 (May 24). Drill these first.**
+
+---
+
+## 8. Serverless — Lambda / API Gateway / Step Functions
+
+| Trigger | Answer |
+|---|---|
+| Task > 15 minutes | **NOT Lambda** (ECS / Batch / Fargate) |
+| Lambda persistent storage | **NOT /tmp** (EFS or S3) — /tmp is ephemeral |
+| Persistent **shared** storage across invocations | **Mount EFS** (Lambda must be in VPC) |
+| Share libraries across many functions | **Layers** |
+| Eliminate cold starts | **Provisioned Concurrency** (NOT Reserved) |
+| Stop one function eating all concurrency | **Reserved Concurrency** |
+| Lambda → RDS in private subnet | **Attach Lambda to VPC** (gets ENI; + NAT for internet) |
+| Lambda can't access S3/DynamoDB | Fix the **Execution Role** IAM permissions |
+| Route async results (success + failure) | **Destinations** (DLQ = failures only) |
+| Lambda invoked by S3/SNS/EventBridge | **Async** (retries 2×, then DLQ) |
+| Lambda reads from Kinesis/DynamoDB Stream/SQS | **Event Source Mapping** (Lambda polls) |
+| Huge deps / existing container as Lambda | **Container image** from ECR (≤10 GB) |
+| Cheapest / simplest API proxy | **HTTP API** (~70% cheaper than REST) |
+| API needs caching / validation / WAF | **REST API** |
+| Limit/meter API requests per customer | **Usage Plans + API Keys** |
+| Browser blocks cross-origin API call | Enable **CORS** |
+| User sign-in at the API | **Cognito User Pools** · custom token logic → **Lambda Authorizer** |
+| Coordinate multi-step workflow (retries + visual) | **Step Functions** |
+| Long-running workflow (hours/days) | **Standard** · high-volume short → **Express** (≤5 min) |
+
+---
+
+## 9. Containers — ECS / EKS / Fargate / ECR
+
+| Trigger | Answer |
+|---|---|
+| Store Docker images privately | **ECR** (+ Image Scanning for vulnerabilities) |
+| Run containers without managing servers | **Fargate** |
+| Run containers on EC2 (use RIs/Spot) | **ECS EC2 Launch Type** |
+| Zero infrastructure management, simplest | **App Runner** (simpler than Fargate) |
+| Persistent shared storage for containers | **EFS** |
+| Task-level Security Groups | **awsvpc** network mode |
+| Ensure N containers always running | **ECS Service** (Desired Count = N) |
+| Scale EC2 hosts when tasks are pending | **Capacity Provider + ASG** |
+| Migrate Kubernetes to AWS | **EKS** |
+| Simple AWS-native orchestration | **ECS** |
+| Container needs S3/DynamoDB access | **Task Role** (NOT Execution Role) |
+| ECS agent needs to pull image from ECR | **Execution Role** (NOT Task Role) |
+
+*Task Role vs Execution Role: **Task Role** = what your app code can do (S3, DynamoDB) · **Execution Role** = what ECS needs to start the task (pull ECR image, write logs).*
+
+---
+
+## 10. Content Delivery & DNS — Route 53 / CloudFront / Global Accelerator
+
+| Trigger | Answer |
+|---|---|
+| Map root/apex domain to ALB | **Alias Record** (NOT CNAME) |
+| Route % of traffic to new version | **Weighted Routing** |
+| Route to fastest region | **Latency-Based Routing** |
+| Automatic failover to DR site | **Failover Routing** (requires Health Check) |
+| Different content by country | **Geolocation Routing** |
+| Serve S3 via CloudFront, block direct access | **Origin Access Control (OAC)** |
+| Restrict access to premium content | **Signed URLs / Signed Cookies** |
+| Block access from specific countries | **CloudFront Geo Restriction** |
+| Cache static content globally | **CloudFront** |
+| Static IP, UDP, gaming, fast failover | **Global Accelerator** |
+| Replicate S3 to a region (not edge cache) | **S3 CRR** (NOT CloudFront) |
+| Manually clear CloudFront cache | **Invalidation** (costs $; prefer versioned filenames) |
+| Simple URL rewrite / header tweak at edge | **CloudFront Functions** (sub-ms, viewer only) |
+| Complex edge logic (network/body access) | **Lambda@Edge** (all 4 events, up to 30s) |
+| CloudFront origin failover / HA | **Origin Groups** (primary + secondary) |
+| Internal DNS within a VPC | **Route 53 Private Hosted Zone** (associate with VPC) |
+
+---
+
+## 11. Security & Identity — IAM / KMS / Cognito / WAF
+
+| Trigger | Answer |
+|---|---|
+| EC2 needs S3 access without keys | **IAM Role** (Instance Profile) |
+| Explicit Deny vs Allow | **Deny always wins** |
+| Auto-rotate RDS password | **Secrets Manager** |
+| Free secret storage | **Parameter Store (Standard)** |
+| User sign-up / sign-in | **Cognito User Pools** |
+| Mobile app uploads to S3 without backend | **Cognito Identity Pools** (temp AWS creds) |
+| Block SQL injection / rate-limit API | **WAF** |
+| Free DDoS protection | **Shield Standard** |
+| Detect compromised instances / threats | **GuardDuty** |
+| Scan EC2/ECR for vulnerabilities | **Inspector** |
+| Discover PII in S3 | **Macie** |
+| Cross-account S3 access | **Bucket Policy** (resource-based) |
+| Encrypt large files efficiently | **Envelope Encryption (KMS)** |
+| Free SSL/TLS for ALB / CloudFront | **ACM** (CloudFront → must be **us-east-1**) |
+| SSL cert on EC2 | **NOT ACM** — CloudHSM or import manually |
+| FIPS 140-2 Level 3 / dedicated HSM | **CloudHSM** |
+| SSO across multiple AWS accounts | **IAM Identity Center** |
+| Centralized security findings | **Security Hub** |
+| Manage WAF rules across all accounts | **Firewall Manager** |
+| Federate corporate AD (SAML) | **AssumeRoleWithSAML** |
+| Social login / web identity | **AssumeRoleWithWebIdentity** (Cognito Identity Pools) |
+| Use existing on-prem AD with AWS | **AD Connector** (proxy) or trust with **Managed Microsoft AD** |
+| Full managed AD for Windows/SQL | **AWS Managed Microsoft AD** |
+
+---
+
+## 12. Monitoring & Audit — CloudWatch / CloudTrail / Config
+
+| Trigger | Answer |
+|---|---|
+| Monitor EC2 memory / disk (not default) | **CloudWatch Agent** (custom metrics) |
+| Alert when metric crosses threshold | **CloudWatch Alarm** |
+| Run Lambda on a schedule | **EventBridge Scheduled Rule** |
+| Who did what / API call audit | **CloudTrail** (enable Data Events for object-level) |
+| Was a resource configured a certain way? | **AWS Config** (config history) |
+| Enforce + auto-fix resource compliance | **Config Rule + Remediation** |
+| Query logs for patterns | **CloudWatch Logs Insights** |
+| Alarm on a log pattern | **Metric Filter + Alarm** |
+| Stream logs to OpenSearch real-time | **Logs Subscription Filter** |
+| Debug latency across microservices | **X-Ray** (Service Map) |
+| Identify underutilized resources | **Trusted Advisor** |
+| **CloudWatch vs CloudTrail vs Config** | CloudWatch = **performance/metrics/logs** · CloudTrail = **who made API calls** · Config = **resource config state + compliance** |
+
+---
+
+## 13. Cost / Migration / DR
+
+| Trigger | Answer |
+|---|---|
+| Analyze spending / forecast | **Cost Explorer** |
+| Alert when budget exceeded | **AWS Budgets** |
+| Most granular line-item billing → S3 | **Cost and Usage Report (CUR)** |
+| Right-size EC2 | **Compute Optimizer** |
+| Flexible savings across regions/compute | **Compute Savings Plans** |
+| Highest discount, locked to family | **EC2 Instance Savings Plans / Standard RI** |
+| Change instance family mid-term | **Convertible RI** |
+| Sell unused RI | **Standard RI only** (Convertible can't) |
+| Predictable baseline + spiky peaks, cheapest | **RIs/Savings Plans for baseline + Spot/On-Demand for peak** |
+| Inbound data transfer to AWS | **FREE** |
+| Cut S3/DynamoDB cost from VPC | **Gateway VPC Endpoint** (free) |
+| Lift-and-shift to AWS, minimal change | **Rehost** (MGN) |
+| Move DB to managed service | **Replatform** (e.g. → RDS) |
+| Replace with SaaS | **Repurchase** |
+| Re-architect cloud-native | **Refactor** |
+| Migrate DB minimal downtime | **DMS** (+ SCT if heterogeneous) |
+| SFTP/FTP files to S3 | **Transfer Family** |
+| Online NFS/SMB → S3 sync | **DataSync** |
+| Offline bulk transfer (TB-PB) | **Snow Family** (Snowball / Snowmobile / Snowcone) |
+| Cheapest DR | **Backup & Restore** |
+| Near-zero RTO DR | **Multi-Site Active-Active** |
+| Centralized cross-account backup | **AWS Backup** |
+| Restrict services across accounts | **SCPs (Organizations)** |
+| Track migration progress | **Migration Hub** |
+| Break down costs by team/project | **Cost Allocation Tags** |
+
+*DR order (cheapest/slowest → priciest/fastest):* **Backup & Restore → Pilot Light → Warm Standby → Multi-Site Active-Active.**
+
+---
+
+## 14. Additional Services — Analytics / IaC / ML
+
+| Trigger | Answer |
+|---|---|
+| Query S3 data with SQL | **Athena** |
+| Data warehouse / OLAP | **Redshift** (query S3 → **Redshift Spectrum**) |
+| ETL / transform data | **Glue** (auto-schema → **Crawlers**; metadata → **Data Catalog**) |
+| Reduce Athena cost | **Parquet/ORC columnar + partitioning** |
+| Big data / Spark / Hadoop | **EMR** |
+| Dashboards / BI | **QuickSight** |
+| Data lake governance / column security | **Lake Formation** |
+| Full-text search / log analytics | **OpenSearch** |
+| Infrastructure as Code | **CloudFormation** (multi-account/region → **StackSets**) |
+| Detect manual infra changes | **CloudFormation Drift Detection** |
+| Deploy web app, minimal management | **Elastic Beanstalk** |
+| GraphQL / real-time data sync | **AppSync** |
+| Migrate Kafka to AWS | **MSK** (new streaming app → **Kinesis**) |
+| Long-running batch jobs in Docker | **AWS Batch** (NOT Lambda) |
+| Analyze images / detect faces | **Rekognition** |
+| Extract text from documents (OCR) | **Textract** |
+| Sentiment / NLP | **Comprehend** |
+| Build chatbot | **Lex** |
+| Custom ML model | **SageMaker** |
+| AWS services on-premises | **Outposts** |
+| Low latency to a specific city | **Local Zones** |
+| 5G edge computing | **Wavelength** |

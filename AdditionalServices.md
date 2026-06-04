@@ -463,7 +463,41 @@ D. Use Kinesis Data Streams with one stream for all events and filter in each co
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **"Query S3 data with SQL"?** -->
+2. **"Data warehouse / OLAP"?** -->
+3. **"Query S3 from Redshift"?** -->
+4. **"ETL / Transform data"?** -->
+5. **"Discover schema automatically"?** -->
+6. **"Central metadata catalog"?** -->
+7. **"React to AWS events / Event-driven"?** -->
+8. **"Schedule Lambda"?** -->
+9. **"Infrastructure as Code"?** -->
+10. **"Deploy across multiple accounts/regions"?** -->
+11. **"Deploy web app, minimal management"?** -->
+12. **"Full-text search / Log analytics with dashboards"?** -->
+13. **"GraphQL / Real-time data sync"?** -->
+14. **"Migrate Kafka to AWS"?** -->
+15. **"New streaming app on AWS"?** -->
+16. **"Reduce Athena cost"?** -->
+17. **"Detect manual infrastructure changes"?** -->
+18. **"Long-running batch jobs with Docker"?** -->
+19. **"Big data / Apache Spark / Hadoop"?** -->
+20. **"Create dashboards / BI"?** -->
+21. **"Data lake governance / column-level security"?** -->
+22. **"Analyze images / Detect faces"?** -->
+23. **"Extract text from documents (OCR)"?** -->
+24. **"Sentiment analysis / NLP"?** -->
+25. **"Build chatbot"?** -->
+26. **"Custom ML model"?** -->
+27. **"AWS services on-premises"?** -->
+28. **"Low latency to specific city"?** -->
+29. **"5G edge computing"?** -->
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **"Query S3 data with SQL"?** --> Athena.
 2. **"Data warehouse / OLAP"?** --> Redshift.

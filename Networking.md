@@ -210,7 +210,34 @@
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Block a specific IP?** →
+2. **Access S3 Privately (Free)?** →
+3. **Access Kinesis/SQS/CloudWatch Privately?** →
+4. **Connect 50 VPCs together?** →
+5. **Connect 2 VPCs?** →
+6. **Private instances need internet (outbound only)?** →
+7. **Instance has Public IP but no internet?** →
+8. **Bastion Host?** →
+9. **NAT Instance?** →
+10. **VPC Peering not working?** →
+11. **Expose your service to other VPCs privately?** →
+12. **Encrypt Direct Connect?** →
+13. **Highest DX resiliency?** →
+14. **IPv6 outbound only (no inbound)?** →
+15. **Deep packet inspection / IDS/IPS at VPC level?** →
+16. **Increase VPN bandwidth?** →
+17. **Hybrid DNS resolution (on-prem ↔ AWS)?** →
+18. **Share subnets across AWS accounts?** →
+19. **Remote user VPN access to AWS?** →
+20. **Custom NACL blocks everything?** →
+21. **Connect multiple branch offices to each other through AWS?** →
+22. **Access private instances without SSH / most secure access?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Block a specific IP?** → NACL (Security Groups can't deny).
 2. **Access S3 Privately (Free)?** → Gateway Endpoint.

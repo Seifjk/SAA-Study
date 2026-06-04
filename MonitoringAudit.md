@@ -233,7 +233,33 @@ These appear on the exam as one-line "which feature" triggers. You don't configu
 
 ---
 
-### **Exam Summary Cheat Sheet (Memorize This)**
+### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
+
+1. **Monitor EC2 memory usage?** →
+2. **Alert when CPU > 80%?** →
+3. **Run Lambda every hour?** →
+4. **Who deleted S3 object?** →
+5. **Was S3 bucket public yesterday?** →
+6. **Ensure all S3 buckets are private, Auto-remediate?** →
+7. **Store app config for free?** →
+8. **Auto-rotate DB password?** →
+9. **Connect to EC2 without SSH?** →
+10. **Run script on 50 instances?** →
+11. **Automate OS patching?** →
+12. **Identify underutilized EC2?** →
+13. **Query logs for errors?** →
+14. **Audit API calls?** →
+15. **Track configuration changes?** →
+16. **Debug latency in distributed app?** →
+17. **Trace requests across microservices?** →
+18. **Stream logs to OpenSearch in real-time?** →
+19. **Create alarm based on log pattern?** →
+20. **Top contributors to metrics?** →
+21. **Monitor API availability?** →
+
+---
+
+### **Exam Summary Cheat Sheet — Answer Key**
 
 1. **Monitor EC2 memory usage?** → CloudWatch Agent (Custom Metrics).
 2. **Alert when CPU > 80%?** → CloudWatch Alarm.
