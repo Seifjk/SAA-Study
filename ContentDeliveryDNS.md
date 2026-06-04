@@ -227,6 +227,8 @@
 | **Cost** | Very cheap | ~6x more expensive |
 | **Use Case** | Simple transforms, Rewrites, Headers | Complex logic, External calls, Body manipulation |
 
+**In one line:** CloudFront Functions = simple, cheap, massive-scale viewer-only edits (headers, URL rewrites); Lambda@Edge = powerful but ~6× pricier — pick it only when you need **network/external calls, request-body access, or origin-side logic** (e.g. auth, dynamic origin selection).
+
 **Exam Trigger:** "Simple URL rewrite or header manipulation" → CloudFront Functions. "Need network access or origin-level processing" → Lambda@Edge. "Cheapest edge compute for high-volume requests" → CloudFront Functions.
 
 ---
@@ -282,6 +284,8 @@
 | **Use Case** | Static content, Caching | Dynamic content, Non-HTTP, Gaming, IoT |
 | **Failover** | Not applicable (Origin handles) | **Fast failover** (< 1 min) |
 
+**In one line:** CloudFront = **caches** content at the edge (keeps a copy near the user) for HTTP/HTTPS; Global Accelerator = **no cache**, just routes live connections over the AWS backbone — pick it when you need **static anycast IPs, TCP/UDP (gaming/IoT/VoIP), or fast cross-region failover**.
+
 **Exam Trigger:** "Static IP required, UDP traffic, Gaming" → Global Accelerator. "Cache static content" → CloudFront.
 
 ---
@@ -330,6 +334,29 @@
 
 ---
 
+> ### My Attempt — Jun 4 (15/17)
+> 1. Alias ✅
+> 2. Weighted routing ✅
+> 3. ~~Geo-proximity~~ ❌ → **Latency-based routing** (fastest = network latency, not proximity+bias)
+> 4. Failover Routing ✅
+> 5. Geolocation ✅
+> 6. ~~Field-Level Encryption~~ ❌ → **OAC** (FLE = encrypt form fields; block direct S3 = OAC)
+> 7. Signed cookie/URL ✅ *(CloudFront term is "Signed", not "pre-signed")*
+> 8. Geo Restriction ✅
+> 9. CloudFront ✅
+> 10. Global Accelerator ✅
+> 11. S3 CRR ✅
+> 12. Cache invalidation ✅
+> 13. CloudFront Functions ✅
+> 14. Lambda@Edge ✅
+> 15. Origin Groups (primary + secondary) ✅
+> 16. Private Hosted Zone ✅
+> 17. Public Hosted Zone ✅
+>
+> **Re-drill:** #3 Latency-based (not Geoproximity) · #6 OAC (not Field-Level Encryption).
+
+---
+
 # **REAL EXAM SCENARIOS**
 
 ### Scenario 1
@@ -344,13 +371,13 @@ B. Use a CNAME Record pointing to the ALB's DNS name.
 
 C. Use an Alias Record pointing to the ALB's DNS name.
 
-D. Use a TXT Record.
+D. Put the ALB behind CloudFront and create a CNAME from the root domain to the CloudFront distribution.
 
 **The Logic:**
 
 - **Trap A — A Record to the ALB's IP:** An A record needs a *fixed* IP. An ALB's IP addresses are managed by AWS and change over time — hardcoding one will break. Not supported.
 - **Trap B — CNAME on the root domain:** The DNS standard **forbids a CNAME at the zone apex** (root domain) — it conflicts with the required SOA/NS records. This is why Route 53 rejected it. CNAME only works on subdomains.
-- **Trap D — TXT Record:** TXT records hold arbitrary text (SPF, domain verification). They don't route traffic at all. Irrelevant.
+- **Trap D — CloudFront + CNAME at the root:** Adding CloudFront doesn't fix the actual problem — a **CNAME still can't live at the zone apex**, so this is rejected for the exact same reason as B. It also bolts on a CDN layer the question never asked for (over-engineered). The apex restriction is about the *record type*, not what it points to.
 - **The Fix — Option C:** A Route 53 **Alias record** is AWS-specific and **works at the root domain**. It points to the ALB's DNS name and Route 53 auto-resolves to the ALB's current IPs. It's also free (no query charge). Alias = the answer whenever you need apex-domain → AWS resource.
 
 ---
@@ -432,15 +459,15 @@ D. Use Elastic IPs for each NLB and distribute to clients.
 
 A. Use versioned filenames (e.g., `style_v2.css`) and update HTML references.
 
-B. Reduce CloudFront TTL to 1 minute.
+B. Reduce the CloudFront TTL to 1 minute so updates appear quickly.
 
-C. Increase CloudFront invalidation budget.
+C. Run a `/*` wildcard invalidation automatically on every deployment.
 
-D. Disable caching entirely.
+D. Set `Cache-Control: no-cache` on the assets so CloudFront revalidates with the origin on every request.
 
 **The Logic:**
 
-- **Trap B — Drop TTL to 1 minute:** Forces near-constant cache misses, hammering the origin and gutting CloudFront's whole performance/cost benefit. Trades a deploy problem for a permanent load problem.
-- **Trap C — Increase the invalidation budget:** Paying *more* for invalidations accepts the broken approach instead of fixing it. Cost goes up, the root issue stays.
-- **Trap D — Disable caching:** Defeats the purpose of having a CDN — every request hits S3, latency and origin load spike. Self-defeating.
-- **The Fix — Option A:** Use **versioned filenames** (`style_v1.css` → `style_v2.css`). A changed file ships under a *new* name, the HTML references it, and CloudFront treats it as a fresh object (cache miss → cache). No invalidations needed, **free**, instant updates. Industry best practice for CDN cache busting.
+- **Trap B — Drop TTL to 1 minute:** Updates would appear within a minute, but it forces near-constant cache misses, hammering the origin and gutting most of CloudFront's performance/cost benefit. Trades a deploy problem for a permanent load problem.
+- **Trap C — Wildcard `/*` invalidation each deploy:** It *works* technically, but `/*` invalidations are the **most expensive** way to do this (you're already paying \$500/mo for far less) — automating them makes the bill worse, not better. Treating the symptom, not the cause.
+- **Trap D — `no-cache` for revalidation:** The asset is revalidated on **every** request, so the edge constantly phones home to the origin — you lose the cache benefit and add latency. Right for truly dynamic content, wrong for static CSS/JS that rarely changes.
+- **The Fix — Option A:** Use **versioned filenames** (`style_v1.css` → `style_v2.css`). A changed file ships under a *new* name, the HTML references it, and CloudFront treats it as a fresh object (cache miss → cache). No invalidations needed, **free**, instant updates, long TTLs stay intact. Industry best practice for CDN cache busting.
