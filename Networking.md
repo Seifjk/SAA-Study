@@ -47,6 +47,7 @@
 | **Use Case** | Standard application security | Blocking a specific malicious IP |
 - **Ephemeral Ports:** NACLs are stateless — return traffic needs explicit rules. You must allow **ephemeral ports (1024-65535)** for outbound responses. SGs handle this automatically (stateful).
 - **Exam Trap:** "You blocked an IP in the Security Group but they can still access." -> You *can't* block in SG. You must use **NACL**.
+- **SG outbound port = the destination's *listening* port (not yours).** A web-tier SG talking to a SQL Server DB needs **outbound 1433** (the DB's port), not 443. Because SGs are stateful, you never open the ephemeral reply port. 3-tier chain: **Web SG** ← `0.0.0.0/0:443` · **App SG** ← Web-SG on app port · **DB SG** ← App-SG on **DB port** (3306/5432/1433). *Reference an SG as the source, not a CIDR.*
 - **Exam Trap:** "Custom NACL created, instances can't communicate" → Custom NACLs deny all by default. You must add allow rules.
 
 ### **AWS Network Firewall**
@@ -125,6 +126,7 @@
 - **Transitive?** **YES.** (Connects thousands of VPCs and On-Prem VPNs).
 - **Architecture:** Solves the messy "Peering Mesh" problem.
 - **TGW Peering:** Connect Transit Gateways across regions for cross-region connectivity.
+- **Shared Services VPC:** A central VPC attached to the TGW hub that hosts resources **all spokes need** — shared DNS (Route 53 Resolver), Active Directory, monitoring, security appliances. Every spoke routes to it through the TGW instead of duplicating those services per-VPC. *Not the same as the legacy "Transit VPC" (an EC2-router pattern TGW replaced).* *Exam Trigger:* "central VPC for shared DNS/AD/logging used by many VPCs" → **Shared Services VPC on Transit Gateway**.
 - *Exam Trigger:* "Simplify network management", "Connect 100 VPCs", "Star Topology", "Cross-region hub-and-spoke".
 
 ### **3. Site-to-Site VPN**

@@ -31,6 +31,8 @@
 
 **Exam Example:** "S3 bucket allows CloudFront to access" → Bucket Policy (Resource-based).
 
+- Resource policy : you attach it to an item to determine who's allowed to access it and what can it exactly do with it, it doesnt give any power to the item, for that you need an IAM Role.
+
 ---
 
 ### **4. Permission Boundaries**

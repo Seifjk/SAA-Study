@@ -164,6 +164,7 @@
 ### **1. User Data**
 
 - **The Rule:** Bash script that runs **ONCE** at instance **FIRST BOOT**.
+- **Runs as `root`:** Executes with **root** privileges by default — no `sudo` needed inside the script. *(Exam tests this half: "first boot" AND "as root".)*
 - **Use Case:** Install software, Configure settings, Pull code from S3.
 - **Size Limit:** 16 KB max.
 - **Access:** Available via Metadata service.

@@ -173,6 +173,10 @@
 - **NFS v4**, **Linux only** (POSIX). Scales to petabytes automatically. **Multi-AZ**.
 - **Performance Modes:** *General Purpose* (default, low latency, web servers); *Max I/O* (high throughput, higher latency, Big Data).
 - **Throughput Modes:** *Elastic* (default/recommended, auto-scales); *Provisioned* (fixed speed); *Bursting* (tied to size, legacy).
+- **Storage Classes (cost tiers — separate axis from perf/throughput modes):**
+    - **Standard** (multi-AZ, frequent access) · **Standard-IA** (multi-AZ, infrequent — cheaper storage, retrieval fee).
+    - **One Zone** (single-AZ, frequent) · **One Zone-IA** (single-AZ, infrequent — *cheapest*, but lost if the AZ fails).
+    - **EFS Lifecycle Management** auto-moves files Standard → Standard-IA (or One Zone → One Zone-IA) after N days of no access (e.g. 30) — same idea as S3 Intelligent-Tiering, big cost saver for cold files. *Exam Trigger:* "EFS files rarely accessed, cut cost" → enable **Lifecycle to IA**; "can tolerate single-AZ" → **One Zone-IA**.
 
 **2. FSx (File System for X)**
 
@@ -212,6 +216,7 @@ When you have *so much* data that sending it over the internet would take **week
 - **Snowball Edge:** ~80TB. Two flavors — *Storage Optimized* (pure data migration) or *Compute Optimized* (also runs EC2/Lambda for processing at the edge).
 - **Snowmobile:** A literal **shipping-container truck** — up to 100PB. For exabyte-scale data-center moves.
 - *Rule of thumb:* Use Snow if transferring over your network connection would take **more than a week**.
+- **Lands in S3 only — can't target Glacier directly.** To archive, data first arrives in an **S3 bucket**, then a **Lifecycle rule** transitions it to Glacier / Deep Archive. *Exam Trigger:* "ship 100 TB to Glacier Deep Archive cheapest" → Snowball → **S3** → **Lifecycle to Glacier** (NOT Snowball → Glacier).
 
 ---
 

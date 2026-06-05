@@ -59,6 +59,7 @@
 
 - **Standby:** NOT accessible (no reads/writes) — failover only.
 - **Failover:** Automatic, DNS flips to standby in 60-120 sec. Triggered by primary AZ/instance failure, reboot-with-failover, or OS patching.
+- **Engine upgrades ≠ failover — they cause downtime.** A major/minor **engine version upgrade** is applied to the primary **and** standby **at the same time**, so Multi-AZ does **not** make it zero-downtime (expect an outage in the maintenance window). Multi-AZ only protects against *unplanned* instance/AZ failure (60-120s), not *planned* engine upgrades. *Exam Trap:* "minimize downtime during a DB engine upgrade" → **Aurora Blue/Green** (or Read Replica upgrade-then-promote), NOT "rely on Multi-AZ."
 - **Cost:** ~2x (two instances). Use case: production HA.
 
 **Exam Contrast: Multi-AZ vs. Read Replicas**

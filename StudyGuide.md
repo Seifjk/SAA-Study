@@ -48,7 +48,7 @@ Block 1 (65 min)  →  Break (10 min)  →  Block 2 (50 min)
 
 | Date | Plan | File | Load |
 |------|------|------|------|
-| **Thu Jun 4** | **CDN / DNS** + review one old cheat sheet | [ContentDeliveryDNS](./ContentDeliveryDNS.md) | Medium ← **TODAY** |
+| **Thu Jun 4** | **CDN / DNS** + review one old cheat sheet | [ContentDeliveryDNS](./ContentDeliveryDNS.md) | ✅ Done |
 | **Fri Jun 5** | **Security & Identity** (heaviest remaining) | [SecurityIdentity](./SecurityIdentity.md) | Heavy |
 | **Sat Jun 6** | **Monitoring & Audit** + **Additional Services** (skim) | [MonitoringAudit](./MonitoringAudit.md) · [AdditionalServices](./AdditionalServices.md) | Medium + Light |
 | **Sun Jun 7** | **Full recall sweep** — all 14 chapters via [Recall.md](./Recall.md) | [Recall](./Recall.md) | Review |
