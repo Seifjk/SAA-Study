@@ -465,69 +465,81 @@ D. Use Kinesis Data Streams with one stream for all events and filter in each co
 
 ### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
 
-1. **"Query S3 data with SQL"?** -->
-2. **"Data warehouse / OLAP"?** -->
-3. **"Query S3 from Redshift"?** -->
-4. **"ETL / Transform data"?** -->
-5. **"Discover schema automatically"?** -->
-6. **"Central metadata catalog"?** -->
-7. **"React to AWS events / Event-driven"?** -->
-8. **"Schedule Lambda"?** -->
-9. **"Infrastructure as Code"?** -->
-10. **"Deploy across multiple accounts/regions"?** -->
-11. **"Deploy web app, minimal management"?** -->
-12. **"Full-text search / Log analytics with dashboards"?** -->
-13. **"GraphQL / Real-time data sync"?** -->
-14. **"Migrate Kafka to AWS"?** -->
-15. **"New streaming app on AWS"?** -->
-16. **"Reduce Athena cost"?** -->
-17. **"Detect manual infrastructure changes"?** -->
-18. **"Long-running batch jobs with Docker"?** -->
-19. **"Big data / Apache Spark / Hadoop"?** -->
-20. **"Create dashboards / BI"?** -->
-21. **"Data lake governance / column-level security"?** -->
-22. **"Analyze images / Detect faces"?** -->
-23. **"Extract text from documents (OCR)"?** -->
-24. **"Sentiment analysis / NLP"?** -->
-25. **"Build chatbot"?** -->
-26. **"Custom ML model"?** -->
-27. **"AWS services on-premises"?** -->
-28. **"Low latency to specific city"?** -->
-29. **"5G edge computing"?** -->
+1. **Query S3 data with SQL, serverless?** → Athena
+2. **Reduce Athena query cost?** → Use Parquet 
+3. **Data warehouse / OLAP / petabyte analytics?** → Redshift
+4. **Query S3 from a Redshift cluster without loading?** →Redshift Spectrum? Serverless?
+5. **Serverless ETL / transform data between formats?** → Glue
+6. **Discover schema automatically?** →Glue Crawler
+7. **Central metadata catalog shared across services?** → Glue Data Catalog
+8. **Convert CSV to Parquet?** → Glue Job
+9. **React to AWS service events / event-driven?** → Eventbridge
+10. **Schedule a Lambda / cron in AWS?** → Eventbridge rule x
+11. **Infrastructure as Code (AWS-only)?** → CloudFormation
+12. **Deploy same infrastructure across multiple accounts/regions?** → StackSets x
+13. **Detect manual changes to resources?** → CloudFormation Drift Detection x
+14. **Deploy a web app with minimal infrastructure management (PaaS)?** → Elastic Beanstalk
+15. **Full-text search / log analytics with dashboards?** → Opensearch
+16. **Make DynamoDB data searchable?** → DynamoDB Streams → Lambda → OpenSearch x
+17. **GraphQL API with real-time / offline sync?** → AppSync
+18. **Migrate an existing Kafka workload to AWS?** → MSK
+19. **New streaming application on AWS?** → Kinesis
+20. **Long-running batch jobs with Docker (hours)?** → Batch
+21. **Big data / Apache Spark / Hadoop cluster?** → EMR
+22. **Create dashboards / serverless BI?** → Quicksight
+23. **Data lake governance / column-level security on S3?** → Lake Formation
+24. **Analyze images / detect faces in video?** → Rekognition
+25. **Extract text from scanned documents (OCR)?** → Textract x
+26. **Sentiment analysis / NLP?** → Comprehend
+27. **Speech-to-text?** → Transcribe
+28. **Text-to-speech?** → Polly
+29. **Build a chatbot / conversational interface?** → Lex
+30. **Translate text between languages?** → Translate
+31. **Build, train, deploy a custom ML model?** → SageMaker
+32. **Intelligent enterprise search across documents?** → Kendra x
+33. **AWS services on-premises (data residency)?** → Outposts
+34. **Single-digit ms latency to a specific city?** → local Zones
+35. **5G edge computing / ultra-low latency for mobile?** → Wavelength
 
 ---
 
 ### **Exam Summary Cheat Sheet — Answer Key**
 
-1. **"Query S3 data with SQL"?** --> Athena.
-2. **"Data warehouse / OLAP"?** --> Redshift.
-3. **"Query S3 from Redshift"?** --> Redshift Spectrum.
-4. **"ETL / Transform data"?** --> Glue.
-5. **"Discover schema automatically"?** --> Glue Crawlers.
-6. **"Central metadata catalog"?** --> Glue Data Catalog.
-7. **"React to AWS events / Event-driven"?** --> EventBridge.
-8. **"Schedule Lambda"?** --> EventBridge rule with schedule.
-9. **"Infrastructure as Code"?** --> CloudFormation.
-10. **"Deploy across multiple accounts/regions"?** --> CloudFormation StackSets.
-11. **"Deploy web app, minimal management"?** --> Elastic Beanstalk.
-12. **"Full-text search / Log analytics with dashboards"?** --> OpenSearch.
-13. **"GraphQL / Real-time data sync"?** --> AppSync.
-14. **"Migrate Kafka to AWS"?** --> MSK (NOT Kinesis).
-15. **"New streaming app on AWS"?** --> Kinesis (NOT MSK).
-16. **"Reduce Athena cost"?** --> Columnar format (Parquet/ORC) + partitioning.
-17. **"Detect manual infrastructure changes"?** --> CloudFormation Drift Detection.
-18. **"Long-running batch jobs with Docker"?** --> AWS Batch (NOT Lambda).
-19. **"Big data / Apache Spark / Hadoop"?** --> EMR.
-20. **"Create dashboards / BI"?** --> QuickSight.
-21. **"Data lake governance / column-level security"?** --> Lake Formation.
-22. **"Analyze images / Detect faces"?** --> Rekognition.
-23. **"Extract text from documents (OCR)"?** --> Textract.
-24. **"Sentiment analysis / NLP"?** --> Comprehend.
-25. **"Build chatbot"?** --> Lex.
-26. **"Custom ML model"?** --> SageMaker.
-27. **"AWS services on-premises"?** --> Outposts.
-28. **"Low latency to specific city"?** --> Local Zones.
-29. **"5G edge computing"?** --> Wavelength.
+1. **Query S3 data with SQL, serverless?** → Athena.
+2. **Reduce Athena query cost?** → Convert to columnar (Parquet/ORC) + partition data.
+3. **Data warehouse / OLAP / petabyte analytics?** → Redshift (NOT for OLTP — that's RDS/Aurora).
+4. **Query S3 from a Redshift cluster without loading?** → Redshift Spectrum.
+5. **Serverless ETL / transform data between formats?** → Glue.
+6. **Discover schema automatically?** → Glue Crawlers.
+7. **Central metadata catalog shared across services?** → Glue Data Catalog.
+8. **Convert CSV to Parquet?** → Glue ETL Job.
+9. **React to AWS service events / event-driven?** → EventBridge.
+10. **Schedule a Lambda / cron in AWS?** → EventBridge rule with schedule expression.
+11. **Infrastructure as Code (AWS-only)?** → CloudFormation.
+12. **Deploy same infrastructure across multiple accounts/regions?** → CloudFormation StackSets.
+13. **Detect manual changes to resources?** → CloudFormation Drift Detection.
+14. **Deploy a web app with minimal infrastructure management (PaaS)?** → Elastic Beanstalk (NOT serverless — runs on EC2).
+15. **Full-text search / log analytics with dashboards?** → OpenSearch.
+16. **Make DynamoDB data searchable?** → DynamoDB Streams → Lambda → OpenSearch.
+17. **GraphQL API with real-time / offline sync?** → AppSync (REST → API Gateway).
+18. **Migrate an existing Kafka workload to AWS?** → MSK (NOT Kinesis).
+19. **New streaming application on AWS?** → Kinesis (NOT MSK).
+20. **Long-running batch jobs with Docker (hours)?** → AWS Batch (NOT Lambda — 15 min max).
+21. **Big data / Apache Spark / Hadoop cluster?** → EMR.
+22. **Create dashboards / serverless BI?** → QuickSight.
+23. **Data lake governance / column-level security on S3?** → Lake Formation.
+24. **Analyze images / detect faces in video?** → Rekognition.
+25. **Extract text from scanned documents (OCR)?** → Textract.
+26. **Sentiment analysis / NLP?** → Comprehend.
+27. **Speech-to-text?** → Transcribe.
+28. **Text-to-speech?** → Polly.
+29. **Build a chatbot / conversational interface?** → Lex.
+30. **Translate text between languages?** → Translate.
+31. **Build, train, deploy a custom ML model?** → SageMaker.
+32. **Intelligent enterprise search across documents?** → Kendra.
+33. **AWS services on-premises (data residency)?** → Outposts.
+34. **Single-digit ms latency to a specific city?** → Local Zones.
+35. **5G edge computing / ultra-low latency for mobile?** → Wavelength.
 
 ---
 
