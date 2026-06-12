@@ -57,7 +57,7 @@ check "EFS" "[^a-z]efs[^a-z]|elastic file"
 check "FSx" "fsx"
 check "Storage Gateway" "storage gateway"
 check "AWS Backup" "aws backup"
-check "EFS storage classes" "efs.{0,40}(standard-ia|one zone|infrequent)"
+check "EFS storage classes" "efs lifecycle|one zone-ia"
 
 echo "=== NETWORKING / CDN ==="
 check "VPC" "[^a-z]vpc[^a-z]"

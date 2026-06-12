@@ -1,52 +1,49 @@
-# SAA-C03 — Recall & Mock Cockpit (full reference)
+# SAA-C03 — Morning Recall (the one file)
 
-> ⚠️ **For your ≤30-min pre-mock recall, use [Recall30.md](./Recall30.md), not this file.** This one is the **full reference** (~280 triggers) — too long to recite daily. Use it *after* a mock, to read up on the sections you got wrong. Don't try to recall the whole thing.
-
-> **Your one-stop sheet to attack the mocks (Jun 8–10) and the exam (Jun 11).**
-> Two ways to use it:
-> 1. **Daily recall** — read the trigger, say the answer out loud, then click **"reveal"** to check yourself. (Answers in the chapter tables §1–§14 are hidden in collapsible dropdowns so you test first, then see the answer.) Whole 14-chapter sweep in 20–30 min. Mark misses, re-read that section.
-> 2. **Pre-mock warm-up (10 min)** — read **§0 Exam Tactics**, the **§0b Killer-Distractor table**, and the **§0c Numbers** sheet right before you start a timed mock. These are where most of your Mock-1 points leaked (72% of misses were test-taking, not knowledge).
+> **This is the only file you need before a mock.** Skim it top-to-bottom every morning, then sit the mock. Everything is here — tactics, your traps, numbers, every discrimination, all 14 chapters. Nothing to look up elsewhere.
 >
-> **Sections:** §0 Tactics · §0b Killer distractors · §0c Numbers cold · §0d Confusable pairs · §0e Cross-service "which wins" · then the 14 chapters: Networking · Compute · HA · Storage · DB Relational · DB NoSQL · Decoupling · Serverless · Containers · CDN/DNS · Security · Monitoring · Cost/Migration/DR · Additional.
+> **How to use it:** answers are in the right column — cover them with your eye, say the answer out loud, glance to check. Out-loud retrieval is what moves your score; silent reading doesn't.
 >
-> 🔴 = a fact you actually got wrong on Maarek #1 (May 24). Drill these hardest.
+> **Order is deliberate:** §A–§E come first because **72% of your Mock-1 misses were test-taking, not knowledge.** The technique and the traps are worth more than any single fact below. 🔴 = a fact you actually got wrong on Maarek #1.
+>
+> **Map:** §A Tactics · §B 🔴 Traps · §C Numbers · §D Confusable pairs · §E Cross-service "which wins" · then **1–14** the chapters: Networking · Compute · HA · Storage · DB-Relational · DB-NoSQL · Decoupling · Serverless · Containers · CDN/DNS · Security · Monitoring · Cost/Migration/DR · Additional.
 
 ---
 
-## 0. Exam Tactics — read this first, every mock
+## §A. Tactics — read first, every morning
 
-**The 4 things that cost you points on Mock-1 (all test-taking, not knowledge):**
+**The 5-step process for every question:**
+1. **Circle the qualifier** in the stem *before* reading answers (see table below).
+2. **Predict the answer** before looking at the options. Then find your prediction.
+3. **Eliminate the 2 obviously wrong.**
+4. **Between the final 2, say the ONE word out loud that kills the wrong one** (see §B). This single habit attacks most of your misses.
+5. **>60 sec → flag and move.** Come back later. Trust your pass-1 instinct on review.
 
-1. **Name the one disqualifying word out loud.** When two answers look right, force yourself to say the *single word* that kills the wrong one (e.g. "*authentication* → User Pool, not Identity Pool"). 10-sec habit, biggest payoff. See §0b.
-2. **Mode ≠ tier ≠ class.** Many services have *multiple independent axes* (EFS: performance mode vs throughput mode vs storage class). If the question names one axis, don't answer from a different axis. See §0d.
-3. **HA ≠ scale ≠ DR.** Multi-AZ survives failure; Read Replica scales reads; Aurora Serverless auto-scales capacity; Aurora Cloning makes a dev copy. Don't conflate. See §5.
-4. **Read the qualifier in the stem.** Circle the constraint before reading answers:
+**Circle the qualifier — what it's really asking:**
 
-| Qualifier in question | What it's really asking |
+| Qualifier in the stem | What it means |
 |---|---|
-| **MOST cost-effective / cheapest** | Managed + serverless + right storage tier usually wins; eliminate anything always-on if spiky |
-| **LEAST operational overhead / managed** | Pick the *more* managed service (Fargate > EC2, Aurora Serverless > self-managed, SQS > MQ for new apps) |
+| **MOST cost-effective / cheapest** | Managed + serverless + right storage tier usually wins; kill anything always-on if load is spiky |
+| **LEAST operational overhead / managed** | Pick the *more* managed option (Fargate > EC2, Aurora Serverless > self-managed, SQS > MQ for new apps) |
 | **MOST secure** | No open ports, IAM over keys, private over public, deny by default |
 | **Highly available / fault-tolerant** | Multi-AZ minimum; "across regions" → cross-region replica / Global |
 | **Real-time vs near-real-time vs batch** | <1s = Kinesis · ~60s = Firehose · minutes/hours = Batch/EMR |
-| **NOT / EXCEPT** | The odd one out — read every option, the 3 "good" ones are the distractors |
-| **Minimal code / no code changes** | Managed feature over custom (ALB+Cognito over app login, RDS Proxy over connection pooling code) |
+| **NOT / EXCEPT** | The odd one out — read every option; the 3 "good" ones are the distractors |
+| **Minimal / no code changes** | Managed feature over custom code (ALB+Cognito over app login, RDS Proxy over pooling code) |
 
-**Process per question:** (1) read stem, circle the qualifier · (2) predict the answer *before* looking · (3) eliminate 2 obviously wrong · (4) between the last 2, name the disqualifying word · (5) flag-and-move if >60s. Trust pass-1 instinct on review.
-
-**Default tie-breakers when genuinely unsure:** managed > custom · simpler > complex · purpose-built > general · AWS-native > self-hosted · serverless > provisioned (for spiky/low-ops).
+**Tie-breakers when genuinely stuck:** managed > custom · simpler > complex · purpose-built > general · AWS-native > self-hosted · serverless > provisioned (for spiky/low-ops) · private > public · deny by default.
 
 ---
 
-## 0b. Killer Distractors — the "one word that kills it" table
+## §B. 🔴 Your Traps — the "one word that kills it" table
 
-*These are the exact trap pairs that cost you on Mock-1 (🔴) plus the highest-frequency look-alikes. Memorize the disqualifier.*
+*The exact discriminations you got wrong on Mock-1 (🔴) plus the highest-frequency look-alikes. Cover the right side; for each, say what disqualifies the tempting answer.*
 
-| You're tempted by… | …but pick this instead when the stem says | Disqualifying word |
+| You're tempted by… | …pick this instead when the stem says | Disqualifying word |
 |---|---|---|
 | 🔴 SNS | **SQS** | "buffer / lost data / **replay** / can't lose messages" — SNS doesn't store |
 | 🔴 Cognito **Identity** Pool | **User Pool** | "**authentication** / sign-in / user directory" (Identity Pool = AWS creds for already-authed users) |
-| 🔴 Dedicated **Hosts** | **Dedicated Instances** | "cheapest single-tenant" (Hosts cost more — only for **per-socket BYOL licensing** visibility) |
+| 🔴 Dedicated **Hosts** | **Dedicated Instances** | "**cheapest** single-tenant" (Hosts cost more — only for per-socket **BYOL licensing** visibility) |
 | 🔴 EFS **Bursting** (throughput mode) | **Max I/O** (performance mode) | "big-data parallel throughput" — wrong axis |
 | 🔴 Macie | **S3 Access Points** | "**enforce** per-prefix access" (Macie only *finds* PII, doesn't enforce) |
 | 🔴 oldest Launch **Template** | oldest Launch **Configuration** | "ASG default termination order" |
@@ -63,13 +60,14 @@
 | Multi-AZ | **Read Replica** | "standby must be **readable**" / "scale reads" / "**cross-region**" |
 | Amazon MQ | **SQS/SNS** | "**new** cloud-native app" (MQ only for lift-and-shift of existing JMS/AMQP/MQTT) |
 | Inspector | **GuardDuty** | "detect **threats / compromised** instances from logs" (Inspector = vuln *scanning*) |
+| Trusted Advisor | **Compute Optimizer** | "**specific** right-size recommendation from utilization history" (TA = broad checks) |
 | Strongly Consistent read | (not available) | the read is **on a GSI** (GSIs are eventually consistent only) |
 
 ---
 
-## 0c. Numbers You Must Know Cold
+## §C. Numbers You Must Know Cold
 
-*Exams love exact numbers as distractor bait. These come up most.*
+*Exams use exact numbers as distractor bait. These come up most.*
 
 | Number | What it is |
 |---|---|
@@ -78,37 +76,37 @@
 | **30 sec / 12 h** | SQS visibility timeout default / max |
 | **20 sec** | SQS long-polling `WaitTimeSeconds` (cuts empty receives) |
 | **0–15 min** | SQS Delay Queue / Message Timer range |
-| **14 days** | SQS max message retention (default 4 days) |
+| **4 days / 14 days** | SQS message retention default / max |
 | **15 min** | Lambda max timeout (longer → ECS/Batch/Fargate) |
-| **10 GB** | Lambda container image max · `/tmp` configurable 512 MB–10 GB (ephemeral) |
-| **/tmp = 512 MB–10 GB** | Lambda ephemeral scratch; **persistent shared** → EFS or S3 |
+| **10 GB** | Lambda container image max · `/tmp` configurable **512 MB–10 GB** (ephemeral) |
 | **5 / 15** | Max RDS read replicas / Aurora read replicas |
 | **5** | Aurora reader **regions** (Global DB) · also LSI per table |
 | **20** | GSI per DynamoDB table |
 | **72 h** | Aurora Backtrack window |
 | **<1 sec** | Aurora Global DB cross-region replication lag |
 | **60–120 sec** | RDS Multi-AZ failover time |
-| **35 days** | RDS automated backup max retention (default 7) |
+| **7 days / 35 days** | RDS automated backup retention default / max |
 | **1 day–365 days** | Kinesis Data Streams retention |
 | **~60 sec** | Firehose buffer/delivery latency |
-| **2 MB/s** | Kinesis Enhanced Fan-Out throughput **per consumer** |
 | **1 MB/s in, 2 MB/s out** | Kinesis throughput **per shard** |
+| **2 MB/s** | Kinesis Enhanced Fan-Out throughput **per consumer** |
+| **5 min / 1 min** | EC2 Basic monitoring interval / Detailed monitoring (paid) |
 | **1024–65535** | Ephemeral port range (NACL outbound replies) |
 | **4 (2×2)** | Max DX resiliency: 2 connections × 2 locations |
-| **us-east-1** | Where ACM cert for **CloudFront** must live |
+| **us-east-1** | Where the ACM cert for **CloudFront** must live |
 | **5** | Targets per EventBridge rule |
 | **7 / AZ** | Spread Placement Group instance cap |
 | **256,000 IOPS** | io2 Block Express max |
-| **0** | Cost of **inbound** data transfer to AWS, and of **Gateway** VPC endpoints |
+| **0 / FREE** | **Inbound** data transfer to AWS, and **Gateway** VPC endpoints |
 
 ---
 
-## 0d. Confusable Pairs — "don't swap these"
+## §D. Confusable Pairs — don't swap these
 
 | Pair | The distinction |
 |---|---|
 | **SG vs NACL** | SG = stateful, allow-only, ENI level · NACL = stateless, allow+deny, subnet level |
-| **Multi-AZ vs Read Replica** | survive failure (sync, not readable) · scale reads (async, readable, cross-region) |
+| **Multi-AZ vs Read Replica** | survive failure (sync, NOT readable) · scale reads (async, readable, cross-region) |
 | **Gateway vs Interface Endpoint** | S3/DynamoDB, free, route-table · everything else, PrivateLink, hourly $ + ENI |
 | **User Pool vs Identity Pool** | sign-in / user directory · hand out temp AWS creds to authed users |
 | **Task Role vs Execution Role** | what your app can do · what ECS needs to start the task (ECR pull, logs) |
@@ -117,10 +115,11 @@
 | **CloudFront vs Global Accelerator** | cache HTTP content at edge · TCP/UDP anycast IP, fast failover, no caching |
 | **CloudFront Functions vs Lambda@Edge** | sub-ms, viewer-only, header/URL rewrite · heavier, all 4 events, network/body access, ≤30s |
 | **CloudWatch vs CloudTrail vs Config** | performance/metrics/logs · who made which API call · resource config state + compliance |
+| **Trusted Advisor vs Compute Optimizer** | broad 5-pillar checks (flags idle) · ML right-sizing (the specific better instance type) |
 | **Cluster vs Spread vs Partition PG** | low latency (1 AZ) · max isolation (≤7/AZ) · HDFS/Kafka racks |
 | **Standard vs FIFO SQS** | high TPS, best-effort order, at-least-once · ordered, exactly-once, 300 msg/s |
 | **Standard vs Convertible RI** | sell/modify-size, locked family · change family, can't sell |
-| **Compute vs EC2 Instance Savings Plan** | any compute/region/family · locked to instance family, deeper discount |
+| **Compute vs EC2-Instance Savings Plan** | any compute/region/family · locked to instance family, deeper discount |
 | **Inspector vs GuardDuty vs Macie** | scan EC2/ECR vulns · detect threats from logs · find PII in S3 |
 | **Shield Std vs Advanced vs WAF** | free L3/4 DDoS · paid + DDoS cost protection + DRT · L7 rules (SQLi/rate-limit) |
 | **Secrets Manager vs Parameter Store** | auto-rotates secrets ($) · free config/secret storage (no auto-rotate) |
@@ -131,7 +130,7 @@
 
 ---
 
-## 0e. Cross-Service "Which One Wins" — span-the-chapters triggers
+## §E. Cross-Service "Which One Wins" — span-the-chapters
 
 *When the answer requires choosing across categories.*
 
@@ -140,19 +139,19 @@
 | Speed up **uploads** of large files to S3 from far away | **S3 Transfer Acceleration** | CloudFront = downloads/cache; GA = TCP/UDP apps |
 | Speed up **dynamic API / global app** failover, non-HTTP | **Global Accelerator** | CloudFront caches static; Route 53 is DNS (clients cache it) |
 | Cache **static** content globally | **CloudFront** | GA doesn't cache |
-| **Replay** a stream for 7 days / multiple consumers | **Kinesis Data Streams** | SQS deletes on consume; Firehose no replay |
+| **Replay** a stream for N days / multiple consumers | **Kinesis Data Streams** | SQS deletes on consume; Firehose no replay |
 | Load streaming data to S3/Redshift, **no code** | **Firehose** | KDS needs consumer code |
 | **New** decoupling between microservices | **SQS / SNS** | Amazon MQ only for migrating existing JMS/AMQP |
 | **Migrate existing** ActiveMQ/RabbitMQ | **Amazon MQ** | SQS/SNS aren't protocol-compatible |
 | React to **AWS service events** (EC2 state, S3 PUT) | **EventBridge** | SNS is for your own pub/sub fan-out |
 | **Fan-out** one message to many queues | **SNS → SQS** | EventBridge if you need filtering/AWS events |
 | Coordinate **multi-step** workflow w/ retries | **Step Functions** | not SQS chaining |
-| Job **> 15 min** in a container | **ECS/Fargate/Batch** | Lambda caps at 15 min |
+| Job **> 15 min** in a container | **ECS / Fargate / Batch** | Lambda caps at 15 min |
 | **Private** S3/DynamoDB access, free | **Gateway Endpoint** | Interface endpoint costs hourly |
-| **Private** access to your own service across VPCs | **NLB + PrivateLink** | peering exposes whole CIDR |
+| **Private** access to your own service across VPCs | **NLB + PrivateLink** | peering exposes the whole CIDR |
 | Encrypt traffic **over Direct Connect** | **VPN over DX** | DX alone is private but **not encrypted** |
 | **SQL on S3**: one object vs whole bucket | **S3 Select** (one) · **Athena** (many) | — |
-| Eliminate **DB connection storms** from Lambda | **RDS Proxy** | not bigger instance |
+| Eliminate **DB connection storms** from Lambda | **RDS Proxy** | not a bigger instance |
 | **Microsecond** reads on DynamoDB | **DAX** | ElastiCache is for RDS/general cache |
 | **In-memory DB** that's durable (not just cache) | **MemoryDB** | ElastiCache Redis is a cache |
 
@@ -162,26 +161,26 @@
 
 | Trigger | Answer |
 |---|---|
-| Block a specific IP | <details><summary>reveal</summary>**NACL** (SG is allow-only)</details> |
-| Private S3 access, free | <details><summary>reveal</summary>**Gateway Endpoint**</details> |
-| Private Kinesis/SQS/CloudWatch access | <details><summary>reveal</summary>**Interface Endpoint** (PrivateLink, hourly $)</details> |
-| Connect 2 VPCs | <details><summary>reveal</summary>**VPC Peering** (no CIDR overlap, not transitive)</details> |
-| Connect 50 VPCs | <details><summary>reveal</summary>**Transit Gateway** (hub-and-spoke, transitive)</details> |
-| 🔴 Central VPC for shared DNS/AD/monitoring used by many VPCs | <details><summary>reveal</summary>**Shared Services VPC** (on TGW hub; *not* legacy Transit VPC)</details> |
-| Private instances → outbound internet | <details><summary>reveal</summary>**NAT Gateway** in public subnet</details> |
-| Bastion Host | <details><summary>reveal</summary>Public-subnet EC2 for **inbound SSH jump**; SG = your IP only</details> |
-| Most secure private-instance access (no SSH) | <details><summary>reveal</summary>**SSM Session Manager** (no open ports, IAM, logged)</details> |
-| Expose your service to other VPCs privately | <details><summary>reveal</summary>**NLB + PrivateLink (Endpoint Service)**</details> |
-| Encrypt Direct Connect | <details><summary>reveal</summary>**Site-to-Site VPN over DX** (DX is private, NOT encrypted)</details> |
-| Max DX resiliency | <details><summary>reveal</summary>**2 connections × 2 locations = 4 total**</details> |
-| IPv6 outbound only | <details><summary>reveal</summary>**Egress-Only Internet Gateway**</details> |
-| Deep packet inspection at VPC level | <details><summary>reveal</summary>**AWS Network Firewall** (Flow Logs = metadata only)</details> |
-| Increase VPN bandwidth | <details><summary>reveal</summary>**ECMP via Transit Gateway**</details> |
-| Hybrid DNS (on-prem ↔ AWS) | <details><summary>reveal</summary>**Route 53 Resolver** (Inbound = on-prem→AWS, Outbound = AWS→on-prem)</details> |
-| Share subnets across accounts | <details><summary>reveal</summary>**RAM** (Resource Access Manager)</details> |
-| Remote user VPN to AWS | <details><summary>reveal</summary>**Client VPN** (S2S = network↔network, Client = user↔AWS)</details> |
-| Custom NACL setup | <details><summary>reveal</summary>Deny-all by default; remember **ephemeral ports 1024-65535** outbound</details> |
-| 🔴 SG outbound rule port (web→DB) | <details><summary>reveal</summary>**= the destination's listening port** (1433/3306/5432), NOT 443 — and reference the **source SG**, not a CIDR</details> |
+| Block a specific IP | **NACL** (SG is allow-only) |
+| Private S3/DynamoDB access, free | **Gateway Endpoint** |
+| Private Kinesis/SQS/CloudWatch access | **Interface Endpoint** (PrivateLink, hourly $) |
+| Connect 2 VPCs | **VPC Peering** (no CIDR overlap, not transitive) |
+| Connect 50 VPCs | **Transit Gateway** (hub-and-spoke, transitive) |
+| 🔴 Central VPC for shared DNS/AD/monitoring used by many VPCs | **Shared Services VPC** (on TGW hub; *not* legacy Transit VPC) |
+| Private instances → outbound internet | **NAT Gateway** in public subnet |
+| IPv6 outbound only | **Egress-Only Internet Gateway** |
+| Bastion Host | Public-subnet EC2 for **inbound SSH jump**; SG = your IP only |
+| Most secure private-instance access (no SSH) | **SSM Session Manager** (no open ports, IAM, logged) |
+| Expose your service to other VPCs privately | **NLB + PrivateLink (Endpoint Service)** |
+| Encrypt Direct Connect | **Site-to-Site VPN over DX** (DX is private, NOT encrypted) |
+| Max DX resiliency | **2 connections × 2 locations = 4 total** |
+| Increase VPN bandwidth | **ECMP via Transit Gateway** |
+| Deep packet inspection at VPC level | **AWS Network Firewall** (Flow Logs = metadata only) |
+| Hybrid DNS (on-prem ↔ AWS) | **Route 53 Resolver** (Inbound = on-prem→AWS · Outbound = AWS→on-prem) |
+| Share subnets across accounts | **RAM** (Resource Access Manager) |
+| Remote user VPN to AWS | **Client VPN** (S2S = network↔network · Client = user↔AWS) |
+| Custom NACL setup | Deny-all by default; remember **ephemeral ports 1024–65535** outbound |
+| 🔴 SG outbound rule port (web→DB) | **= the destination's listening port** (1433/3306/5432), NOT 443 — and reference the **source SG**, not a CIDR |
 
 **3-tier SG chain:** Web SG ← `0.0.0.0/0:443` · App SG ← **Web-SG** on app port · DB SG ← **App-SG** on DB port. (SGs are stateful → never open the ephemeral reply port.)
 
@@ -191,37 +190,35 @@
 
 | Trigger | Answer |
 |---|---|
-| Lowest latency between instances | <details><summary>reveal</summary>**Cluster Placement Group**</details> |
-| Maximum fault isolation | <details><summary>reveal</summary>**Spread PG** (≤7/AZ) or **Partition PG** for HDFS/Kafka</details> |
-| Cheapest for fault-tolerant batch | <details><summary>reveal</summary>**Spot** (~70-90% off)</details> |
-| T2/T3 slow during business hours | <details><summary>reveal</summary>Credits exhausted → **T2/T3 Unlimited** or move to **M5**</details> |
-| Per-socket / BYOL licensing | <details><summary>reveal</summary>**Dedicated Hosts**</details> |
-| Cheapest single-tenant (no licensing need) | <details><summary>reveal</summary>**Dedicated Instances** (cheaper than Hosts)</details> |
-| HPC sub-millisecond network | <details><summary>reveal</summary>**EFA** (Elastic Fabric Adapter — *network*, not storage)</details> |
-| Preserve private IP on failover | <details><summary>reveal</summary>**Attach ENI** to new instance</details> |
-| Resume app with RAM intact | <details><summary>reveal</summary>**Hibernate**</details> |
-| Auto-install software at launch | <details><summary>reveal</summary>**User Data** script</details> |
-| 🔴 User data privileges / when it runs | <details><summary>reveal</summary>Runs **as root**, **once, at first boot** only</details> |
-| EC2 → S3 without hardcoded keys | <details><summary>reveal</summary>**IAM Instance Profile**</details> |
-| Guarantee capacity in an AZ | <details><summary>reveal</summary>**Capacity Reservation** (not a discount)</details> |
-| Static public IP across stop/start | <details><summary>reveal</summary>**Elastic IP**</details> |
-| Prevent SSRF / metadata theft | <details><summary>reveal</summary>**IMDSv2** (token-based)</details> |
-| SSH without key pairs | <details><summary>reveal</summary>**EC2 Instance Connect**</details> |
-| ASG "launch config"? | <details><summary>reveal</summary>**Launch Template** (Launch Configuration is legacy)</details> |
+| Lowest latency between instances | **Cluster Placement Group** |
+| Maximum fault isolation | **Spread PG** (≤7/AZ) or **Partition PG** for HDFS/Kafka |
+| Cheapest for fault-tolerant batch | **Spot** (~70–90% off) |
+| T2/T3 slow during business hours | Credits exhausted → **T2/T3 Unlimited** or move to **M5** |
+| Per-socket / BYOL licensing | **Dedicated Hosts** |
+| Cheapest single-tenant (no licensing need) | **Dedicated Instances** (cheaper than Hosts) |
+| HPC sub-millisecond network | **EFA** (Elastic Fabric Adapter — *network*, not storage) |
+| Preserve private IP on failover | **Attach ENI** to new instance |
+| Resume app with RAM intact | **Hibernate** |
+| Auto-install software at launch | **User Data** script |
+| 🔴 User data privileges / when it runs | Runs **as root**, **once, at first boot** only |
+| EC2 → S3 without hardcoded keys | **IAM Instance Profile** |
+| Guarantee capacity in an AZ | **Capacity Reservation** (not a discount) |
+| Static public IP across stop/start | **Elastic IP** |
+| Prevent SSRF / metadata theft | **IMDSv2** (token-based) |
+| SSH without key pairs | **EC2 Instance Connect** |
+| ASG "launch config"? | **Launch Template** (Launch Configuration is legacy) |
 
-**Launch Template vs User Data vs Lifecycle Hook — the one that trips you:**
+**Launch Template vs User Data vs Lifecycle Hook:**
 
 | Trigger | Answer |
 |---|---|
-| Define **what** the instance looks like (AMI, type, SG, IAM role, contains user data) | <details><summary>reveal</summary>**Launch Template**</details> |
-| Run a script the **first time** the instance boots (install Apache, register service) | <details><summary>reveal</summary>**User Data** (a field *inside* the Launch Template)</details> |
-| **Pause** the instance during scale-out/in to do work (drain conns, copy logs, custom warm-up) | <details><summary>reveal</summary>**Lifecycle Hook**</details> |
-| "Copy logs before termination" | <details><summary>reveal</summary>**Lifecycle Hook** (terminating)</details> |
-| "Pre-warm cache before serving traffic" | <details><summary>reveal</summary>**Lifecycle Hook** (pending — user data already finished)</details> |
-| "Install software on boot" | <details><summary>reveal</summary>**User Data**</details> |
-| "Versioned instance config" / "standardize across ASG" | <details><summary>reveal</summary>**Launch Template**</details> |
+| Define **what** the instance looks like (AMI, type, SG, IAM role, holds user data) | **Launch Template** |
+| Run a script the **first time** the instance boots (install Apache, register service) | **User Data** (a field *inside* the Launch Template) |
+| **Pause** the instance during scale-out/in to do work (drain conns, copy logs, warm-up) | **Lifecycle Hook** |
+| "Copy logs before termination" | **Lifecycle Hook** (terminating) |
+| "Pre-warm cache before serving traffic" | **Lifecycle Hook** (pending — user data already finished) |
 
-*Mental model: **Launch Template** = the recipe · **User Data** = a step inside the recipe that runs at first boot · **Lifecycle Hook** = ASG hits pause so you can act before the instance joins or leaves.*
+*Mental model: **Launch Template** = the recipe · **User Data** = a step inside it that runs at first boot · **Lifecycle Hook** = ASG hits pause so you can act before the instance joins or leaves.*
 
 ---
 
@@ -229,27 +226,27 @@
 
 | Trigger | Answer |
 |---|---|
-| Route based on URL path / host | <details><summary>reveal</summary>**ALB**</details> |
-| Static IP, extreme TPS, TCP/UDP | <details><summary>reveal</summary>**NLB**</details> |
-| 3rd-party firewall traffic inspection (GENEVE) | <details><summary>reveal</summary>**GWLB**</details> |
-| Invoke Lambda from HTTP | <details><summary>reveal</summary>**ALB**</details> |
-| Stateful app on multiple instances | <details><summary>reveal</summary>**ALB + Stickiness**</details> |
-| Maintain CPU at 60% | <details><summary>reveal</summary>**Target Tracking Scaling**</details> |
-| Scale every Monday 9 AM | <details><summary>reveal</summary>**Scheduled Scaling**</details> |
-| Scale before a predicted spike | <details><summary>reveal</summary>**Predictive Scaling**</details> |
-| Let in-flight requests finish before terminate | <details><summary>reveal</summary>**Connection Draining** (Deregistration Delay)</details> |
-| Scale workers based on queue depth | <details><summary>reveal</summary>**SQS `ApproximateNumberOfMessagesVisible` + Target Tracking**</details> |
-| App behind ALB needs original client IP | <details><summary>reveal</summary>**`X-Forwarded-For`** header</details> |
-| Roll out new AMI across ASG without downtime | <details><summary>reveal</summary>**Instance Refresh** (set min healthy %)</details> |
-| NLB cross-zone — free? | <details><summary>reveal</summary>**No** (NLB inter-AZ is **paid**; ALB cross-zone is free)</details> |
-| Authenticate users at the LB | <details><summary>reveal</summary>**ALB + OIDC/Cognito User Pool**</details> |
-| 🔴 New instance fails health checks at startup (slow boot) | <details><summary>reveal</summary>**Increase Health Check Grace Period**</details> |
-| 🔴 Why ASG won't terminate an unhealthy-looking instance | <details><summary>reveal</summary>Within **grace period** OR in **Impaired** status</details> |
-| App takes 8 min to boot, scales too slow | <details><summary>reveal</summary>**Warm Pool**</details> |
-| 🔴 ASG default termination order | <details><summary>reveal</summary>AZ with most instances → **oldest Launch Configuration** → closest billing hour</details> |
-| 🔴 "4 instances must always be up, survive 1 AZ loss, cheapest" | <details><summary>reveal</summary>**3 AZs × 2 each** (=6) — losing one AZ still leaves 4</details> |
+| Route based on URL path / host | **ALB** |
+| Static IP, extreme TPS, TCP/UDP | **NLB** |
+| 3rd-party firewall traffic inspection (GENEVE) | **GWLB** |
+| Invoke Lambda from HTTP | **ALB** |
+| Stateful app on multiple instances | **ALB + Stickiness** |
+| Maintain CPU at 60% | **Target Tracking Scaling** |
+| Scale every Monday 9 AM | **Scheduled Scaling** |
+| Scale before a predicted spike | **Predictive Scaling** |
+| Let in-flight requests finish before terminate | **Connection Draining** (Deregistration Delay) |
+| Scale workers based on queue depth | **SQS `ApproximateNumberOfMessagesVisible` + Target Tracking** |
+| App behind ALB needs original client IP | **`X-Forwarded-For`** header |
+| Roll out new AMI across ASG without downtime | **Instance Refresh** (set min healthy %) |
+| NLB cross-zone — free? | **No** (NLB inter-AZ is **paid**; ALB cross-zone is free) |
+| Authenticate users at the LB | **ALB + OIDC / Cognito User Pool** |
+| 🔴 New instance fails health checks at startup (slow boot) | **Increase Health Check Grace Period** |
+| App takes 8 min to boot, scales too slow | **Warm Pool** |
+| 🔴 Why ASG won't terminate an unhealthy-looking instance | Within **grace period** OR in **Impaired** status |
+| 🔴 ASG default termination order | AZ with most instances → **oldest Launch Configuration** → closest billing hour |
+| 🔴 "4 instances must always be up, survive 1 AZ loss, cheapest" | **3 AZs × 2 each** (=6) — losing one AZ still leaves 4 |
 
-*Don't swap: **Grace Period** = wait before health-checking new instance · **Warm Pool** = pre-initialized instances ready to flip in seconds · **Cooldown** = wait between scaling actions.*
+*Don't swap: **Grace Period** = wait before health-checking new instance · **Warm Pool** = pre-initialized instances ready in seconds · **Cooldown** = wait between scaling actions.*
 
 ---
 
@@ -257,24 +254,24 @@
 
 | Trigger | Answer |
 |---|---|
-| SQL on a single S3 object | <details><summary>reveal</summary>**S3 Select** (across many → **Athena**)</details> |
-| Replicate across regions | <details><summary>reveal</summary>**CRR** (requires Versioning on both sides)</details> |
-| Protect against accidental delete | <details><summary>reveal</summary>**Versioning** (+ **MFA Delete**)</details> |
-| Reduce cost over time, you set rules | <details><summary>reveal</summary>**Lifecycle Policy**</details> |
-| Auto-archive cold objects, no retrieval fee, AWS decides | <details><summary>reveal</summary>**Intelligent-Tiering**</details> |
-| Replicate **existing** objects | <details><summary>reveal</summary>**S3 Batch Replication** (normal replication = new only)</details> |
-| WORM / regulatory / cannot delete | <details><summary>reveal</summary>**Object Lock — Compliance Mode** (or Glacier Vault Lock)</details> |
-| Object Lock modes | <details><summary>reveal</summary>**Governance** = override w/ permission · **Compliance** = nobody, not even root</details> |
-| Temporary access to private object | <details><summary>reveal</summary>**Pre-signed URL**</details> |
-| Process file on upload | <details><summary>reveal</summary>**S3 Event Notification → Lambda** (multi-target → **EventBridge**)</details> |
-| Near-real-time per-upload processing, decoupled | <details><summary>reveal</summary>**S3 Event → SQS → Lambda**</details> |
-| Static site + HTTPS + custom domain | <details><summary>reveal</summary>**S3 + CloudFront (OAC) + Route 53 + ACM**</details> |
-| Multiple apps, different policies on one bucket | <details><summary>reveal</summary>**S3 Access Points**</details> |
-| Requester pays egress | <details><summary>reveal</summary>**S3 Requester Pays**</details> |
-| Redact PII on retrieval | <details><summary>reveal</summary>**S3 Object Lambda**</details> |
-| Bulk tag/copy/process existing objects | <details><summary>reveal</summary>**S3 Batch Operations**</details> |
-| 503 errors with SSE-KMS | <details><summary>reveal</summary>**KMS quota exceeded**</details> |
-| Speed up **uploads** from far-away users | <details><summary>reveal</summary>**S3 Transfer Acceleration** (NOT CloudFront)</details> |
+| SQL on a single S3 object | **S3 Select** (across many → **Athena**) |
+| Replicate across regions | **CRR** (requires Versioning on both sides) |
+| Protect against accidental delete | **Versioning** (+ **MFA Delete**) |
+| Reduce cost over time, you set rules | **Lifecycle Policy** |
+| Auto-archive cold objects, no retrieval fee, AWS decides | **Intelligent-Tiering** |
+| Replicate **existing** objects | **S3 Batch Replication** (normal replication = new only) |
+| WORM / regulatory / cannot delete | **Object Lock — Compliance Mode** (or Glacier Vault Lock) |
+| Object Lock modes | **Governance** = override w/ permission · **Compliance** = nobody, not even root |
+| Temporary access to private object | **Pre-signed URL** |
+| Process file on upload | **S3 Event Notification → Lambda** (multi-target → **EventBridge**) |
+| Near-real-time per-upload processing, decoupled | **S3 Event → SQS → Lambda** |
+| Static site + HTTPS + custom domain | **S3 + CloudFront (OAC) + Route 53 + ACM** |
+| Multiple apps, different policies on one bucket | **S3 Access Points** |
+| Requester pays egress | **S3 Requester Pays** |
+| Redact PII on retrieval | **S3 Object Lambda** |
+| Bulk tag/copy/process existing objects | **S3 Batch Operations** |
+| 503 errors with SSE-KMS | **KMS quota exceeded** |
+| Speed up **uploads** from far-away users | **S3 Transfer Acceleration** (NOT CloudFront) |
 
 **Classes hot → cold:** Standard → Intelligent-Tiering → Standard-IA → One Zone-IA → Glacier Instant → Glacier Flexible → Glacier Deep Archive.
 
@@ -282,20 +279,21 @@
 
 | Trigger | Answer |
 |---|---|
-| High IOPS block storage | <details><summary>reveal</summary>**EBS io1/io2** (256K IOPS → **io2 Block Express**)</details> |
-| High throughput / streaming HDD | <details><summary>reveal</summary>**st1**</details> |
-| Instance Store vs EBS | <details><summary>reveal</summary>Instance Store = **ephemeral, fastest** · EBS = persistent network</details> |
-| EBS shared by 2+ EC2 in same AZ | <details><summary>reveal</summary>**EBS Multi-Attach** (io1/io2, cluster-aware app)</details> |
-| Windows shared drive | <details><summary>reveal</summary>**FSx for Windows**</details> |
-| Linux shared drive (NFS) | <details><summary>reveal</summary>**EFS**</details> |
-| HPC / supercomputer FS | <details><summary>reveal</summary>**FSx for Lustre**</details> |
-| 🔴 EFS, files rarely accessed, cut cost | <details><summary>reveal</summary>**EFS Lifecycle → Standard-IA** (single-AZ OK → **One Zone-IA**, cheapest)</details> |
-| EFS axes (don't swap) | <details><summary>reveal</summary>**Performance** mode (GP / Max I/O) ≠ **Throughput** mode (Elastic/Provisioned/Bursting) ≠ **Storage class** (Standard/IA/One Zone)</details> |
-| Schedule EBS backups | <details><summary>reveal</summary>**Data Lifecycle Manager (DLM)**</details> |
-| No first-read latency on EBS snapshot | <details><summary>reveal</summary>**Fast Snapshot Restore (FSR)**</details> |
-| Migrate NFS / sync on-prem → AWS | <details><summary>reveal</summary>**DataSync** (NFS/SMB/HDFS → S3/EFS/FSx)</details> |
-| Existing SFTP/FTP workflow to S3 | <details><summary>reveal</summary>**Transfer Family**</details> |
-| 🔴 Ship bulk data to Glacier cheapest | <details><summary>reveal</summary>**Snowball → S3 → Lifecycle to Glacier** (can't target Glacier directly)</details> |
+| High IOPS block storage | **EBS io1/io2** (256K IOPS → **io2 Block Express**) |
+| High throughput / streaming HDD | **st1** |
+| Instance Store vs EBS | Instance Store = **ephemeral, fastest** · EBS = persistent network |
+| EBS shared by 2+ EC2 in same AZ | **EBS Multi-Attach** (io1/io2, cluster-aware app) |
+| Windows shared drive | **FSx for Windows** |
+| Linux shared drive (NFS) | **EFS** |
+| HPC / supercomputer FS | **FSx for Lustre** |
+| 🔴 EFS, files rarely accessed, cut cost | **EFS Lifecycle → Standard-IA** (single-AZ OK → **One Zone-IA**, cheapest) |
+| EFS axes (don't swap) | **Performance** mode (GP / Max I/O) ≠ **Throughput** mode (Elastic/Provisioned/Bursting) ≠ **Storage class** (Standard/IA/One Zone) |
+| Schedule EBS backups | **Data Lifecycle Manager (DLM)** |
+| No first-read latency on EBS snapshot | **Fast Snapshot Restore (FSR)** |
+| Migrate NFS / sync on-prem → AWS | **DataSync** (NFS/SMB/HDFS → S3/EFS/FSx) |
+| DataSync **over Direct Connect** privately | **Private VIF + PrivateLink interface endpoint** (keeps transfer off the public internet) |
+| Existing SFTP/FTP workflow to S3 | **Transfer Family** |
+| 🔴 Ship bulk data to Glacier cheapest | **Snowball → S3 → Lifecycle to Glacier** (can't target Glacier directly) |
 
 ---
 
@@ -303,24 +301,23 @@
 
 | Trigger | Answer |
 |---|---|
-| Scale read workload | <details><summary>reveal</summary>**Read Replicas** (async, up to 5 RDS / 15 Aurora)</details> |
-| Production HA / auto-failover | <details><summary>reveal</summary>**Multi-AZ** (sync, standby NOT readable)</details> |
-| Standby NOT accessible | <details><summary>reveal</summary>**Multi-AZ**</details> |
-| Standby IS accessible | <details><summary>reveal</summary>**Read Replica**</details> |
-| 🔴 Minimize downtime during DB **engine upgrade** | <details><summary>reveal</summary>**Aurora Blue/Green** — Multi-AZ does NOT help (upgrades hit primary+standby together = downtime)</details> |
-| Encrypt existing unencrypted DB | <details><summary>reveal</summary>**Snapshot → Copy w/ encryption → Restore** (only path)</details> |
-| Eliminate DB password | <details><summary>reveal</summary>**IAM Database Authentication**</details> |
-| Auto-scale DB storage | <details><summary>reveal</summary>**Storage Auto Scaling**</details> |
-| 5× faster MySQL | <details><summary>reveal</summary>**Aurora**</details> |
-| Variable / unpredictable load, auto-scale capacity + HA | <details><summary>reveal</summary>**Aurora Serverless v2**</details> |
-| Global reads, RTO < 1 min DR | <details><summary>reveal</summary>**Aurora Global Database** (1 writer, up to 5 reader regions, <1s lag)</details> |
-| Lambda exhausting DB connections | <details><summary>reveal</summary>**RDS Proxy**</details> |
-| Quickly undo a bad data change (Aurora) | <details><summary>reveal</summary>**Backtrack** (up to 72h, in-place)</details> |
-| 🔴 Fast dev/test copy of prod DB | <details><summary>reveal</summary>**Aurora Cloning** (copy-on-write) — NOT a Read Replica (replicas scale reads, aren't dev envs)</details> |
-| Need OS-level DB access | <details><summary>reveal</summary>**RDS Custom** (Oracle / SQL Server only)</details> |
-| Zero-downtime DB upgrade | <details><summary>reveal</summary>**Aurora Blue/Green Deployment**</details> |
-| Performance bottleneck analysis | <details><summary>reveal</summary>**RDS Performance Insights**</details> |
-| Alert on failover/maintenance | <details><summary>reveal</summary>**RDS Event Notifications → SNS**</details> |
+| Scale read workload | **Read Replicas** (async, up to 5 RDS / 15 Aurora) |
+| Production HA / auto-failover | **Multi-AZ** (sync, standby NOT readable) |
+| Standby NOT accessible | **Multi-AZ** |
+| Standby IS accessible | **Read Replica** |
+| 🔴 Minimize downtime during DB **engine upgrade** | **Aurora Blue/Green** — Multi-AZ does NOT help (upgrades hit primary+standby together = downtime) |
+| Encrypt existing unencrypted DB | **Snapshot → Copy w/ encryption → Restore** (only path) |
+| Eliminate DB password | **IAM Database Authentication** |
+| Auto-scale DB storage | **Storage Auto Scaling** |
+| 5× faster MySQL | **Aurora** |
+| Variable / unpredictable load, auto-scale capacity + HA | **Aurora Serverless v2** |
+| Global reads, RTO < 1 min DR | **Aurora Global Database** (1 writer, up to 5 reader regions, <1s lag) |
+| Lambda exhausting DB connections | **RDS Proxy** |
+| Quickly undo a bad data change (Aurora) | **Backtrack** (up to 72h, in-place) |
+| 🔴 Fast dev/test copy of prod DB | **Aurora Cloning** (copy-on-write) — NOT a Read Replica |
+| Need OS-level DB access | **RDS Custom** (Oracle / SQL Server only) |
+| Performance bottleneck analysis | **RDS Performance Insights** |
+| Alert on failover/maintenance | **RDS Event Notifications → SNS** |
 
 **Multi-AZ vs Read Replica:**
 
@@ -333,7 +330,7 @@
 | Data loss | Zero | Possible (lag) |
 | Cross-region | **No** | **Yes** |
 
-**The HA-vs-scale-vs-clone cheat (memorize as a set):** Multi-AZ = *survive failure* · Read Replica = *scale reads* · Aurora Serverless v2 = *auto-scale capacity* · Aurora Cloning = *fast dev copy* · Snapshot→copy-encrypt→restore = *encrypt existing*.
+**HA-vs-scale-vs-clone (memorize as a set):** Multi-AZ = *survive failure* · Read Replica = *scale reads* · Aurora Serverless v2 = *auto-scale capacity* · Aurora Cloning = *fast dev copy* · Snapshot→copy-encrypt→restore = *encrypt existing*.
 
 ---
 
@@ -341,33 +338,32 @@
 
 | Trigger | Answer |
 |---|---|
-| Unpredictable DynamoDB workload | <details><summary>reveal</summary>**On-Demand** mode</details> |
-| Query DynamoDB by non-PK attribute | <details><summary>reveal</summary>**GSI** (or **LSI** if same PK, different sort)</details> |
-| Must read the very latest write | <details><summary>reveal</summary>**Strongly Consistent Reads** (2× cost, not on GSI)</details> |
-| DynamoDB latency to microseconds | <details><summary>reveal</summary>**DAX**</details> |
-| React to DynamoDB changes | <details><summary>reveal</summary>**DynamoDB Streams → Lambda**</details> |
-| Multi-region active-active DynamoDB | <details><summary>reveal</summary>**Global Tables**</details> |
-| Auto-delete old items | <details><summary>reveal</summary>**TTL**</details> |
-| Atomic across multiple items | <details><summary>reveal</summary>**Transactions** (ACID)</details> |
-| Analyze DynamoDB w/o consuming RCUs | <details><summary>reveal</summary>**Export to S3**</details> |
-| SQL-like queries on DynamoDB | <details><summary>reveal</summary>**PartiQL**</details> |
-| Cache with persistence/backups/HA | <details><summary>reveal</summary>**Redis**</details> |
-| Simple multi-threaded cache | <details><summary>reveal</summary>**Memcached**</details> |
-| Scale Redis horizontally | <details><summary>reveal</summary>**Cluster Mode Enabled**</details> |
-| Cross-region Redis for DR | <details><summary>reveal</summary>**ElastiCache Global Datastore**</details> |
-| Durable in-memory DB (not just cache) | <details><summary>reveal</summary>**MemoryDB for Redis**</details> |
-| MongoDB migration | <details><summary>reveal</summary>**DocumentDB**</details> |
-| Social network / fraud / recommendations | <details><summary>reveal</summary>**Neptune** (graph)</details> |
-| IoT / time-series | <details><summary>reveal</summary>**Timestream**</details> |
-| Immutable ledger / audit trail | <details><summary>reveal</summary>**QLDB** (not blockchain)</details> |
-| Cassandra migration | <details><summary>reveal</summary>**Keyspaces**</details> |
+| Unpredictable DynamoDB workload | **On-Demand** mode |
+| Query DynamoDB by non-PK attribute | **GSI** (or **LSI** if same PK, different sort) |
+| Must read the very latest write | **Strongly Consistent Reads** (2× cost, not on GSI) |
+| DynamoDB latency to microseconds | **DAX** |
+| React to DynamoDB changes | **DynamoDB Streams → Lambda** |
+| Multi-region active-active DynamoDB | **Global Tables** |
+| Auto-delete old items | **TTL** |
+| Atomic across multiple items | **Transactions** (ACID) |
+| Analyze DynamoDB w/o consuming RCUs | **Export to S3** |
+| SQL-like queries on DynamoDB | **PartiQL** |
+| Cache with persistence/backups/HA | **Redis** |
+| Simple multi-threaded cache | **Memcached** |
+| Scale Redis horizontally | **Cluster Mode Enabled** |
+| Cross-region Redis for DR | **ElastiCache Global Datastore** |
+| Durable in-memory DB (not just cache) | **MemoryDB for Redis** |
+| MongoDB migration | **DocumentDB** |
+| Social network / fraud / recommendations | **Neptune** (graph) |
+| IoT / time-series | **Timestream** |
+| Immutable ledger / audit trail | **QLDB** (not blockchain) |
+| Cassandra migration | **Keyspaces** |
 
 **GSI vs LSI:**
 
 | Feature | GSI | LSI |
 |---|---|---|
 | Partition Key | **Different** from base | **Same** as base |
-| Sort Key | Different | Different |
 | Capacity | **Own** RCU/WCU | Shares with base |
 | Consistency | **Eventual only** | **Strong or Eventual** |
 | When created | **Anytime** | **Only at table creation** |
@@ -381,35 +377,32 @@
 
 | Trigger | Answer |
 |---|---|
-| Decouple producers from consumers | <details><summary>reveal</summary>**SQS**</details> |
-| Strict ordering, no duplicates | <details><summary>reveal</summary>**SQS FIFO** (Message Group ID = the thing you order *per*, e.g. Account ID)</details> |
-| Highest throughput, duplicates OK | <details><summary>reveal</summary>**SQS Standard** (the default — best-effort order, at-least-once)</details> |
-| Reduce SQS API calls / cost | <details><summary>reveal</summary>**Long Polling** (`WaitTimeSeconds = 20`)</details> |
-| Message processed multiple times | <details><summary>reveal</summary>**Increase Visibility Timeout** (default 30s, max 12h)</details> |
-| Handle messages failing repeatedly | <details><summary>reveal</summary>**Dead Letter Queue** (after `MaxReceiveCount` failures)</details> |
-| 🔴 **SQS message larger than 256 KB** | <details><summary>reveal</summary>**SQS Extended Client Library** (payload → S3, reference → SQS)</details> |
-| Delay ALL messages 0-15 min | <details><summary>reveal</summary>**Delay Queue**</details> |
-| Delay specific messages | <details><summary>reveal</summary>**Message Timer** (per-message, overrides delay queue)</details> |
-| Cross-account SQS access (S3 → SQS in another account) | <details><summary>reveal</summary>**SQS Access Policy** (resource-based)</details> |
-| **SNS vs SQS** | <details><summary>reveal</summary>SNS = **push, pub/sub, many subscribers** · SQS = **pull, queue, one consumer group**</details> |
-| Send same message to multiple services | <details><summary>reveal</summary>**SNS + SQS Fan-Out** (1 topic → N queues, each service gets its own buffer)</details> |
-| Subscriber receives only certain message types | <details><summary>reveal</summary>**SNS Message Filtering** (JSON filter policy on attributes)</details> |
-| Pub/sub with strict ordering | <details><summary>reveal</summary>**SNS FIFO Topic + SQS FIFO Queues** (FIFO topics can ONLY subscribe FIFO queues)</details> |
-| Real-time (<1s) + replay last N days | <details><summary>reveal</summary>**Kinesis Data Streams** (retention 1d-365d)</details> |
-| Load streaming data to S3/Redshift/OpenSearch, no code | <details><summary>reveal</summary>**Amazon Data Firehose** (~60s latency, auto-scales, optional Lambda transform)</details> |
-| Scale Kinesis consumers | <details><summary>reveal</summary>**Add shards (split) + KCL workers** (max 1 worker per shard — extras sit idle)</details> |
-| Dedicated 2 MB/s per consumer on Kinesis | <details><summary>reveal</summary>**Enhanced Fan-Out** (HTTP/2 push, no shared throughput)</details> |
-| Kinesis vs SQS — "replay last 7 days" | <details><summary>reveal</summary>**Kinesis** (SQS deletes on consume; can't replay)</details> |
-| Migrate on-prem RabbitMQ / ActiveMQ | <details><summary>reveal</summary>**Amazon MQ**</details> |
-| New cloud-native app | <details><summary>reveal</summary>**SQS / SNS** (NOT Amazon MQ)</details> |
-| React to AWS service events (EC2 state, S3 PUT, CloudTrail API call) | <details><summary>reveal</summary>**EventBridge**</details> |
-| Schedule cron / rate-based task | <details><summary>reveal</summary>**EventBridge Scheduler**</details> |
-| Event-driven with filtering, many targets, cross-account | <details><summary>reveal</summary>**EventBridge Rules** (up to 5 targets per rule)</details> |
-| 🔴 **Replay past events for debugging** | <details><summary>reveal</summary>**EventBridge Archive & Replay** (NOT Firehose — Firehose is one-way load to S3, no replay)</details> |
+| Decouple producers from consumers | **SQS** |
+| Strict ordering, no duplicates | **SQS FIFO** (Message Group ID = the thing you order *per*, e.g. Account ID) |
+| Highest throughput, duplicates OK | **SQS Standard** (best-effort order, at-least-once) |
+| Reduce SQS API calls / cost | **Long Polling** (`WaitTimeSeconds = 20`) |
+| Message processed multiple times | **Increase Visibility Timeout** (default 30s, max 12h) |
+| Handle messages failing repeatedly | **Dead Letter Queue** (after `MaxReceiveCount` failures) |
+| 🔴 **SQS message larger than 256 KB** | **SQS Extended Client Library** (payload → S3, reference → SQS) |
+| Delay ALL messages 0–15 min | **Delay Queue** |
+| Delay specific messages | **Message Timer** (per-message, overrides delay queue) |
+| Cross-account SQS access (S3 → SQS in another account) | **SQS Access Policy** (resource-based) |
+| **SNS vs SQS** | SNS = **push, pub/sub, many subscribers** · SQS = **pull, queue, one consumer group** |
+| Send same message to multiple services | **SNS + SQS Fan-Out** (1 topic → N queues, each gets its own buffer) |
+| Subscriber receives only certain message types | **SNS Message Filtering** (JSON filter policy on attributes) |
+| Pub/sub with strict ordering | **SNS FIFO Topic + SQS FIFO Queues** (FIFO topics can ONLY subscribe FIFO queues) |
+| Real-time (<1s) + replay last N days | **Kinesis Data Streams** (retention 1d–365d) |
+| Load streaming data to S3/Redshift/OpenSearch, no code | **Amazon Data Firehose** (~60s latency, auto-scales, optional Lambda transform) |
+| Scale Kinesis consumers | **Add shards (split) + KCL workers** (max 1 worker per shard) |
+| Dedicated 2 MB/s per consumer on Kinesis | **Enhanced Fan-Out** (HTTP/2 push) |
+| Migrate on-prem RabbitMQ / ActiveMQ | **Amazon MQ** |
+| New cloud-native app | **SQS / SNS** (NOT Amazon MQ) |
+| React to AWS service events (EC2 state, S3 PUT, CloudTrail API call) | **EventBridge** |
+| Schedule cron / rate-based task | **EventBridge Scheduler** |
+| Event-driven with filtering, many targets, cross-account | **EventBridge Rules** (up to 5 targets per rule) |
+| 🔴 **Replay past events for debugging** | **EventBridge Archive & Replay** (NOT Firehose — Firehose is one-way, no replay) |
 
-**The "queue is never the destination" model:** Producer → SQS → Consumer fleet (Lambda / EC2 ASG / ECS-Fargate / on-prem) → final data store (DB / S3 / API). The queue is a **shock absorber** between spiky producers and steady consumers — scale consumers on `ApproximateNumberOfMessagesVisible`.
-
-**🔴 = the 2 you missed on Day 6 (May 24). Drill these first.**
+**The "queue is never the destination" model:** Producer → SQS → Consumer fleet (Lambda / EC2 ASG / ECS-Fargate) → final data store (DB / S3 / API). The queue is a **shock absorber** between spiky producers and steady consumers — scale consumers on `ApproximateNumberOfMessagesVisible`.
 
 ---
 
@@ -417,25 +410,25 @@
 
 | Trigger | Answer |
 |---|---|
-| Task > 15 minutes | <details><summary>reveal</summary>**NOT Lambda** (ECS / Batch / Fargate)</details> |
-| Lambda persistent storage | <details><summary>reveal</summary>**NOT /tmp** (EFS or S3) — /tmp is ephemeral</details> |
-| Persistent **shared** storage across invocations | <details><summary>reveal</summary>**Mount EFS** (Lambda must be in VPC)</details> |
-| Share libraries across many functions | <details><summary>reveal</summary>**Layers**</details> |
-| Eliminate cold starts | <details><summary>reveal</summary>**Provisioned Concurrency** (NOT Reserved)</details> |
-| Stop one function eating all concurrency | <details><summary>reveal</summary>**Reserved Concurrency**</details> |
-| Lambda → RDS in private subnet | <details><summary>reveal</summary>**Attach Lambda to VPC** (gets ENI; + NAT for internet)</details> |
-| Lambda can't access S3/DynamoDB | <details><summary>reveal</summary>Fix the **Execution Role** IAM permissions</details> |
-| Route async results (success + failure) | <details><summary>reveal</summary>**Destinations** (DLQ = failures only)</details> |
-| Lambda invoked by S3/SNS/EventBridge | <details><summary>reveal</summary>**Async** (retries 2×, then DLQ)</details> |
-| Lambda reads from Kinesis/DynamoDB Stream/SQS | <details><summary>reveal</summary>**Event Source Mapping** (Lambda polls)</details> |
-| Huge deps / existing container as Lambda | <details><summary>reveal</summary>**Container image** from ECR (≤10 GB)</details> |
-| Cheapest / simplest API proxy | <details><summary>reveal</summary>**HTTP API** (~70% cheaper than REST)</details> |
-| API needs caching / validation / WAF | <details><summary>reveal</summary>**REST API**</details> |
-| Limit/meter API requests per customer | <details><summary>reveal</summary>**Usage Plans + API Keys**</details> |
-| Browser blocks cross-origin API call | <details><summary>reveal</summary>Enable **CORS**</details> |
-| User sign-in at the API | <details><summary>reveal</summary>**Cognito User Pools** · custom token logic → **Lambda Authorizer**</details> |
-| Coordinate multi-step workflow (retries + visual) | <details><summary>reveal</summary>**Step Functions**</details> |
-| Long-running workflow (hours/days) | <details><summary>reveal</summary>**Standard** · high-volume short → **Express** (≤5 min)</details> |
+| Task > 15 minutes | **NOT Lambda** (ECS / Batch / Fargate) |
+| Lambda persistent storage | **NOT /tmp** (EFS or S3) — /tmp is ephemeral |
+| Persistent **shared** storage across invocations | **Mount EFS** (Lambda must be in VPC) |
+| Share libraries across many functions | **Layers** |
+| Eliminate cold starts | **Provisioned Concurrency** (NOT Reserved) |
+| Stop one function eating all concurrency | **Reserved Concurrency** |
+| Lambda → RDS in private subnet | **Attach Lambda to VPC** (gets ENI; + NAT for internet) |
+| Lambda can't access S3/DynamoDB | Fix the **Execution Role** IAM permissions |
+| Route async results (success + failure) | **Destinations** (DLQ = failures only) |
+| Lambda invoked by S3/SNS/EventBridge | **Async** (retries 2×, then DLQ) |
+| Lambda reads from Kinesis/DynamoDB Stream/SQS | **Event Source Mapping** (Lambda polls) |
+| Huge deps / existing container as Lambda | **Container image** from ECR (≤10 GB) |
+| Cheapest / simplest API proxy | **HTTP API** (~70% cheaper than REST) |
+| API needs caching / validation / WAF | **REST API** |
+| Limit/meter API requests per customer | **Usage Plans + API Keys** |
+| Browser blocks cross-origin API call | Enable **CORS** |
+| User sign-in at the API | **Cognito User Pools** · custom token logic → **Lambda Authorizer** |
+| Coordinate multi-step workflow (retries + visual) | **Step Functions** |
+| Long-running workflow (hours/days) | **Standard** · high-volume short → **Express** (≤5 min) |
 
 ---
 
@@ -443,20 +436,20 @@
 
 | Trigger | Answer |
 |---|---|
-| Store Docker images privately | <details><summary>reveal</summary>**ECR** (+ Image Scanning for vulnerabilities)</details> |
-| Run containers without managing servers | <details><summary>reveal</summary>**Fargate**</details> |
-| Run containers on EC2 (use RIs/Spot) | <details><summary>reveal</summary>**ECS EC2 Launch Type**</details> |
-| Zero infrastructure management, simplest | <details><summary>reveal</summary>**App Runner** (simpler than Fargate)</details> |
-| Persistent shared storage for containers | <details><summary>reveal</summary>**EFS**</details> |
-| Task-level Security Groups | <details><summary>reveal</summary>**awsvpc** network mode</details> |
-| Ensure N containers always running | <details><summary>reveal</summary>**ECS Service** (Desired Count = N)</details> |
-| Scale EC2 hosts when tasks are pending | <details><summary>reveal</summary>**Capacity Provider + ASG**</details> |
-| Migrate Kubernetes to AWS | <details><summary>reveal</summary>**EKS**</details> |
-| Simple AWS-native orchestration | <details><summary>reveal</summary>**ECS**</details> |
-| Container needs S3/DynamoDB access | <details><summary>reveal</summary>**Task Role** (NOT Execution Role)</details> |
-| ECS agent needs to pull image from ECR | <details><summary>reveal</summary>**Execution Role** (NOT Task Role)</details> |
+| Store Docker images privately | **ECR** (+ Image Scanning for vulnerabilities) |
+| Run containers without managing servers | **Fargate** |
+| Run containers on EC2 (use RIs/Spot) | **ECS EC2 Launch Type** |
+| Zero infrastructure management, simplest | **App Runner** (simpler than Fargate) |
+| Persistent shared storage for containers | **EFS** |
+| Task-level Security Groups | **awsvpc** network mode |
+| Ensure N containers always running | **ECS Service** (Desired Count = N) |
+| Scale EC2 hosts when tasks are pending | **Capacity Provider + ASG** |
+| Migrate Kubernetes to AWS | **EKS** |
+| Simple AWS-native orchestration | **ECS** |
+| Container needs S3/DynamoDB access | **Task Role** (NOT Execution Role) |
+| ECS agent needs to pull image from ECR | **Execution Role** (NOT Task Role) |
 
-*Task Role vs Execution Role: **Task Role** = what your app code can do (S3, DynamoDB) · **Execution Role** = what ECS needs to start the task (pull ECR image, write logs).*
+*Task Role = what your app code can do (S3, DynamoDB) · Execution Role = what ECS needs to start the task (pull ECR image, write logs).*
 
 ---
 
@@ -464,23 +457,23 @@
 
 | Trigger | Answer |
 |---|---|
-| Map root/apex domain to ALB | <details><summary>reveal</summary>**Alias Record** (NOT CNAME)</details> |
-| Route % of traffic to new version | <details><summary>reveal</summary>**Weighted Routing**</details> |
-| Route to fastest region | <details><summary>reveal</summary>**Latency-Based Routing**</details> |
-| Automatic failover to DR site | <details><summary>reveal</summary>**Failover Routing** (requires Health Check)</details> |
-| Different content by country | <details><summary>reveal</summary>**Geolocation Routing**</details> |
-| Serve S3 via CloudFront, block direct access | <details><summary>reveal</summary>**Origin Access Control (OAC)**</details> |
-| Restrict access to premium content | <details><summary>reveal</summary>**Signed URLs / Signed Cookies**</details> |
-| Block access from specific countries | <details><summary>reveal</summary>**CloudFront Geo Restriction**</details> |
-| Cache static content globally | <details><summary>reveal</summary>**CloudFront**</details> |
-| Static IP, UDP, gaming, fast failover | <details><summary>reveal</summary>**Global Accelerator**</details> |
-| Blue/green when clients DNS-cache aggressively | <details><summary>reveal</summary>**Global Accelerator** (static anycast IP, no DNS cache problem)</details> |
-| Replicate S3 to a region (not edge cache) | <details><summary>reveal</summary>**S3 CRR** (NOT CloudFront)</details> |
-| Manually clear CloudFront cache | <details><summary>reveal</summary>**Invalidation** (costs $; prefer versioned filenames)</details> |
-| Simple URL rewrite / header tweak at edge | <details><summary>reveal</summary>**CloudFront Functions** (sub-ms, viewer only)</details> |
-| Complex edge logic (network/body access) | <details><summary>reveal</summary>**Lambda@Edge** (all 4 events, up to 30s)</details> |
-| CloudFront origin failover / HA | <details><summary>reveal</summary>**Origin Groups** (primary + secondary)</details> |
-| Internal DNS within a VPC | <details><summary>reveal</summary>**Route 53 Private Hosted Zone** (associate with VPC)</details> |
+| Map root/apex domain to ALB | **Alias Record** (NOT CNAME) |
+| Route % of traffic to new version | **Weighted Routing** |
+| Route to fastest region | **Latency-Based Routing** |
+| Automatic failover to DR site | **Failover Routing** (requires Health Check) |
+| Different content by country | **Geolocation Routing** |
+| Serve S3 via CloudFront, block direct access | **Origin Access Control (OAC)** |
+| Restrict access to premium content | **Signed URLs / Signed Cookies** |
+| Block access from specific countries | **CloudFront Geo Restriction** |
+| Cache static content globally | **CloudFront** |
+| Static IP, UDP, gaming, fast failover | **Global Accelerator** |
+| Blue/green when clients DNS-cache aggressively | **Global Accelerator** (static anycast IP, no DNS-cache problem) |
+| Replicate S3 to a region (not edge cache) | **S3 CRR** (NOT CloudFront) |
+| Manually clear CloudFront cache | **Invalidation** (costs $; prefer versioned filenames) |
+| Simple URL rewrite / header tweak at edge | **CloudFront Functions** (sub-ms, viewer only) |
+| Complex edge logic (network/body access) | **Lambda@Edge** (all 4 events, up to 30s) |
+| CloudFront origin failover / HA | **Origin Groups** (primary + secondary) |
+| Internal DNS within a VPC | **Route 53 Private Hosted Zone** (associate with VPC) |
 
 ---
 
@@ -488,33 +481,32 @@
 
 | Trigger | Answer |
 |---|---|
-| EC2 needs S3 access without keys | <details><summary>reveal</summary>**IAM Role** (Instance Profile)</details> |
-| Explicit Deny vs Allow | <details><summary>reveal</summary>**Deny always wins** (order: explicit Deny → Allow → default Deny)</details> |
-| Limit max permissions a user/role can get | <details><summary>reveal</summary>**Permission Boundary** (on the principal — caps escalation; not an SCP, not a group)</details> |
-| Restrict an action to one region / by IP | <details><summary>reveal</summary>IAM **condition** (`aws:RequestedRegion`, `aws:SourceIp`)</details> |
-| Auto-rotate RDS password | <details><summary>reveal</summary>**Secrets Manager**</details> |
-| Free secret storage | <details><summary>reveal</summary>**Parameter Store (Standard)**</details> |
-| User sign-up / sign-in | <details><summary>reveal</summary>**Cognito User Pools**</details> |
-| Mobile app uploads to S3 without backend | <details><summary>reveal</summary>**Cognito Identity Pools** (temp AWS creds)</details> |
-| S3 IAM policy structure | <details><summary>reveal</summary>`ListBucket` on **bucket ARN** + `GetObject` on **bucket/\*** (two resources)</details> |
-| Block SQL injection / rate-limit API | <details><summary>reveal</summary>**WAF**</details> |
-| Free DDoS protection | <details><summary>reveal</summary>**Shield Standard**</details> |
-| Detect compromised instances / threats | <details><summary>reveal</summary>**GuardDuty**</details> |
-| Scan EC2/ECR for vulnerabilities | <details><summary>reveal</summary>**Inspector**</details> |
-| Discover PII in S3 | <details><summary>reveal</summary>**Macie**</details> |
-| Cross-account S3 access | <details><summary>reveal</summary>**Bucket Policy** (resource-based)</details> |
-| Encrypt large files efficiently | <details><summary>reveal</summary>**Envelope Encryption (KMS)**</details> |
-| Free SSL/TLS for ALB / CloudFront | <details><summary>reveal</summary>**ACM** (CloudFront → must be **us-east-1**)</details> |
-| SSL cert on EC2 | <details><summary>reveal</summary>**NOT ACM** — CloudHSM or import manually</details> |
-| FIPS 140-2 Level 3 / dedicated HSM | <details><summary>reveal</summary>**CloudHSM**</details> |
-| SSO across multiple AWS accounts | <details><summary>reveal</summary>**IAM Identity Center**</details> |
-| Centralized security findings | <details><summary>reveal</summary>**Security Hub**</details> |
-| Manage WAF rules across all accounts | <details><summary>reveal</summary>**Firewall Manager**</details> |
-| Check config compliance (e.g. cert is ACM-issued not imported) | <details><summary>reveal</summary>**AWS Config** managed rule</details> |
-| Federate corporate AD (SAML) | <details><summary>reveal</summary>**AssumeRoleWithSAML**</details> |
-| Social login / web identity | <details><summary>reveal</summary>**AssumeRoleWithWebIdentity** (Cognito Identity Pools)</details> |
-| Use existing on-prem AD with AWS | <details><summary>reveal</summary>**AD Connector** (proxy) or trust with **Managed Microsoft AD**</details> |
-| Full managed AD for Windows/SQL | <details><summary>reveal</summary>**AWS Managed Microsoft AD**</details> |
+| EC2 needs S3 access without keys | **IAM Role** (Instance Profile) |
+| Explicit Deny vs Allow | **Deny always wins** (explicit Deny → Allow → default Deny) |
+| Limit max permissions a user/role can get | **Permission Boundary** (caps escalation; not an SCP, not a group) |
+| Restrict an action to one region / by IP | IAM **condition** (`aws:RequestedRegion`, `aws:SourceIp`) |
+| Auto-rotate RDS password | **Secrets Manager** |
+| Free secret storage | **Parameter Store (Standard)** |
+| User sign-up / sign-in | **Cognito User Pools** |
+| Mobile app uploads to S3 without backend | **Cognito Identity Pools** (temp AWS creds) |
+| S3 IAM policy structure | `ListBucket` on **bucket ARN** + `GetObject` on **bucket/\*** (two resources) |
+| Block SQL injection / rate-limit API | **WAF** |
+| Free DDoS protection | **Shield Standard** |
+| Detect compromised instances / threats | **GuardDuty** |
+| Scan EC2/ECR for vulnerabilities | **Inspector** |
+| Discover PII in S3 | **Macie** |
+| Cross-account S3 access | **Bucket Policy** (resource-based) |
+| Encrypt large files efficiently | **Envelope Encryption (KMS)** |
+| Free SSL/TLS for ALB / CloudFront | **ACM** (CloudFront → must be **us-east-1**) |
+| SSL cert on EC2 | **NOT ACM** — CloudHSM or import manually |
+| FIPS 140-2 Level 3 / dedicated HSM | **CloudHSM** |
+| SSO across multiple AWS accounts | **IAM Identity Center** |
+| Centralized security findings | **Security Hub** |
+| Manage WAF rules across all accounts | **Firewall Manager** |
+| Federate corporate AD (SAML) | **AssumeRoleWithSAML** |
+| Social login / web identity | **AssumeRoleWithWebIdentity** (Cognito Identity Pools) |
+| Use existing on-prem AD with AWS | **AD Connector** (proxy) or trust with **Managed Microsoft AD** |
+| Full managed AD for Windows/SQL | **AWS Managed Microsoft AD** |
 
 ---
 
@@ -522,18 +514,23 @@
 
 | Trigger | Answer |
 |---|---|
-| Monitor EC2 memory / disk (not default) | <details><summary>reveal</summary>**CloudWatch Agent** (custom metrics)</details> |
-| Alert when metric crosses threshold | <details><summary>reveal</summary>**CloudWatch Alarm**</details> |
-| Run Lambda on a schedule | <details><summary>reveal</summary>**EventBridge Scheduled Rule**</details> |
-| Who did what / API call audit | <details><summary>reveal</summary>**CloudTrail** (enable Data Events for object-level)</details> |
-| Was a resource configured a certain way? | <details><summary>reveal</summary>**AWS Config** (config history)</details> |
-| Enforce + auto-fix resource compliance | <details><summary>reveal</summary>**Config Rule + Remediation**</details> |
-| Query logs for patterns | <details><summary>reveal</summary>**CloudWatch Logs Insights**</details> |
-| Alarm on a log pattern | <details><summary>reveal</summary>**Metric Filter + Alarm**</details> |
-| Stream logs to OpenSearch real-time | <details><summary>reveal</summary>**Logs Subscription Filter**</details> |
-| Debug latency across microservices | <details><summary>reveal</summary>**X-Ray** (Service Map)</details> |
-| Identify underutilized resources | <details><summary>reveal</summary>**Trusted Advisor**</details> |
-| **CloudWatch vs CloudTrail vs Config** | <details><summary>reveal</summary>CloudWatch = **performance/metrics/logs** · CloudTrail = **who made API calls** · Config = **resource config state + compliance**</details> |
+| Monitor EC2 memory / disk (not default) | **CloudWatch Agent** (custom metrics) |
+| Need EC2 metrics every 1 minute | **Detailed Monitoring** (Basic = 5 min) |
+| Alert when metric crosses threshold | **CloudWatch Alarm** |
+| 🔴 Auto-recover EC2 on hardware failure | **Alarm on System Status Check → Recover** (keeps same ID/Private IP/EIP) |
+| Run Lambda on a schedule | **EventBridge Scheduled Rule** |
+| Who did what / API call audit | **CloudTrail** (enable Data Events for object-level) |
+| Was a resource configured a certain way (history)? | **AWS Config** |
+| Enforce + auto-fix resource compliance | **Config Rule + Remediation** |
+| Query logs for patterns | **CloudWatch Logs Insights** |
+| Alarm on a log pattern | **Metric Filter + Alarm** |
+| Stream logs to OpenSearch real-time | **Logs Subscription Filter** |
+| Top-N contributors to a metric (e.g. top IPs) | **Contributor Insights** |
+| Proactively test API/endpoint availability | **CloudWatch Synthetics (Canaries)** |
+| Debug latency across microservices | **X-Ray** (Service Map) |
+| Identify underutilized resources (broad) | **Trusted Advisor** |
+| Specific right-size recommendation (utilization history) | **Compute Optimizer** |
+| **CloudWatch vs CloudTrail vs Config** | CloudWatch = **performance/metrics/logs** · CloudTrail = **who made API calls** · Config = **resource config state + compliance** |
 
 ---
 
@@ -541,32 +538,32 @@
 
 | Trigger | Answer |
 |---|---|
-| Analyze spending / forecast | <details><summary>reveal</summary>**Cost Explorer**</details> |
-| Alert when budget exceeded | <details><summary>reveal</summary>**AWS Budgets**</details> |
-| Most granular line-item billing → S3 | <details><summary>reveal</summary>**Cost and Usage Report (CUR)**</details> |
-| Right-size EC2 | <details><summary>reveal</summary>**Compute Optimizer**</details> |
-| Flexible savings across regions/compute | <details><summary>reveal</summary>**Compute Savings Plans**</details> |
-| Highest discount, locked to family | <details><summary>reveal</summary>**EC2 Instance Savings Plans / Standard RI**</details> |
-| Change instance family mid-term | <details><summary>reveal</summary>**Convertible RI**</details> |
-| Sell unused RI | <details><summary>reveal</summary>**Standard RI only** (Convertible can't)</details> |
-| 🔴 Predictable baseline + spiky peaks, cheapest | <details><summary>reveal</summary>**RIs/Savings Plans for baseline + Spot/On-Demand for peak** (not 100% of either)</details> |
-| Inbound data transfer to AWS | <details><summary>reveal</summary>**FREE**</details> |
-| Cut S3/DynamoDB cost from VPC | <details><summary>reveal</summary>**Gateway VPC Endpoint** (free)</details> |
-| Lift-and-shift to AWS, minimal change | <details><summary>reveal</summary>**Rehost** (MGN)</details> |
-| Move DB to managed service | <details><summary>reveal</summary>**Replatform** (e.g. → RDS)</details> |
-| Replace with SaaS | <details><summary>reveal</summary>**Repurchase**</details> |
-| Re-architect cloud-native | <details><summary>reveal</summary>**Refactor**</details> |
-| Migrate DB minimal downtime | <details><summary>reveal</summary>**DMS** (+ SCT if heterogeneous)</details> |
-| SFTP/FTP files to S3 | <details><summary>reveal</summary>**Transfer Family**</details> |
-| Online NFS/SMB → S3 sync | <details><summary>reveal</summary>**DataSync**</details> |
-| Offline bulk transfer (TB-PB) | <details><summary>reveal</summary>**Snow Family** (Snowball / Snowmobile / Snowcone)</details> |
-| Cheapest DR | <details><summary>reveal</summary>**Backup & Restore**</details> |
-| DR with Route 53 failover + always-on small ASG | <details><summary>reveal</summary>**Warm Standby**</details> |
-| Near-zero RTO DR | <details><summary>reveal</summary>**Multi-Site Active-Active**</details> |
-| Centralized cross-account backup | <details><summary>reveal</summary>**AWS Backup**</details> |
-| Restrict services across accounts | <details><summary>reveal</summary>**SCPs (Organizations)**</details> |
-| Track migration progress | <details><summary>reveal</summary>**Migration Hub**</details> |
-| Break down costs by team/project | <details><summary>reveal</summary>**Cost Allocation Tags**</details> |
+| Analyze spending / forecast | **Cost Explorer** |
+| Alert when budget exceeded | **AWS Budgets** |
+| Most granular line-item billing → S3 | **Cost and Usage Report (CUR)** |
+| Right-size EC2 | **Compute Optimizer** |
+| Flexible savings across regions/compute | **Compute Savings Plans** |
+| Highest discount, locked to family | **EC2 Instance Savings Plans / Standard RI** |
+| Change instance family mid-term | **Convertible RI** |
+| Sell unused RI | **Standard RI only** (Convertible can't) |
+| 🔴 Predictable baseline + spiky peaks, cheapest | **RIs/Savings Plans for baseline + Spot/On-Demand for peak** (not 100% of either) |
+| Inbound data transfer to AWS | **FREE** |
+| Cut S3/DynamoDB cost from VPC | **Gateway VPC Endpoint** (free) |
+| Lift-and-shift to AWS, minimal change | **Rehost** (MGN) |
+| Move DB to managed service | **Replatform** (e.g. → RDS) |
+| Replace with SaaS | **Repurchase** |
+| Re-architect cloud-native | **Refactor** |
+| Migrate DB minimal downtime | **DMS** (+ SCT if heterogeneous) |
+| SFTP/FTP files to S3 | **Transfer Family** |
+| Online NFS/SMB → S3 sync | **DataSync** |
+| Offline bulk transfer (TB–PB) | **Snow Family** (Snowball / Snowmobile / Snowcone) |
+| Cheapest DR | **Backup & Restore** |
+| DR with Route 53 failover + always-on small ASG | **Warm Standby** |
+| Near-zero RTO DR | **Multi-Site Active-Active** |
+| Centralized cross-account backup | **AWS Backup** |
+| Restrict services across accounts | **SCPs (Organizations)** |
+| Track migration progress | **Migration Hub** |
+| Break down costs by team/project | **Cost Allocation Tags** |
 
 *DR order (cheapest/slowest → priciest/fastest):* **Backup & Restore → Pilot Light → Warm Standby → Multi-Site Active-Active.**
 
@@ -576,36 +573,35 @@
 
 | Trigger | Answer |
 |---|---|
-| Query S3 data with SQL | <details><summary>reveal</summary>**Athena**</details> |
-| Data warehouse / OLAP | <details><summary>reveal</summary>**Redshift** (query S3 → **Redshift Spectrum**)</details> |
-| ETL / transform data | <details><summary>reveal</summary>**Glue** (auto-schema → **Crawlers**; metadata → **Data Catalog**)</details> |
-| Reduce Athena cost | <details><summary>reveal</summary>**Parquet/ORC columnar + partitioning**</details> |
-| Convert .csv → .parquet | <details><summary>reveal</summary>**Glue** (ETL job)</details> |
-| Big data / Spark / Hadoop | <details><summary>reveal</summary>**EMR**</details> |
-| Dashboards / BI | <details><summary>reveal</summary>**QuickSight**</details> |
-| Data lake governance / column security | <details><summary>reveal</summary>**Lake Formation**</details> |
-| Full-text search / log analytics | <details><summary>reveal</summary>**OpenSearch**</details> |
-| Infrastructure as Code | <details><summary>reveal</summary>**CloudFormation** (multi-account/region → **StackSets**)</details> |
-| Detect manual infra changes | <details><summary>reveal</summary>**CloudFormation Drift Detection**</details> |
-| Deploy web app, minimal management | <details><summary>reveal</summary>**Elastic Beanstalk**</details> |
-| GraphQL / real-time data sync | <details><summary>reveal</summary>**AppSync**</details> |
-| Migrate Kafka to AWS | <details><summary>reveal</summary>**MSK** (new streaming app → **Kinesis**)</details> |
-| Long-running batch jobs in Docker | <details><summary>reveal</summary>**AWS Batch** (NOT Lambda)</details> |
-| Analyze images / detect faces | <details><summary>reveal</summary>**Rekognition**</details> |
-| Extract text from documents (OCR) | <details><summary>reveal</summary>**Textract**</details> |
-| Sentiment / NLP | <details><summary>reveal</summary>**Comprehend**</details> |
-| Build chatbot | <details><summary>reveal</summary>**Lex**</details> |
-| Custom ML model | <details><summary>reveal</summary>**SageMaker**</details> |
-| AWS services on-premises | <details><summary>reveal</summary>**Outposts**</details> |
-| Low latency to a specific city | <details><summary>reveal</summary>**Local Zones**</details> |
-| 5G edge computing | <details><summary>reveal</summary>**Wavelength**</details> |
+| Query S3 data with SQL | **Athena** |
+| Data warehouse / OLAP | **Redshift** (query S3 → **Redshift Spectrum**) |
+| ETL / transform data | **Glue** (auto-schema → **Crawlers**; metadata → **Data Catalog**) |
+| Reduce Athena cost | **Parquet/ORC columnar + partitioning** |
+| Convert .csv → .parquet | **Glue** (ETL job) |
+| Big data / Spark / Hadoop | **EMR** |
+| Dashboards / BI | **QuickSight** |
+| Data lake governance / column security | **Lake Formation** |
+| Full-text search / log analytics | **OpenSearch** |
+| Infrastructure as Code | **CloudFormation** (multi-account/region → **StackSets**) |
+| Detect manual infra changes | **CloudFormation Drift Detection** |
+| Deploy web app, minimal management | **Elastic Beanstalk** |
+| GraphQL / real-time data sync | **AppSync** |
+| Migrate Kafka to AWS | **MSK** (new streaming app → **Kinesis**) |
+| Long-running batch jobs in Docker | **AWS Batch** (NOT Lambda) |
+| Analyze images / detect faces | **Rekognition** |
+| Extract text from documents (OCR) | **Textract** |
+| Sentiment / NLP | **Comprehend** |
+| Build chatbot | **Lex** |
+| Custom ML model | **SageMaker** |
+| AWS services on-premises | **Outposts** |
+| Low latency to a specific city | **Local Zones** |
+| 5G edge computing | **Wavelength** |
 
 ---
 
-## 🎯 Final pre-mock checklist (run §0 → §0e in 10 min)
+## ✅ Before you click "Start"
 
-- [ ] Read **§0 Tactics** — circle the qualifier, predict before reading, name the disqualifier.
-- [ ] Skim **§0b Killer distractors** — the 🔴 rows are your proven weak spots.
-- [ ] Glance at **§0c Numbers** — 720 pass, 256 KB, 15 min, 60-120s, <1s, us-east-1.
-- [ ] After the mock: log score in StudyGuide.md tracker + add every miss to your paper weak-list.
-- [ ] Re-read the chapter section for each miss **same day** (wrong-answer review is the highest-value hour).
+- [ ] You read **§A Tactics** — circle the qualifier, predict before reading, name the disqualifier.
+- [ ] You drilled **§B 🔴 Traps** — these are your proven weak spots.
+- [ ] You glanced at **§C Numbers** — 720 pass · 256 KB · 15 min · 60–120s · <1s · us-east-1.
+- [ ] **After the mock:** log the score in StudyGuide.md and add every miss to your weak-list. Re-read that section here **the same day** — wrong-answer review is the highest-value hour.

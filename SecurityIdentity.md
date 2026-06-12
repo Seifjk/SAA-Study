@@ -390,32 +390,32 @@
 
 ### **Exam Summary Cheat Sheet — Practice (Fill In Yourself)**
 
-1. **EC2 needs S3 access without keys?** →
-2. **Explicit Deny vs. Allow?** →
-3. **Auto-rotate RDS password?** →
-4. **Free secret storage?** →
-5. **User sign-up/sign-in?** →
-6. **Mobile app uploads to S3 without backend?** →
-7. **Block SQL injection?** →
-8. **Rate limit API?** →
-9. **Free DDoS protection?** →
-10. **Detect compromised instances?** →
-11. **Scan EC2 for vulnerabilities?** →
-12. **Discover PII in S3?** →
-13. **Cross-account S3 access?** →
-14. **Encrypt large files efficiently?** →
-15. **Free SSL/TLS for ALB or CloudFront?** →
-16. **CloudFront HTTPS with custom domain?** →
-17. **SSL certificate on EC2?** →
-18. **FIPS 140-2 Level 3 / dedicated HSM?** →
-19. **SSO across multiple AWS accounts?** →
-20. **Centralized security findings dashboard?** →
-21. **Manage WAF rules across all accounts?** →
-22. **Deep packet inspection / IDS/IPS in VPC?** →
-23. **AssumeRoleWithWebIdentity?** →
-24. **AssumeRoleWithSAML?** →
-25. **Use existing on-prem Active Directory with AWS?** →
-26. **Full managed AD in AWS (Windows/SQL workloads)?** →
+1. **EC2 needs S3 access without keys?** → IAM Role
+2. **Explicit Deny vs. Allow?** → Explicit Deny 
+3. **Auto-rotate RDS password?** → Secrets Manager
+4. **Free secret storage?** → SSM
+5. **User sign-up/sign-in?** → Cognito
+6. **Mobile app uploads to S3 without backend?** → Cognito Identity Pools
+7. **Block SQL injection?** → WAF
+8. **Rate limit API?** → WAF Rate Limit
+9. **Free DDoS protection?** → Standard Shield
+10. **Detect compromised instances?** → GuardDuty
+11. **Scan EC2 for vulnerabilities?** → inspector
+12. **Discover PII in S3?** → Macie
+13. **Cross-account S3 access?** → Bucket Policy
+14. **Encrypt large files efficiently?** → Envelope Encryption
+15. **Free SSL/TLS for ALB or CloudFront?** → ACM
+16. **CloudFront HTTPS with custom domain?** → ACM on Us-east-1
+17. **SSL certificate on EC2?** → CloudHSM
+18. **FIPS 140-2 Level 3 / dedicated HSM?** → CloudHSM
+19. **SSO across multiple AWS accounts?** → IAM Identity Center
+20. **Centralized security findings dashboard?** → SecurityHub
+21. **Manage WAF rules across all accounts?** → Firewall Manager
+22. **Deep packet inspection / IDS/IPS in VPC?** → Firewall Network
+23. **AssumeRoleWithWebIdentity?** → STS policy for Cognito google etc.
+24. **AssumeRoleWithSAML?** → for SAML login
+25. **Use existing on-prem Active Directory with AWS?** →  AD Connector or Trust- connection
+26. **Full managed AD in AWS (Windows/SQL workloads)?** → AWS Managed AD
 
 ---
 

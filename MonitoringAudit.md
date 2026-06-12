@@ -17,8 +17,9 @@
 **The Rule:** Time-series data points (CPU, Network, etc.). AWS services publish built-in metrics automatically; you can push **Custom Metrics** for app/business data.
 
 - **The one tested gotcha:** EC2 default metrics are hypervisor-level (CPU, network, disk-ops) and **do NOT include memory or in-guest disk usage** — install the **CloudWatch Agent** to get those.
+- **Basic vs Detailed Monitoring:** EC2 sends metrics every **5 min** by default (Basic). Enable **Detailed Monitoring** (paid) for **1-min** granularity — needed when ASG must scale faster than 5-min reaction time.
 
-**Exam Trigger:** "Monitor EC2 memory/disk usage" → CloudWatch Agent (Custom Metrics).
+**Exam Trigger:** "Monitor EC2 memory/disk usage" → CloudWatch Agent (Custom Metrics). "Need EC2 metrics every 1 minute" → enable Detailed Monitoring.
 
 ---
 
@@ -40,8 +41,9 @@
 - **States:** OK, ALARM, INSUFFICIENT_DATA.
 - **Config:** metric, threshold, evaluation period, datapoints to alarm.
 - **Composite Alarms:** Combine multiple alarms with AND/OR logic to reduce noise (e.g., alert only if CPU AND Network high).
+- **EC2 Recover (tested):** An alarm on the **System Status Check** (host/hardware failure, not your OS) with the **recover** action auto-moves the instance to new hardware — **same Instance ID, Private IP, and Elastic IP** preserved. (Instance Status Check = your OS/config problem → recover won't help; reboot or fix the instance.)
 
-**Exam Trigger:** "Alert when CPU > 80% for 5 minutes" → CloudWatch Alarm.
+**Exam Trigger:** "Alert when CPU > 80% for 5 minutes" → CloudWatch Alarm. "Auto-recover EC2 on underlying hardware failure" → CloudWatch Alarm on System Status Check → Recover action.
 
 ---
 
@@ -221,6 +223,17 @@ These appear on the exam as one-line "which feature" triggers. You don't configu
 
 ---
 
+### **SECTION 5.5: COMPUTE OPTIMIZER**
+
+*ML-based right-sizing recommendations.*
+
+- **The Rule:** Analyzes historical **utilization metrics** and recommends the **optimal resource size/type** for EC2 instances, EC2 Auto Scaling groups, EBS volumes, and Lambda functions. Tells you "downsize this m5.xlarge → m5.large" or "this Lambda needs more memory."
+- **Trusted Advisor vs Compute Optimizer (the tested trap):** Trusted Advisor = **broad** checks across 5 pillars, flags *idle/underutilized* resources. Compute Optimizer = **deep, ML-driven right-sizing** — the specific better instance type/size. When the question asks for a *specific sizing recommendation based on utilization history*, it's Compute Optimizer.
+
+**Exam Trigger:** "Right-size EC2/EBS/Lambda based on utilization history" → Compute Optimizer. "Specific recommendation for a better instance type" → Compute Optimizer.
+
+---
+
 ### **SECTION 6: PERSONAL HEALTH DASHBOARD**
 
 *Service health events affecting your resources.*
@@ -256,6 +269,8 @@ These appear on the exam as one-line "which feature" triggers. You don't configu
 19. **Create alarm based on log pattern?** →
 20. **Top contributors to metrics?** →
 21. **Monitor API availability?** →
+22. **Right-size EC2/Lambda from utilization history?** →
+23. **Auto-recover EC2 on hardware failure?** →
 
 ---
 
@@ -282,6 +297,8 @@ These appear on the exam as one-line "which feature" triggers. You don't configu
 19. **Create alarm based on log pattern?** → CloudWatch Metric Filter + Alarm.
 20. **Top contributors to metrics?** → CloudWatch Contributor Insights.
 21. **Monitor API availability?** → CloudWatch Synthetics Canaries.
+22. **Right-size EC2/Lambda from utilization history?** → Compute Optimizer.
+23. **Auto-recover EC2 on hardware failure?** → CloudWatch Alarm on System Status Check → Recover action.
 
 ---
 
